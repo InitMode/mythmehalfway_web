@@ -1,227 +1,1604 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Myth Me Halfway – Story Library</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>Myth Me Halfway – Story Library</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8a2be2;
+            --primary-dark: #5d0e9e;
+            --bg-light: #f5f5f7;
+            --bg-dark: #0f0f1a;
+            --card-light: #ffffff;
+            --card-dark: #1a1a2e;
+            --text-light: #333333;
+            --text-dark: #e0e0e0;
+            --border-light: #e0e0e0;
+            --border-dark: #2d2d44;
+            --accent: #ff6b8b;
+            --success: #4CAF50;
+        }
 
-<style>
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background: #111;
-    color: #fff;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+        }
 
-header {
-    background: #222;
-    padding: 15px;
-    text-align: center;
-    font-size: 20px;
-    font-weight: bold;
-}
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background: var(--bg-light);
+            color: var(--text-light);
+            min-height: 100vh;
+        }
 
-.controls {
-    display: flex;
-    gap: 10px;
-    padding: 10px;
-    background: #1a1a1a;
-    position: sticky;
-    top: 0;
-    z-index: 20;
-}
+        body.dark-mode {
+            background: var(--bg-dark);
+            color: var(--text-dark);
+        }
 
-input, select {
-    padding: 8px;
-    border-radius: 6px;
-    border: none;
-}
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
 
-#storiesContainer {
-    padding: 15px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
-    gap: 15px;
-}
+        .header-left h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
 
-.story-card {
-    background: #222;
-    padding: 15px;
-    border-radius: 10px;
-    cursor: pointer;
-    border: 1px solid #333;
-}
+        .header-left .subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
 
-.story-card:hover {
-    background: #333;
-}
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
 
-/* Modal */
-#storyModal {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.8);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-}
+        /* Theme Toggle */
+        .theme-toggle {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
 
-#modalContent {
-    background: #222;
-    padding: 20px;
-    max-width: 800px;
-    width: 100%;
-    border-radius: 12px;
-    max-height: 90vh;
-    overflow-y: auto;
-}
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
 
-#closeModal {
-    float: right;
-    cursor: pointer;
-    font-size: 20px;
-    padding: 5px;
-}
-</style>
+        /* Main Container */
+        .main-container {
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 300px;
+            background: var(--card-light);
+            border-right: 1px solid var(--border-light);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            overflow-y: auto;
+        }
+
+        body.dark-mode .sidebar {
+            background: var(--card-dark);
+            border-right-color: var(--border-dark);
+        }
+
+        /* Search */
+        .search-container {
+            position: relative;
+        }
+
+        .search-container i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 2.5rem;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: var(--bg-light);
+            color: var(--text-light);
+        }
+
+        body.dark-mode .search-input {
+            background: var(--bg-dark);
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+
+        /* Filters */
+        .filter-section h3 {
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+            color: var(--primary);
+        }
+
+        .filter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            padding: 0.3rem 0.8rem;
+            background: #eef2ff;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        body.dark-mode .tag {
+            background: #2a2a4a;
+        }
+
+        .tag.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Sounds Panel */
+        .sounds-panel {
+            margin-top: auto;
+        }
+
+        .sound-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.8rem;
+            background: var(--bg-light);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            border: 1px solid var(--border-light);
+        }
+
+        body.dark-mode .sound-item {
+            background: var(--bg-dark);
+            border-color: var(--border-dark);
+        }
+
+        .sound-item.active {
+            border-color: var(--accent);
+            background: rgba(255, 107, 139, 0.1);
+        }
+
+        .sound-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .volume-slider {
+            width: 80px;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        body.dark-mode .stats-bar {
+            border-bottom-color: var(--border-dark);
+        }
+
+        .stats {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .stat-item i {
+            color: var(--primary);
+        }
+
+        /* View Controls */
+        .view-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .view-btn {
+            background: var(--bg-light);
+            border: 1px solid var(--border-light);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        body.dark-mode .view-btn {
+            background: var(--bg-dark);
+            border-color: var(--border-dark);
+        }
+
+        .view-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Stories Grid/List */
+        .stories-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stories-container.list-view {
+            grid-template-columns: 1fr;
+        }
+
+        /* Story Card */
+        .story-card {
+            background: var(--card-light);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            height: 320px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body.dark-mode .story-card {
+            background: var(--card-dark);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .story-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .story-card.list-view {
+            height: auto;
+            flex-direction: row;
+        }
+
+        /* Card Image */
+        .card-image {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .story-card.list-view .card-image {
+            height: 180px;
+            width: 140px;
+            flex-shrink: 0;
+        }
+
+        .card-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent 50%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1rem;
+            color: white;
+        }
+
+        /* Card Content */
+        .card-content {
+            padding: 1rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .story-card.list-view .card-content {
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            line-height: 1.3;
+        }
+
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #777;
+            margin-bottom: 0.5rem;
+        }
+
+        body.dark-mode .card-meta {
+            color: #aaa;
+        }
+
+        .card-description {
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 1rem;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        body.dark-mode .card-description {
+            color: #bbb;
+        }
+
+        .story-card.list-view .card-description {
+            -webkit-line-clamp: 3;
+        }
+
+        /* Card Actions */
+        .card-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: none;
+            color: #777;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 0.3rem;
+            border-radius: 4px;
+        }
+
+        .action-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        body.dark-mode .action-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .action-btn.active {
+            color: var(--accent);
+        }
+
+        .read-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .read-btn.continue {
+            background: var(--success);
+        }
+
+        .read-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .read-btn.continue:hover {
+            background: #3d8b40;
+        }
+
+        /* Progress Indicator */
+        .progress-indicator {
+            height: 4px;
+            background: #eee;
+            border-radius: 2px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        body.dark-mode .progress-indicator {
+            background: #333;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-light);
+            width: 90%;
+            max-width: 900px;
+            height: 90vh;
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode .modal-content {
+            background: var(--card-dark);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-body {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            line-height: 1.8;
+        }
+
+        .modal-controls {
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-light);
+            border-top: 1px solid var(--border-light);
+        }
+
+        body.dark-mode .modal-controls {
+            background: var(--bg-dark);
+            border-top-color: var(--border-dark);
+        }
+
+        .page-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .page-input {
+            width: 60px;
+            padding: 0.5rem;
+            border: 1px solid var(--border-light);
+            border-radius: 4px;
+            text-align: center;
+            background: var(--bg-light);
+            color: var(--text-light);
+        }
+
+        body.dark-mode .page-input {
+            background: var(--bg-dark);
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+
+        .page-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .page-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--primary);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 1001;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border-light);
+            }
+            
+            body.dark-mode .sidebar {
+                border-bottom-color: var(--border-dark);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stories-container {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .card-image {
+                height: 180px;
+            }
+            
+            .story-card {
+                height: 300px;
+            }
+            
+            header {
+                padding: 1rem;
+            }
+            
+            .stats-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stories-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .story-card.list-view .card-image {
+                width: 100px;
+                height: 140px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                height: 95vh;
+            }
+        }
+    </style>
 </head>
 
-<body>
+<body class="dark-mode">
+    <header>
+        <div class="header-left">
+            <h1>Myth Me Halfway</h1>
+            <div class="subtitle">Story Library <span id="currentYear"></span></div>
+        </div>
+        <div class="header-right">
+            <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </header>
 
-<header>
-    Myth Me Halfway &middot; <span id="currentYear"></span>
-</header>
+    <div class="main-container">
+        <!-- Sidebar with filters and sounds -->
+        <aside class="sidebar">
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" class="search-input" placeholder="Search stories, tags, authors...">
+            </div>
 
-<div class="controls">
-    <input type="text" id="searchInput" placeholder="Search stories...">
-    <select id="typeFilter">
-        <option value="all">All Types</option>
-    </select>
-    <select id="sortFilter">
-        <option value="newest">Newest</option>
-        <option value="oldest">Oldest</option>
-    </select>
-</div>
+            <div class="filter-section">
+                <h3>Story Types</h3>
+                <div class="filter-tags" id="typeFilter"></div>
+            </div>
 
-<div id="statusText">Loading stories…</div>
-<div id="storyCount"></div>
+            <div class="filter-section">
+                <h3>Popular Tags</h3>
+                <div class="filter-tags" id="tagFilter"></div>
+            </div>
 
-<div id="storiesContainer"></div>
+            <div class="sounds-panel">
+                <h3>Background Sounds</h3>
+                <div id="soundsContainer"></div>
+            </div>
+        </aside>
 
-<!-- Modal -->
-<div id="storyModal">
-    <div id="modalContent">
-        <span id="closeModal">✖</span>
-        <h2 id="modalTitle"></h2>
-        <div id="modalStoryContent"></div>
+        <!-- Main content -->
+        <main class="content-area">
+            <div class="stats-bar">
+                <div class="stats">
+                    <div class="stat-item">
+                        <i class="fas fa-book-open"></i>
+                        <span id="totalStories">0 stories</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-bookmark"></i>
+                        <span id="bookmarkedCount">0 bookmarked</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-play-circle"></i>
+                        <span id="readingCount">0 reading</span>
+                    </div>
+                </div>
+                <div class="view-controls">
+                    <button class="view-btn active" id="gridViewBtn" title="Grid view">
+                        <i class="fas fa-th-large"></i>
+                    </button>
+                    <button class="view-btn" id="listViewBtn" title="List view">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="stories-container" id="storiesContainer">
+                <!-- Story cards will be inserted here -->
+            </div>
+        </main>
     </div>
-</div>
 
-<script>
-document.getElementById("currentYear").textContent = new Date().getFullYear();
+    <!-- Story Modal -->
+    <div class="modal" id="storyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Story Title</h2>
+                <button class="modal-close" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalStoryContent">
+                <!-- Story content will be inserted here -->
+            </div>
+            <div class="modal-controls">
+                <div class="page-controls">
+                    <button class="page-btn" id="prevPageBtn">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <input type="number" id="pageInput" class="page-input" min="1" value="1">
+                    <span id="totalPages">/ 1</span>
+                    <button class="page-btn" id="nextPageBtn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div>
+                    <button class="action-btn" id="modalBookmarkBtn" title="Bookmark">
+                        <i class="far fa-bookmark"></i>
+                    </button>
+                    <button class="action-btn" id="modalLikeBtn" title="Like">
+                        <i class="far fa-heart"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-const BASE_PATH = window.location.pathname.replace(/\/$/, "");
-const API_BASE = BASE_PATH + "/api";
-const STORIES_INDEX = API_BASE + "/stories/index.json";
+    <!-- Toast notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Action completed</span>
+    </div>
 
-let allStories = [];
-let displayedStories = [];
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Constants and Configuration ---
+            const BASE_PATH = window.location.pathname.replace(/\/$/, "");
+            const API_BASE = BASE_PATH + "/api";
+            const STORIES_INDEX = API_BASE + "/stories/index.json";
+            
+            // Sounds configuration
+            const SOUNDS = [
+                { id: 'rain', name: 'Heavy Rain', url: 'https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg' },
+                { id: 'fire', name: 'Campfire', url: 'https://actions.google.com/sounds/v1/ambiences/fire.ogg' },
+                { id: 'coffee', name: 'Coffee Shop', url: 'https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg' },
+                { id: 'forest', name: 'Forest', url: 'https://actions.google.com/sounds/v1/nature/forest_wind.ogg' }
+            ];
+            
+            // Page configuration
+            const WORDS_PER_PAGE = 300;
+            
+            // --- State Management ---
+            let allStories = [];
+            let displayedStories = [];
+            let activeFilters = {
+                type: 'all',
+                tags: []
+            };
+            let currentView = 'grid'; // 'grid' or 'list'
+            let activeSound = null;
+            let audioContext = null;
+            let audioElements = {};
+            let currentStoryData = null;
+            let currentStoryPages = [];
+            let currentPage = 1;
+            
+            // --- Local Storage Keys ---
+            const STORAGE_KEYS = {
+                THEME: 'mythmehalfway_theme',
+                BOOKMARKS: 'mythmehalfway_bookmarks',
+                READING: 'mythmehalfway_reading',
+                LIKES: 'mythmehalfway_likes',
+                SOUND: 'mythmehalfway_sound',
+                VOLUME: 'mythmehalfway_volume'
+            };
+            
+            // --- DOM Elements ---
+            const currentYearEl = document.getElementById('currentYear');
+            const themeToggle = document.getElementById('themeToggle');
+            const searchInput = document.getElementById('searchInput');
+            const typeFilter = document.getElementById('typeFilter');
+            const tagFilter = document.getElementById('tagFilter');
+            const soundsContainer = document.getElementById('soundsContainer');
+            const totalStoriesEl = document.getElementById('totalStories');
+            const bookmarkedCountEl = document.getElementById('bookmarkedCount');
+            const readingCountEl = document.getElementById('readingCount');
+            const gridViewBtn = document.getElementById('gridViewBtn');
+            const listViewBtn = document.getElementById('listViewBtn');
+            const storiesContainer = document.getElementById('storiesContainer');
+            const storyModal = document.getElementById('storyModal');
+            const closeModal = document.getElementById('closeModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalStoryContent = document.getElementById('modalStoryContent');
+            const prevPageBtn = document.getElementById('prevPageBtn');
+            const nextPageBtn = document.getElementById('nextPageBtn');
+            const pageInput = document.getElementById('pageInput');
+            const totalPagesEl = document.getElementById('totalPages');
+            const modalBookmarkBtn = document.getElementById('modalBookmarkBtn');
+            const modalLikeBtn = document.getElementById('modalLikeBtn');
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            // --- Initialize ---
+            function init() {
+                // Set current year
+                currentYearEl.textContent = new Date().getFullYear();
+                
+                // Initialize theme
+                initTheme();
+                
+                // Initialize filters
+                initFilters();
+                
+                // Initialize sounds
+                initSounds();
+                
+                // Initialize event listeners
+                initEventListeners();
+                
+                // Load stories
+                loadStories();
+                
+                // Update stats
+                updateStats();
+            }
+            
+            // --- Theme Management ---
+            function initTheme() {
+                const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME);
+                if (savedTheme === 'light') {
+                    document.body.classList.remove('dark-mode');
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                } else {
+                    document.body.classList.add('dark-mode');
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                }
+            }
+            
+            // --- Filter Management ---
+            function initFilters() {
+                // These would be populated from stories data
+                const types = ['fiction', 'non-fiction', 'mythology', 'folklore', 'fantasy'];
+                const tags = ['African mythology', 'Kenyan folklore', 'magical realism', 'short story', 'children\'s story', 'courage', 'sacrifice', 'adventure', 'magic', 'spirit'];
+                
+                // Add type filters
+                types.forEach(type => {
+                    const typeEl = document.createElement('span');
+                    typeEl.className = 'tag';
+                    typeEl.textContent = type;
+                    typeEl.dataset.value = type;
+                    typeEl.addEventListener('click', () => toggleTypeFilter(type));
+                    typeFilter.appendChild(typeEl);
+                });
+                
+                // Add tag filters
+                tags.forEach(tag => {
+                    const tagEl = document.createElement('span');
+                    tagEl.className = 'tag';
+                    tagEl.textContent = tag;
+                    tagEl.dataset.value = tag;
+                    tagEl.addEventListener('click', () => toggleTagFilter(tag));
+                    tagFilter.appendChild(tagEl);
+                });
+            }
+            
+            // --- Sound Management ---
+            function initSounds() {
+                SOUNDS.forEach(sound => {
+                    const soundEl = document.createElement('div');
+                    soundEl.className = 'sound-item';
+                    soundEl.dataset.soundId = sound.id;
+                    
+                    const soundInfo = document.createElement('div');
+                    soundInfo.textContent = sound.name;
+                    
+                    const soundControls = document.createElement('div');
+                    soundControls.className = 'sound-controls';
+                    
+                    const playBtn = document.createElement('button');
+                    playBtn.className = 'action-btn';
+                    playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                    playBtn.title = 'Play sound';
+                    
+                    const volumeSlider = document.createElement('input');
+                    volumeSlider.type = 'range';
+                    volumeSlider.className = 'volume-slider';
+                    volumeSlider.min = '0';
+                    volumeSlider.max = '100';
+                    volumeSlider.value = '50';
+                    
+                    soundControls.appendChild(playBtn);
+                    soundControls.appendChild(volumeSlider);
+                    
+                    soundEl.appendChild(soundInfo);
+                    soundEl.appendChild(soundControls);
+                    
+                    soundEl.addEventListener('click', (e) => {
+                        if (!e.target.closest('.sound-controls')) {
+                            toggleSound(sound.id);
+                        }
+                    });
+                    
+                    playBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        toggleSound(sound.id);
+                    });
+                    
+                    volumeSlider.addEventListener('input', (e) => {
+                        e.stopPropagation();
+                        updateVolume(sound.id, e.target.value / 100);
+                    });
+                    
+                    soundsContainer.appendChild(soundEl);
+                    
+                    // Create audio element
+                    const audio = new Audio(sound.url);
+                    audio.loop = true;
+                    audio.volume = 0.5;
+                    audioElements[sound.id] = audio;
+                });
+                
+                // Load saved sound preference
+                const savedSound = localStorage.getItem(STORAGE_KEYS.SOUND);
+                const savedVolume = localStorage.getItem(STORAGE_KEYS.VOLUME) || 0.5;
+                
+                if (savedSound && audioElements[savedSound]) {
+                    setTimeout(() => toggleSound(savedSound), 500);
+                    audioElements[savedSound].volume = parseFloat(savedVolume);
+                }
+            }
+            
+            // --- Data Management ---
+            async function fetchStories() {
+                try {
+                    const res = await fetch(STORIES_INDEX + "?t=" + Date.now());
+                    if (!res.ok) throw new Error("Bad status " + res.status);
+                    return await res.json();
+                } catch (err) {
+                    console.error("Failed to fetch stories:", err);
+                    return [];
+                }
+            }
+            
+            async function loadStories() {
+                const files = await fetchStories();
+                const newStories = [];
+                
+                // For demo purposes, create sample stories if none exist
+                if (files.length === 0) {
+                    // Create demo stories based on the provided story
+                    for (let i = 0; i < 12; i++) {
+                        newStories.push({
+                            id: `story-${i}`,
+                            filename: `story-${i}.md`,
+                            path: `${API_BASE}/stories/story-${i}.md`,
+                            // Mock data - in real app this would come from frontmatter
+                            title: i === 0 ? "The Girl Who Borrowed the Wind" : `Mythical Tale ${i}`,
+                            author: i === 0 ? "Salt Merchant" : "Storyteller",
+                            cover: i === 0 ? "https://source.unsplash.com/featured/?baobab,wind" : `https://source.unsplash.com/featured/?myth,${i}`,
+                            description: i === 0 ? "A short magical tale from Ukambani about courage, sacrifice, and the Wind Spirit Mwenga Mkuu." : `An enchanting story about myths and legends from around the world. Part ${i} of our collection.`,
+                            type: i < 4 ? "fiction" : i < 8 ? "mythology" : "folklore",
+                            tags: i === 0 ? ["African mythology", "Kenyan folklore", "magical realism", "short story", "children's story", "courage", "sacrifice"] : 
+                                  ["mythology", "fantasy", "adventure", "spirit"]
+                        });
+                    }
+                } else {
+                    // In a real app, fetch actual story metadata
+                    for (const file of files) {
+                        newStories.push({
+                            id: file.replace(".md", ""),
+                            filename: file,
+                            path: API_BASE + "/stories/" + file
+                        });
+                    }
+                }
+                
+                allStories = newStories;
+                displayedStories = [...allStories];
+                renderStories();
+                updateStats();
+                
+                // Set up auto-refresh every 30 seconds
+                setInterval(async () => {
+                    const updatedFiles = await fetchStories();
+                    // Implementation for detecting new stories would go here
+                }, 30000);
+            }
+            
+            // --- Story Rendering ---
+            function renderStories() {
+                storiesContainer.innerHTML = "";
+                storiesContainer.className = `stories-container ${currentView}-view`;
+                
+                displayedStories.forEach(story => {
+                    const storyEl = createStoryCard(story);
+                    storiesContainer.appendChild(storyEl);
+                });
+                
+                updateStats();
+            }
+            
+            function createStoryCard(story) {
+                const card = document.createElement('div');
+                card.className = `story-card ${currentView}-view`;
+                card.dataset.storyId = story.id;
+                
+                // Get user data from localStorage
+                const bookmarks = JSON.parse(localStorage.getItem(STORAGE_KEYS.BOOKMARKS) || '[]');
+                const reading = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING) || '{}');
+                const likes = JSON.parse(localStorage.getItem(STORAGE_KEYS.LIKES) || '[]');
+                
+                const isBookmarked = bookmarks.includes(story.id);
+                const isLiked = likes.includes(story.id);
+                const readingProgress = reading[story.id] || 0;
+                const hasProgress = readingProgress > 0;
+                
+                // Card image
+                const cardImage = document.createElement('div');
+                cardImage.className = 'card-image';
+                cardImage.style.backgroundImage = `url('${story.cover || 'https://source.unsplash.com/featured/?story,book'}')`;
+                
+                const cardOverlay = document.createElement('div');
+                cardOverlay.className = 'card-overlay';
+                
+                const cardTitle = document.createElement('h3');
+                cardTitle.className = 'card-title';
+                cardTitle.textContent = story.title || story.id;
+                
+                const cardMeta = document.createElement('div');
+                cardMeta.className = 'card-meta';
+                cardMeta.innerHTML = `
+                    <span>${story.type || 'fiction'}</span>
+                    <span>${story.author || 'Unknown'}</span>
+                `;
+                
+                cardOverlay.appendChild(cardTitle);
+                cardOverlay.appendChild(cardMeta);
+                cardImage.appendChild(cardOverlay);
+                
+                // Card content
+                const cardContent = document.createElement('div');
+                cardContent.className = 'card-content';
+                
+                const cardDescription = document.createElement('p');
+                cardDescription.className = 'card-description';
+                cardDescription.textContent = story.description || 'An enchanting story waiting to be read...';
+                
+                // Progress indicator
+                const progressIndicator = document.createElement('div');
+                progressIndicator.className = 'progress-indicator';
+                
+                const progressBar = document.createElement('div');
+                progressBar.className = 'progress-bar';
+                progressBar.style.width = `${readingProgress}%`;
+                
+                progressIndicator.appendChild(progressBar);
+                
+                // Card actions
+                const cardActions = document.createElement('div');
+                cardActions.className = 'card-actions';
+                
+                const leftActions = document.createElement('div');
+                
+                const bookmarkBtn = document.createElement('button');
+                bookmarkBtn.className = `action-btn ${isBookmarked ? 'active' : ''}`;
+                bookmarkBtn.innerHTML = isBookmarked ? '<i class="fas fa-bookmark"></i>' : '<i class="far fa-bookmark"></i>';
+                bookmarkBtn.title = isBookmarked ? 'Remove bookmark' : 'Bookmark story';
+                bookmarkBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleBookmark(story.id);
+                });
+                
+                const likeBtn = document.createElement('button');
+                likeBtn.className = `action-btn ${isLiked ? 'active' : ''}`;
+                likeBtn.innerHTML = isLiked ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
+                likeBtn.title = isLiked ? 'Unlike story' : 'Like story';
+                likeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleLike(story.id);
+                });
+                
+                leftActions.appendChild(bookmarkBtn);
+                leftActions.appendChild(likeBtn);
+                
+                const readBtn = document.createElement('button');
+                readBtn.className = `read-btn ${hasProgress ? 'continue' : ''}`;
+                readBtn.textContent = hasProgress ? 'Continue Reading' : 'Read Now';
+                readBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openStory(story);
+                });
+                
+                cardActions.appendChild(leftActions);
+                cardActions.appendChild(readBtn);
+                
+                // Assemble card
+                cardContent.appendChild(cardDescription);
+                if (hasProgress) {
+                    cardContent.appendChild(progressIndicator);
+                }
+                cardContent.appendChild(cardActions);
+                
+                card.appendChild(cardImage);
+                card.appendChild(cardContent);
+                
+                // Open story on card click
+                card.addEventListener('click', () => openStory(story));
+                
+                return card;
+            }
+            
+            // --- Story Modal ---
+            async function openStory(story) {
+                currentStoryData = story;
+                modalTitle.textContent = story.title || story.id;
+                modalStoryContent.innerHTML = '<div class="loading">Loading story...</div>';
+                storyModal.classList.add('active');
+                
+                try {
+                    // In a real app, fetch the actual story content
+                    // const res = await fetch(story.path);
+                    // const text = await res.text();
+                    
+                    // For demo, use the provided story
+                    const storyText = `# ${story.title || story.id}
 
-const storyContainer = document.getElementById("storiesContainer");
-const statusText = document.getElementById("statusText");
-const searchInput = document.getElementById("searchInput");
-const sortFilter = document.getElementById("sortFilter");
+In the drought-stricken plains of Ukambani, there lived a young girl named Mumo.  
+Her village had not felt a breeze in many moons, and the wells were turning into dust.
 
-const storyModal = document.getElementById("storyModal");
-const closeModal = document.getElementById("closeModal");
-const modalTitle = document.getElementById("modalTitle");
-const modalStoryContent = document.getElementById("modalStoryContent");
+One evening, Mumo wandered to the sacred hill where the old stories say the **Wind Spirit**,  
+_Mwenga Mkuu_, sleeps inside a giant baobab tree.  
+Most children feared the place—but Mumo was brave.
 
-async function fetchStories() {
-    try {
-        const res = await fetch(STORIES_INDEX + "?t=" + Date.now());
-        if (!res.ok) throw new Error("Bad status " + res.status);
-        return await res.json();
-    } catch (err) {
-        console.error("Failed to fetch stories:", err);
-        return [];
-    }
-}
+She placed her palms on the rough bark.
 
-async function loadStories(initial = true) {
-    const files = await fetchStories();
-    const newStories = files.map(f => ({
-        id: f.replace(".md", ""),
-        filename: f,
-        path: API_BASE + "/stories/" + f
-    }));
+> "Great Mwenga," she whispered.  
+> "My people grow weak. Please, wake, even for a moment."
 
-    if (initial) {
-        allStories = newStories;
-        displayedStories = [...allStories];
-        renderStories();
-        statusText.textContent = "Stories loaded ✓";
-    } else {
-        // Detect newly added stories
-        const existingIds = allStories.map(s => s.id);
-        const added = newStories.filter(s => !existingIds.includes(s.id));
-        if (added.length > 0) {
-            allStories.push(...added);
-            displayedStories = [...allStories];
-            renderStories();
-            statusText.textContent = "Stories updated ✓";
-        }
-    }
-}
+The baobab groaned.  
+A cool swirl of air wrapped around her wrists like bracelets of morning mist.
 
-function renderStories() {
-    storyContainer.innerHTML = "";
-    displayedStories.forEach(story => {
-        const div = document.createElement("div");
-        div.className = "story-card";
-        div.innerHTML = `<h3>${story.id}</h3><small>${story.filename}</small>`;
-        div.onclick = () => openStory(story);
-        storyContainer.appendChild(div);
-    });
-    document.getElementById("storyCount").textContent = displayedStories.length + " stories";
-}
+The Wind Spirit spoke:
 
-async function openStory(story) {
-    modalTitle.textContent = story.id;
-    modalStoryContent.innerHTML = "Loading…";
-    storyModal.style.display = "flex";
+> "Child of courage, I can lend you a breeze.  
+> But when I give, something must be returned."
 
-    const res = await fetch(story.path);
-    if (res.ok) {
-        const text = await res.text();
-        modalStoryContent.innerHTML = `<pre style="white-space: pre-wrap;">${text}</pre>`;
-    } else {
-        modalStoryContent.innerHTML = "Error loading file.";
-    }
-}
+Mumo thought hard. She had no water.  
+She had no cattle.  
+But she had her voice.
 
-closeModal.onclick = () => storyModal.style.display = "none";
+So she offered it.
 
-searchInput.oninput = applyFilters;
-sortFilter.onchange = applyFilters;
+> "Take my songs, Mwenga.  
+> My voice carries stories, and stories are part of the wind."
 
-function applyFilters() {
-    const q = searchInput.value.toLowerCase();
-    displayedStories = allStories.filter(s =>
-        s.id.toLowerCase().includes(q) || s.filename.toLowerCase().includes(q)
-    );
-    if (sortFilter.value === "newest") displayedStories.reverse();
-    renderStories();
-}
+The spirit agreed.  
+A powerful gust spiraled into her hands, glowing like soft blue fire.
 
-// Initial load
-loadStories();
+Mumo ran home, releasing the wind across the dry fields.  
+Clouds gathered, rain fell, children danced.
 
-// Auto-refresh / auto-detect new stories every 30 seconds
-setInterval(() => loadStories(false), 30000);
-</script>
+But Mumo could no longer sing.
 
+Weeks later, the Wind Spirit returned, moved by her sacrifice.  
+It placed a warm breeze in her throat.
+
+> "Your songs are now part of every wind," it said.  
+> "Each time the breeze touches your village, it brings your voice home."
+
+And so the people of Ukambani say that when the wind hums through the baobab trees,  
+you can hear a soft girl's song—  
+a reminder of Mumo, who borrowed the wind to save her people.`;
+                    
+                    // Paginate the story
+                    currentStoryPages = paginateStory(storyText);
+                    currentPage = getSavedPage(story.id) || 1;
+                    
+                    renderStoryPage();
+                    updateModalButtons(story.id);
+                    
+                    // Save reading progress
+                    saveReadingProgress(story.id, currentPage, currentStoryPages.length);
+                    
+                } catch (err) {
+                    console.error("Error loading story:", err);
+                    modalStoryContent.innerHTML = '<div class="error">Error loading story. Please try again.</div>';
+                }
+            }
+            
+            function paginateStory(text) {
+                const words = text.split(/\s+/);
+                const pages = [];
+                
+                for (let i = 0; i < words.length; i += WORDS_PER_PAGE) {
+                    const pageWords = words.slice(i, i + WORDS_PER_PAGE);
+                    pages.push(pageWords.join(' '));
+                }
+                
+                return pages;
+            }
+            
+            function renderStoryPage() {
+                if (!currentStoryPages.length) return;
+                
+                const pageIndex = Math.min(Math.max(0, currentPage - 1), currentStoryPages.length - 1);
+                const pageContent = currentStoryPages[pageIndex];
+                
+                // Convert markdown-like formatting to HTML
+                let htmlContent = pageContent
+                    .replace(/# (.*?)(\n|$)/g, '<h1>$1</h1>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/_(.*?)_/g, '<em>$1</em>')
+                    .replace(/> (.*?)(\n|$)/g, '<blockquote>$1</blockquote>')
+                    .replace(/\n/g, '<br>');
+                
+                modalStoryContent.innerHTML = htmlContent;
+                pageInput.value = currentPage;
+                totalPagesEl.textContent = `/ ${currentStoryPages.length}`;
+                
+                // Update buttons
+                prevPageBtn.disabled = currentPage <= 1;
+                nextPageBtn.disabled = currentPage >= currentStoryPages.length;
+            }
+            
+            // --- User Actions ---
+            function toggleBookmark(storyId) {
+                const bookmarks = JSON.parse(localStorage.getItem(STORAGE_KEYS.BOOKMARKS) || '[]');
+                const index = bookmarks.indexOf(storyId);
+                
+                if (index === -1) {
+                    bookmarks.push(storyId);
+                    showToast('Story bookmarked');
+                } else {
+                    bookmarks.splice(index, 1);
+                    showToast('Bookmark removed');
+                }
+                
+                localStorage.setItem(STORAGE_KEYS.BOOKMARKS, JSON.stringify(bookmarks));
+                
+                // Update UI
+                if (currentStoryData && currentStoryData.id === storyId) {
+                    updateModalButtons(storyId);
+                }
+                
+                renderStories();
+                updateStats();
+            }
+            
+            function toggleLike(storyId) {
+                const likes = JSON.parse(localStorage.getItem(STORAGE_KEYS.LIKES) || '[]');
+                const index = likes.indexOf(storyId);
+                
+                if (index === -1) {
+                    likes.push(storyId);
+                    showToast('Story liked');
+                } else {
+                    likes.splice(index, 1);
+                    showToast('Like removed');
+                }
+                
+                localStorage.setItem(STORAGE_KEYS.LIKES, JSON.stringify(likes));
+                
+                if (currentStoryData && currentStoryData.id === storyId) {
+                    updateModalButtons(storyId);
+                }
+                
+                renderStories();
+            }
+            
+            function saveReadingProgress(storyId, page, totalPages) {
+                const reading = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING) || '{}');
+                const progress = Math.min(100, Math.round((page / totalPages) * 100));
+                
+                reading[storyId] = progress;
+                localStorage.setItem(STORAGE_KEYS.READING, JSON.stringify(reading));
+                
+                if (storyId === currentStoryData?.id) {
+                    // Save exact page for this story
+                    const storyReading = JSON.parse(localStorage.getItem(`${STORAGE_KEYS.READING}_${storyId}`) || '{}');
+                    storyReading.page = page;
+                    localStorage.setItem(`${STORAGE_KEYS.READING}_${storyId}`, JSON.stringify(storyReading));
+                }
+                
+                renderStories();
+                updateStats();
+            }
+            
+            function getSavedPage(storyId) {
+                const storyReading = JSON.parse(localStorage.getItem(`${STORAGE_KEYS.READING}_${storyId}`) || '{}');
+                return storyReading.page || 1;
+            }
+            
+            // --- Sound Controls ---
+            function toggleSound(soundId) {
+                if (activeSound === soundId) {
+                    // Stop current sound
+                    audioElements[soundId].pause();
+                    activeSound = null;
+                    localStorage.removeItem(STORAGE_KEYS.SOUND);
+                    
+                    // Update UI
+                    document.querySelectorAll('.sound-item').forEach(el => {
+                        el.classList.remove('active');
+                        el.querySelector('.action-btn').innerHTML = '<i class="fas fa-play"></i>';
+                    });
+                } else {
+                    // Stop any playing sound
+                    if (activeSound && audioElements[activeSound]) {
+                        audioElements[activeSound].pause();
+                    }
+                    
+                    // Play new sound
+                    audioElements[soundId].play();
+                    activeSound = soundId;
+                    localStorage.setItem(STORAGE_KEYS.SOUND, soundId);
+                    
+                    // Update UI
+                    document.querySelectorAll('.sound-item').forEach(el => {
+                        el.classList.remove('active');
+                        el.querySelector('.action-btn').innerHTML = '<i class="fas fa-play"></i>';
+                    });
+                    
+                    const activeEl = document.querySelector(`[data-sound-id="${soundId}"]`);
+                    if (activeEl) {
+                        activeEl.classList.add('active');
+                        activeEl.querySelector('.action-btn').innerHTML = '<i class="fas fa-pause"></i>';
+                    }
+                }
+            }
+            
+            function updateVolume(soundId, volume) {
+                if (audioElements[soundId]) {
+                    audioElements[soundId].volume = volume;
+                    if (activeSound === soundId) {
+                        localStorage.setItem(STORAGE_KEYS.VOLUME, volume);
+                    }
+                }
+            }
+            
+            // --- Filter Functions ---
+            function toggleTypeFilter(type) {
+                const typeEl = document.querySelector(`#typeFilter .tag[data-value="${type}"]`);
+                
+                if (activeFilters.type === type) {
+                    activeFilters.type = 'all';
+                    typeEl.classList.remove('active');
+                } else {
+                    activeFilters.type = type;
+                    document.querySelectorAll('#typeFilter .tag').forEach(el => el.classList.remove('active'));
+                    typeEl.classList.add('active');
+                }
+                
+                applyFilters();
+            }
+            
+            function toggleTagFilter(tag) {
+                const tagEl = document.querySelector(`#tagFilter .tag[data-value="${tag}"]`);
+                const index = activeFilters.tags.indexOf(tag);
+                
+                if (index === -1) {
+                    activeFilters.tags.push(tag);
+                    tagEl.classList.add('active');
+                } else {
+                    activeFilters.tags.splice(index, 1);
+                    tagEl.classList.remove('active');
+                }
+                
+                applyFilters();
+            }
+            
+            function applyFilters() {
+                const searchQuery = searchInput.value.toLowerCase();
+                
+                displayedStories = allStories.filter(story => {
+                    // Search filter
+                    const matchesSearch = !searchQuery || 
+                        (story.title && story.title.toLowerCase().includes(searchQuery)) ||
+                        (story.description && story.description.toLowerCase().includes(searchQuery)) ||
+                        (story.author && story.author.toLowerCase().includes(searchQuery)) ||
+                        (story.tags && story.tags.some(tag => tag.toLowerCase().includes(searchQuery)));
+                    
+                    // Type filter
+                    const matchesType = activeFilters.type === 'all' || 
+                        (story.type && story.type === activeFilters.type);
+                    
+                    // Tag filter
+                    const matchesTags = activeFilters.tags.length === 0 ||
+                        (story.tags && activeFilters.tags.every(tag => story.tags.includes(tag)));
+                    
+                    return matchesSearch && matchesType && matchesTags;
+                });
+                
+                // Apply sorting (if any)
+                // This could be extended based on user preferences
+                
+                renderStories();
+            }
+            
+            // --- UI Update Functions ---
+            function updateStats() {
+                totalStoriesEl.textContent = `${displayedStories.length} ${displayedStories.length === 1 ? 'story' : 'stories'}`;
+                
+                const bookmarks = JSON.parse(localStorage.getItem(STORAGE_KEYS.BOOKMARKS) || '[]');
+                bookmarkedCountEl.textContent = `${bookmarks.length} bookmarked`;
+                
+                const reading = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING) || '{}');
+                const readingCount = Object.keys(reading).length;
+                readingCountEl.textContent = `${readingCount} reading`;
+            }
+            
+            function updateModalButtons(storyId) {
+                const bookmarks = JSON.parse(localStorage.getItem(STORAGE_KEYS.BOOKMARKS) || '[]');
+                const likes = JSON.parse(localStorage.getItem(STORAGE_KEYS.LIKES) || '[]');
+                
+                const isBookmarked = bookmarks.includes(storyId);
+                const isLiked = likes.includes(storyId);
+                
+                modalBookmarkBtn.innerHTML = isBookmarked ? 
+                    '<i class="fas fa-bookmark"></i>' : '<i class="far fa-bookmark"></i>';
+                modalBookmarkBtn.title = isBookmarked ? 'Remove bookmark' : 'Bookmark story';
+                
+                modalLikeBtn.innerHTML = isLiked ? 
+                    '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
+                modalLikeBtn.title = isLiked ? 'Unlike story' : 'Like story';
+            }
+            
+            function showToast(message) {
+                toastMessage.textContent = message;
+                toast.classList.add('show');
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+            
+            // --- Event Listeners ---
+            function initEventListeners() {
+                // Theme toggle
+                themeToggle.addEventListener('click', () => {
+                    const isDark = document.body.classList.contains('dark-mode');
+                    
+                    if (isDark) {
+                        document.body.classList.remove('dark-mode');
+                        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                        localStorage.setItem(STORAGE_KEYS.THEME, 'light');
+                    } else {
+                        document.body.classList.add('dark-mode');
+                        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                        localStorage.setItem(STORAGE_KEYS.THEME, 'dark');
+                    }
+                });
+                
+                // Search
+                searchInput.addEventListener('input', applyFilters);
+                
+                // View controls
+                gridViewBtn.addEventListener('click', () => {
+                    currentView = 'grid';
+                    gridViewBtn.classList.add('active');
+                    listViewBtn.classList.remove('active');
+                    renderStories();
+                });
+                
+                listViewBtn.addEventListener('click', () => {
+                    currentView = 'list';
+                    listViewBtn.classList.add('active');
+                    gridViewBtn.classList.remove('active');
+                    renderStories();
+                });
+                
+                // Modal controls
+                closeModal.addEventListener('click', () => {
+                    storyModal.classList.remove('active');
+                    currentStoryData = null;
+                    currentStoryPages = [];
+                });
+                
+                prevPageBtn.addEventListener('click', () => {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        renderStoryPage();
+                        saveReadingProgress(currentStoryData.id, currentPage, currentStoryPages.length);
+                    }
+                });
+                
+                nextPageBtn.addEventListener('click', () => {
+                    if (currentPage < currentStoryPages.length) {
+                        currentPage++;
+                        renderStoryPage();
+                        saveReadingProgress(currentStoryData.id, currentPage, currentStoryPages.length);
+                    }
+                });
+                
+                pageInput.addEventListener('change', () => {
+                    const newPage = parseInt(pageInput.value);
+                    if (!isNaN(newPage) && newPage >= 1 && newPage <= currentStoryPages.length) {
+                        currentPage = newPage;
+                        renderStoryPage();
+                        saveReadingProgress(currentStoryData.id, currentPage, currentStoryPages.length);
+                    } else {
+                        pageInput.value = currentPage;
+                    }
+                });
+                
+                modalBookmarkBtn.addEventListener('click', () => {
+                    if (currentStoryData) {
+                        toggleBookmark(currentStoryData.id);
+                    }
+                });
+                
+                modalLikeBtn.addEventListener('click', () => {
+                    if (currentStoryData) {
+                        toggleLike(currentStoryData.id);
+                    }
+                });
+                
+                // Close modal on background click
+                storyModal.addEventListener('click', (e) => {
+                    if (e.target === storyModal) {
+                        storyModal.classList.remove('active');
+                        currentStoryData = null;
+                        currentStoryPages = [];
+                    }
+                });
+                
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
+                    // Close modal with Escape
+                    if (e.key === 'Escape' && storyModal.classList.contains('active')) {
+                        storyModal.classList.remove('active');
+                        currentStoryData = null;
+                        currentStoryPages = [];
+                    }
+                    
+                    // Navigate pages with arrow keys
+                    if (storyModal.classList.contains('active')) {
+                        if (e.key === 'ArrowLeft') {
+                            e.preventDefault();
+                            prevPageBtn.click();
+                        } else if (e.key === 'ArrowRight') {
+                            e.preventDefault();
+                            nextPageBtn.click();
+                        }
+                    }
+                });
+            }
+            
+            // Start the application
+            init();
+        });
+    </script>
 </body>
 </html>
