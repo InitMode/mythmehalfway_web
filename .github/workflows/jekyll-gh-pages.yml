@@ -51,7 +51,7 @@ jobs:
           echo '{"status": "API running", "timestamp": "'$(date)'"}' > _site/api/status.json
       
       # Fetch stories from private repo
-            - name: Fetch Stories From Private Repo
+      - name: Fetch Stories From Private Repo
         run: |
           echo "Fetching list of stories from private repo..."
 
