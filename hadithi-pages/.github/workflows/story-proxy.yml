@@ -28,7 +28,7 @@ jobs:
           mkdir -p public/stories
           curl -H "Authorization: Bearer ${{ secrets.STORY_TOKEN }}" \
                -H "Accept: application/vnd.github.raw" \
-               https://api.github.com/repos/<YOUR_USERNAME>/hadithi-stories/contents/stories \
+               https://api.github.com/repos/InitMode/mythmehalfway/contents/stories \
           | jq -r '.[] | .download_url' | while read url; do
                fname=$(basename "$url")
                curl -L "$url" -o "public/stories/$fname"
