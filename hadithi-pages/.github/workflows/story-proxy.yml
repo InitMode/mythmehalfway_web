@@ -1,1 +1,48 @@
+name: Story Proxy API
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout public repo
+        uses: actions/checkout@v3
+
+      - name: Create public API status
+        run: |
+          mkdir -p public/api
+          echo '{"status": "API running"}' > public/api/status.json
+
+      - name: Fetch Stories From Private Repo
+        run: |
+          mkdir -p public/stories
+          curl -H "Authorization: Bearer ${{ secrets.STORY_TOKEN }}" \
+               -H "Accept: application/vnd.github.raw" \
+               https://api.github.com/repos/<YOUR_USERNAME>/hadithi-stories/contents/stories \
+          | jq -r '.[] | .download_url' | while read url; do
+               fname=$(basename "$url")
+               curl -L "$url" -o "public/stories/$fname"
+            done
+
+      - name: Upload to GitHub Pages Artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: ./public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy GitHub Pages
+        uses: actions/deploy-pages@v3
 
