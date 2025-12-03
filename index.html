@@ -616,427 +616,402 @@ a reminder of Mumo, who borrowed the wind to save her people.`,
             };
 
             const isBookmarked = bookmarks.includes(book.id);
-            const likeCount = likes[book.id] || book.likes;
+           // ... inside ReaderView (around line 906)
+            const likeCount = likes[book.id] || book.likes;
 
-            return React.createElement('div', {
-                className: `fixed inset-0 z-40 flex flex-col h-screen animate-fade-in ${isDark ? 'bg-gray-900' : 'bg-white'}`
-            },
-                React.createElement('div', {
-                    className: `h-1 w-full z-50 ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`
-                },
-                    React.createElement('div', {
-                        className: "h-full bg-indigo-600 transition-all duration-100",
-                        style: { width: `${progress}%` }
-                    })
-                ),
-                React.createElement('div', {
-                    className: `h-16 border-b flex items-center justify-between px-4 md:px-8 backdrop-blur z-20 ${isDark ? 'bg-gray-900/95 border-gray-800 text-gray-200' : 'bg-white/95 border-gray-100 text-gray-800'}`
-                },
-                    React.createElement('button', {
-                        onClick: onClose,
-                        className: `flex items-center gap-2 transition ${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-black'}`
-                    }, '← Back'),
-                    React.createElement('span', {
-                        className: "font-semibold truncate max-w-[40%] text-sm md:text-base"
-                    }, book.title),
-                    React.createElement('div', { className: "flex items-center gap-3" },
-                        React.createElement('div', {
-                            className: `hidden md:flex items-center gap-2 rounded-lg px-2 py-1 ${isDark ? 'bg-gray-800' : 'bg-gray-100'}`
-                        },
-                            React.createElement('button', {
-                                onClick: () => setFontSize(Math.max(14, fontSize - 2)),
-                                className: "p-1 hover:text-indigo-500"
-                            }, 'A'),
-                            React.createElement('span', {
-                                className: "text-xs font-mono w-4 text-center"
-                            }, fontSize),
-                            React.createElement('button', {
-                                onClick: () => setFontSize(Math.min(32, fontSize + 2)),
-                                className: "p-1 hover:text-indigo-500"
-                            }, 'A')
-                        ),
-                        React.createElement('button', {
-                            onClick: () => onLike(book.id),
-                            className: `flex items-center gap-1 px-3 py-1.5 rounded-full transition ${isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`
-                        }, '❤️', likeCount),
-                        React.createElement('button', {
-                            onClick: () => onToggleBookmark(book.id),
-                            className: `p-2 rounded-full transition ${isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`
-                        }, isBookmarked ? '🔖' : '📑')
-                    )
-                ),
-                React.createElement('div', {
-                    className: "flex-1 overflow-y-auto no-scrollbar scroll-smooth",
-                    onScroll: handleScroll,
-                    ref: contentRef
-                },
-                    React.createElement('div', { className: "max-w-3xl mx-auto px-6 py-12 md:py-20" },
-                        React.createElement('div', {
-                            className: `mb-10 text-center border-b pb-8 ${isDark ? 'border-gray-800' : 'border-gray-100'}`
-                        },
-                            React.createElement('span', {
-                                className: "text-indigo-500 font-bold tracking-wider text-xs uppercase mb-2 block"
-                            }, book.category),
-                            React.createElement('h1', {
-                                className: `text-3xl md:text-5xl font-serif font-bold mb-4 leading-tight ${isDark ? 'text-white' : 'text-gray-900'}`
-                            }, book.title),
-                            React.createElement('div', {
-                                className: `flex items-center justify-center gap-4 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`
-                            },
-                                React.createElement('span', null, `By ${book.author}`),
-                                '•',
-                                React.createElement('span', null, `${book.readTimeMin} min read`)
-                            )
-                        ),
-                        React.createElement('div', {
-                            className: `font-serif leading-relaxed whitespace-pre-wrap ${isDark ? 'text-gray-300' : 'text-gray-800'}`,
-                            style: { fontSize: `${fontSize}px` }
-                        }, book.content),
-                        React.createElement('div', {
-                            className: `mt-20 pt-10 border-t flex flex-col items-center gap-8 ${isDark ? 'border-gray-800' : 'border-gray-100'}`
-                        },
-                            React.createElement('div', { className: "flex flex-col items-center gap-2" },
-                                React.createElement('div', { className: "w-16 h-1 bg-indigo-500 rounded-full mb-2" }),
-                                React.createElement('p', {
-                                    className: `italic text-lg font-serif ${isDark ? 'text-gray-400' : 'text-gray-600'}`
-                                }, "You've reached the end"),
-                                React.createElement('button', {
-                                    onClick: () => contentRef.current.scrollTo({ top: 0, behavior: 'smooth' }),
-                                    className: `flex items-center gap-2 px-4 py-2 rounded-full text-sm transition mt-2 ${isDark ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`
-                                }, '↑ Back to Top')
-                            ),
-                            React.createElement('div', { className: "w-full mt-8" },
-                                React.createElement('h3', {
-                                    className: `font-bold text-xl mb-6 ${isDark ? 'text-white' : 'text-gray-900'}`
-                                }, 'Keep Reading'),
-                                React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-3 gap-4" },
-                                    relatedBooks.map(rBook => 
-                                        React.createElement('div', {
-                                            key: rBook.id,
-                                            onClick: () => onRead(rBook),
-                                            className: `p-4 rounded-xl border cursor-pointer transition transform hover:-translate-y-1 hover:shadow-lg ${isDark ? 'bg-gray-800 border-gray-700 hover:bg-gray-750' : 'bg-white border-gray-100 hover:border-indigo-100'}`
-                                        },
-                                            React.createElement('div', { className: "flex items-center gap-3 mb-2" },
-                                                React.createElement('span', {
-                                                    className: "text-xs font-semibold text-indigo-500 uppercase"
-                                                }, rBook.category)
-                                            ),
-                                            React.createElement('h4', {
-                                                className: `font-bold leading-tight mb-1 ${isDark ? 'text-gray-200' : 'text-gray-800'}`
-                                            }, rBook.title),
-                                            React.createElement('p', {
-                                                className: `text-xs ${isDark ? 'text-gray-500' : 'text-gray-500'}`
-                                            }, `by ${rBook.author}`)
-                                        )
-                                    )
-                                )
-                            )
-                        )
-                    )
-                )
-            );
-        };
+            return React.createElement('div', {
+                className: `fixed inset-0 z-50 flex flex-col ${isDark ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'} transition-colors duration-300`
+            },
+                // Header Bar
+                React.createElement('div', {
+                    className: `flex items-center justify-between p-4 shadow-md ${isDark ? 'bg-gray-800 border-b border-gray-700' : 'bg-white border-b border-gray-100'}`
+                },
+                    React.createElement('button', {
+                        onClick: onClose,
+                        className: `p-2 rounded-full transition ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`
+                    }, '← Back'),
+                    React.createElement('div', { className: "text-lg font-semibold truncate max-w-xs sm:max-w-md" }, book.title),
+                    React.createElement('div', { className: "flex items-center gap-2" },
+                        React.createElement('button', {
+                            onClick: () => setFontSize(s => Math.min(s + 2, 32)),
+                            className: `p-2 rounded-full transition text-xl ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`
+                        }, 'A+'),
+                        React.createElement('button', {
+                            onClick: () => setFontSize(s => Math.max(s - 2, 14)),
+                            className: `p-2 rounded-full transition text-sm ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`
+                        }, 'A-')
+                    )
+                ),
+                
+                // Reading Content Area
+                React.createElement('div', {
+                    ref: contentRef,
+                    onScroll: handleScroll,
+                    className: "flex-1 overflow-y-auto p-4 sm:p-8 no-scrollbar"
+                },
+                    React.createElement('div', { className: "max-w-3xl mx-auto" },
+                        // Metadata
+                        React.createElement('div', { className: "mb-6 text-center" },
+                            React.createElement('h2', { className: "text-4xl font-extrabold mb-1" }, book.title),
+                            React.createElement('p', { className: `text-xl font-medium ${isDark ? 'text-indigo-300' : 'text-indigo-600'} mb-4` }, `by ${book.author}`),
+                            React.createElement('div', { className: "flex justify-center gap-4 text-sm" },
+                                React.createElement('span', { className: `px-3 py-1 rounded-full text-xs font-semibold ${isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'}` }, book.category),
+                                React.createElement('span', { className: `px-3 py-1 rounded-full text-xs font-semibold ${isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'}` }, `${book.readTimeMin} min read`)
+                            )
+                        ),
+                        // Content
+                        React.createElement('div', {
+                            className: `prose ${isDark ? 'prose-invert prose-p:text-gray-300' : 'prose-p:text-gray-700'} max-w-none space-y-4 leading-relaxed transition-all`,
+                            style: { fontSize: `${fontSize}px` },
+                            dangerouslySetInnerHTML: { __html: marked.parse(book.content) }
+                        }),
+                        // End of Story/Actions
+                        React.createElement('div', { className: `mt-10 pt-6 border-t ${isDark ? 'border-gray-700' : 'border-gray-200'} flex justify-between items-center` },
+                            React.createElement('button', {
+                                onClick: () => onLike(book.id),
+                                className: "flex items-center gap-2 px-4 py-2 rounded-full transition bg-red-100 text-red-600 hover:bg-red-200"
+                            }, '❤️', likeCount),
+                            React.createElement('button', {
+                                onClick: () => onToggleBookmark(book.id),
+                                className: `flex items-center gap-2 px-4 py-2 rounded-full transition ${
+                                    isBookmarked ? 'bg-yellow-400 text-white hover:bg-yellow-500' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                }`
+                            }, isBookmarked ? 'Bookmarked 🔖' : 'Bookmark'),
+                        )
+                    )
+                ),
+                
+                // Progress Bar
+                React.createElement('div', { className: `w-full h-1 ${isDark ? 'bg-gray-700' : 'bg-gray-200'} sticky bottom-0` },
+                    React.createElement('div', {
+                        className: "h-full bg-indigo-500 transition-all duration-300",
+                        style: { width: `${progress}%` }
+                    })
+                ),
 
-        // --- Main App Component ---
+                // Related Stories (Footer)
+                React.createElement('div', { className: `p-4 sm:p-8 ${isDark ? 'bg-gray-800 border-t border-gray-700' : 'bg-gray-50 border-t border-gray-200'}` },
+                    React.createElement('div', { className: "max-w-3xl mx-auto" },
+                        React.createElement('h3', { className: "text-xl font-bold mb-4" }, "More Stories Like This"),
+                        relatedBooks.length > 0 ? (
+                            React.createElement('div', { className: "flex flex-col sm:flex-row gap-4" },
+                                relatedBooks.map(relBook =>
+                                    React.createElement('div', {
+                                        key: relBook.id,
+                                        className: "flex-1 cursor-pointer hover:text-indigo-500 transition",
+                                        onClick: () => { onClose(); onRead(relBook); }
+                                    },
+                                        React.createElement('img', { src: relBook.cover, alt: relBook.title, className: "w-full h-24 object-cover rounded-lg mb-2" }),
+                                        React.createElement('p', { className: "font-medium text-sm line-clamp-2" }, relBook.title),
+                                        React.createElement('p', { className: `text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}` }, relBook.author)
+                                    )
+                                )
+                            )
+                        ) : (
+                            React.createElement('p', { className: `${isDark ? 'text-gray-400' : 'text-gray-500'}` }, "No related stories found.")
+                        )
+                    )
+                )
+            );
+        };
 
-        function App() {
-            const [view, setView] = useState('library'); 
-            const [books, setBooks] = useState([]);
-            const [currentBook, setCurrentBook] = useState(null);
-            const [isDark, setIsDark] = useState(() => localStorage.getItem('mmh_theme') === 'dark');
-            const [activeSound, setActiveSound] = useState(null);
-            const [isLoading, setIsLoading] = useState(true);
-            
-            const [bookmarks, setBookmarks] = useState(() => {
-                try { return JSON.parse(localStorage.getItem('mmh_bookmarks') || '[]'); } catch { return []; }
-            });
-            const [likes, setLikes] = useState(() => {
-                try { return JSON.parse(localStorage.getItem('mmh_likes') || '{}'); } catch { return {}; }
-            });
-            const [readingStats, setReadingStats] = useState(() => {
-                try { return JSON.parse(localStorage.getItem('mmh_stats') || '{"totalMinutes": 0, "booksRead": 0}'); } catch { return {totalMinutes: 0, booksRead: 0}; }
-            });
-            const [readHistory, setReadHistory] = useState(() => {
-                try { return JSON.parse(localStorage.getItem('mmh_history') || '[]'); } catch { return []; }
-            });
-            const [lastReadPosition, setLastReadPosition] = useState(() => {
-                try { return JSON.parse(localStorage.getItem('mmh_last_read') || '{"bookId": null, "progress": 0}'); } catch { return {bookId: null, progress: 0}; }
-            });
 
-            const [showBookmarks, setShowBookmarks] = useState(false);
-            const [showAddBook, setShowAddBook] = useState(false);
-            const [notification, setNotification] = useState(null);
+        const AddBookModal = ({ isOpen, onClose, onSubmit, isDark }) => {
+            const [title, setTitle] = useState('');
+            const [author, setAuthor] = useState('');
+            const [category, setCategory] = useState('');
+            const [description, setDescription] = useState('');
 
-            useEffect(() => { localStorage.setItem('mmh_bookmarks', JSON.stringify(bookmarks)); }, [bookmarks]);
-            useEffect(() => { localStorage.setItem('mmh_likes', JSON.stringify(likes)); }, [likes]);
-            useEffect(() => { localStorage.setItem('mmh_stats', JSON.stringify(readingStats)); }, [readingStats]);
-            useEffect(() => { localStorage.setItem('mmh_history', JSON.stringify(readHistory)); }, [readHistory]);
-            useEffect(() => { localStorage.setItem('mmh_last_read', JSON.stringify(lastReadPosition)); }, [lastReadPosition]);
-            
-            useEffect(() => { 
-                localStorage.setItem('mmh_theme', isDark ? 'dark' : 'light');
-                if (isDark) {
-                    document.body.classList.add('bg-gray-900');
-                    document.body.classList.remove('bg-gray-100');
-                } else {
-                    document.body.classList.add('bg-gray-100');
-                    document.body.classList.remove('bg-gray-900');
-                }
-            }, [isDark]);
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                onSubmit({ title, author, category, description });
+                onClose();
+            };
 
-            // Load stories on component mount
-            useEffect(() => {
-                const loadStories = async () => {
-                    setIsLoading(true);
-                    try {
-                        const fetchedStories = await fetchStoriesFromAPI();
-                        setBooks(fetchedStories);
-                        setNotification({ message: `Loaded ${fetchedStories.length} stories`, type: 'success' });
-                    } catch (error) {
-                        console.error('Failed to load stories from API, using fallback:', error);
-                        const fallbackStories = getFallbackStories();
-                        setBooks(fallbackStories);
-                        setNotification({ 
-                            message: `Using demo stories (${fallbackStories.length} available)`, 
-                            type: 'info' 
-                        });
-                    } finally {
-                        setIsLoading(false);
-                    }
-                };
+            const inputClass = `w-full p-3 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition ${isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-gray-50 border-gray-300 text-gray-900'}`;
+            const labelClass = `block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`;
 
-                loadStories();
-            }, []);
+            return React.createElement(Modal, { isOpen: isOpen, onClose: onClose, title: "Suggest a Story", isDark: isDark },
+                React.createElement('form', { onSubmit: handleSubmit, className: "space-y-4" },
+                    React.createElement('div', null,
+                        React.createElement('label', { className: labelClass }, "Title"),
+                        React.createElement('input', { type: "text", value: title, onChange: (e) => setTitle(e.target.value), required: true, className: inputClass })
+                    ),
+                    React.createElement('div', null,
+                        React.createElement('label', { className: labelClass }, "Author (Your Name)"),
+                        React.createElement('input', { type: "text", value: author, onChange: (e) => setAuthor(e.target.value), required: true, className: inputClass })
+                    ),
+                    React.createElement('div', null,
+                        React.createElement('label', { className: labelClass }, "Category/Type"),
+                        React.createElement('input', { type: "text", value: category, onChange: (e) => setCategory(e.target.value), required: true, className: inputClass })
+                    ),
+                    React.createElement('div', null,
+                        React.createElement('label', { className: labelClass }, "Short Description"),
+                        React.createElement('textarea', { value: description, onChange: (e) => setDescription(e.target.value), required: true, className: inputClass, rows: 3 })
+                    ),
+                    React.createElement('button', {
+                        type: "submit",
+                        className: "w-full p-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition"
+                    }, "Submit Suggestion")
+                )
+            );
+        };
 
-            const notify = (msg, type = 'info') => setNotification({ message: msg, type });
+        const BookmarkModal = ({ isOpen, onClose, bookmarks, books, onRead, onToggleBookmark, onLike, likes, isDark }) => {
+            const bookmarkedStories = bookmarks
+                .map(id => books.find(b => b.id === id))
+                .filter(book => book);
 
-            const toggleTheme = () => setIsDark(!isDark);
+            return React.createElement(Modal, { isOpen: isOpen, onClose: onClose, title: "Your Bookmarks", isDark: isDark },
+                bookmarkedStories.length === 0 ? (
+                    React.createElement('p', { className: `${isDark ? 'text-gray-400' : 'text-gray-600'}` }, "You haven't bookmarked any stories yet. Start exploring the library!")
+                ) : (
+                    React.createElement('div', { className: "space-y-4" },
+                        bookmarkedStories.map(book =>
+                            React.createElement('div', {
+                                key: book.id,
+                                className: `flex items-center p-3 rounded-lg border transition ${isDark ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-100'}`
+                            },
+                                React.createElement('img', { src: book.cover, alt: book.title, className: "w-12 h-12 object-cover rounded-md mr-4" }),
+                                React.createElement('div', { className: "flex-1" },
+                                    React.createElement('p', { className: `font-semibold cursor-pointer hover:text-indigo-500 ${isDark ? 'text-white' : 'text-gray-900'}`, onClick: () => { onClose(); onRead(book); } }, book.title),
+                                    React.createElement('p', { className: `text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}` }, `by ${book.author}`)
+                                ),
+                                React.createElement('button', {
+                                    onClick: () => onToggleBookmark(book.id),
+                                    className: "text-red-500 hover:text-red-700 p-2 ml-4"
+                                }, '❌')
+                            )
+                    )
+                )
+            );
+        };
 
-            const handleToggleBookmark = (bookId) => {
-                if (bookmarks.includes(bookId)) {
-                    setBookmarks(prev => prev.filter(id => id !== bookId));
-                    notify("Bookmark removed", "info");
-                } else {
-                    setBookmarks(prev => [...prev, bookId]);
-                    notify("Saved to bookmarks", "success");
-                }
-            };
 
-            const handleLike = (bookId) => {
-                setLikes(prev => {
-                    const book = books.find(b => b.id === bookId);
-                    const current = prev[bookId] || (book ? book.likes : 0);
-                    return { ...prev, [bookId]: current + 1 };
-                });
-            };
+        // --- Main App Component ---
+        const App = () => {
+            const [books, setBooks] = useState([]);
+            const [isLoading, setIsLoading] = useState(true);
+            const [currentBook, setCurrentBook] = useState(null);
+            const [bookmarks, setBookmarks] = useState(() => JSON.parse(localStorage.getItem('mythmehalfway_bookmarks') || '[]'));
+            const [likes, setLikes] = useState(() => JSON.parse(localStorage.getItem('mythmehalfway_likes') || '{}'));
+            const [readingStats, setReadingStats] = useState(() => JSON.parse(localStorage.getItem('mythmehalfway_stats') || '{ "totalMinutes": 0, "booksRead": 0 }'));
+            const [lastReadPosition, setLastReadPosition] = useState(() => JSON.parse(localStorage.getItem('mythmehalfway_last_read') || '{ "bookId": null, "progress": 0 }'));
+            const [activeSound, setActiveSound] = useState(null);
+            const [isDark, setIsDark] = useState(false);
+            const [notification, setNotification] = useState(null);
 
-            const handleReadBook = (book, initialScrollProgress = 0) => {
-                setCurrentBook({ ...book, initialScrollProgress });
-                setView('reader');
+            const [showAddBook, setShowAddBook] = useState(false);
+            const [showBookmarks, setShowBookmarks] = useState(false);
+            
+            const showNotification = (message, type = 'info') => {
+                setNotification({ message, type });
+                setTimeout(() => setNotification(null), 3000);
+            };
 
-                if (!readHistory.includes(book.id)) {
-                    setReadHistory(prev => [...prev, book.id]);
-                    setReadingStats(prev => ({ ...prev, booksRead: prev.booksRead + 1 }));
-                }
-            };
+            useEffect(() => {
+                // Load stories on mount
+                const loadStories = async () => {
+                    try {
+                        const apiStories = await fetchStoriesFromAPI();
+                        setBooks(apiStories);
+                    } catch (e) {
+                        console.warn('API fetch failed, falling back to dummy data:', e.message);
+                        setBooks(getFallbackStories());
+                        showNotification('Could not connect to API. Using local stories.', 'error');
+                    } finally {
+                        setIsLoading(false);
+                    }
+                };
 
-            const handleResumeReading = () => {
-                const bookToResume = books.find(b => b.id === lastReadPosition.bookId);
-                if (bookToResume) {
-                    handleReadBook(bookToResume, lastReadPosition.progress);
-                } else {
-                     setLastReadPosition({ bookId: null, progress: 0 });
-                }
-            }
+                // Load Marked.js for markdown rendering
+                if (typeof marked === 'undefined') {
+                    const script = document.createElement('script');
+                    script.src = "https://cdn.jsdelivr.net/npm/marked/marked.min.js";
+                    script.onload = loadStories;
+                    document.head.appendChild(script);
+                } else {
+                    loadStories();
+                }
 
-            const handleAddBook = (e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                const title = formData.get('title');
-                const newBook = {
-                    id: Date.now().toString(),
-                    title: title,
-                    author: formData.get('author') || "Anonymous",
-                    category: formData.get('category'),
-                    cover: `https://source.unsplash.com/random/600x400?${formData.get('category')}`,
-                    description: "A newly added story in your collection.",
-                    content: `# ${title}\n\nThis is a manually added story. Content would be generated here.`,
-                    readTimeMin: Math.floor(Math.random() * 10) + 2,
-                    likes: 0,
-                    views: 0,
-                    tags: [formData.get('category').toLowerCase()]
-                };
-                setBooks(prev => [newBook, ...prev]);
-                setShowAddBook(false);
-                notify("New story added to local collection!", "success");
-            };
+                // Dark Mode based on system preference
+                const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                setIsDark(prefersDark);
+                document.body.className = prefersDark ? 'bg-gray-900' : 'bg-gray-100';
+            }, []);
 
-            const handleToggleSound = (sound) => {
-                if (activeSound?.id === sound?.id) {
-                    setActiveSound(null);
-                } else {
-                    setActiveSound(sound);
-                }
-            };
+            useEffect(() => {
+                localStorage.setItem('mythmehalfway_bookmarks', JSON.stringify(bookmarks));
+            }, [bookmarks]);
+            
+            useEffect(() => {
+                localStorage.setItem('mythmehalfway_likes', JSON.stringify(likes));
+            }, [likes]);
 
-            useEffect(() => {
-                let interval;
-                if (view === 'reader') {
-                    interval = setInterval(() => {
-                        setReadingStats(prev => ({ ...prev, totalMinutes: prev.totalMinutes + (1/60) }));
-                    }, 1000);
-                }
-                return () => clearInterval(interval);
-            }, [view]);
+            useEffect(() => {
+                localStorage.setItem('mythmehalfway_stats', JSON.stringify(readingStats));
+            }, [readingStats]);
+            
+            useEffect(() => {
+                document.body.className = isDark ? 'bg-gray-900 transition-colors' : 'bg-gray-100 transition-colors';
+            }, [isDark]);
 
-            return React.createElement('div', {
-                className: `min-h-screen transition-colors duration-300 font-sans ${isDark ? 'bg-gray-900 text-gray-100' : 'bg-gray-100 text-gray-900'}`
-            },
-                notification && React.createElement(Notification, {
-                    message: notification.message,
-                    type: notification.type,
-                    onClose: () => setNotification(null)
-                }),
 
-                React.createElement('button', {
-                    onClick: toggleTheme,
-                    className: `fixed top-6 right-6 z-50 p-2 rounded-full transition ${isDark ? 'bg-gray-800 text-yellow-400 hover:bg-gray-700' : 'bg-white text-gray-600 hover:bg-gray-100 shadow-sm border border-gray-200'}`,
-                    title: "Toggle Theme"
-                }, isDark ? '☀️' : '🌙'),
+            const handleRead = (book, initialScrollProgress = 0) => {
+                const bookWithProgress = { ...book, initialScrollProgress };
+                setCurrentBook(bookWithProgress);
+                setLastReadPosition({ bookId: book.id, progress: initialScrollProgress });
+                localStorage.setItem('mythmehalfway_last_read', JSON.stringify({ bookId: book.id, progress: initialScrollProgress }));
+            };
 
-                React.createElement(SoundWidget, {
-                    activeSound: activeSound,
-                    onToggleSound: handleToggleSound,
-                    isDark: isDark
-                }),
+            const handleCloseReader = () => {
+                // Check if story was finished
+                if (lastReadPosition.bookId === currentBook.id && lastReadPosition.progress > 95) {
+                    setReadingStats(prev => ({
+                        totalMinutes: prev.totalMinutes + currentBook.readTimeMin,
+                        booksRead: prev.booksRead + 1
+                    }));
+                    showNotification(`Completed: ${currentBook.title}!`, 'success');
+                    setLastReadPosition({ bookId: null, progress: 0 }); // Clear completed book from 'Continue Reading'
+                } else {
+                    // Only show this if they started the book
+                    if (lastReadPosition.progress > 0) {
+                        showNotification('Progress Saved.', 'info');
+                    }
+                }
+                setCurrentBook(null);
+            };
 
-                view === 'library' ? 
-                    React.createElement(LibraryView, {
-                        books: books,
-                        readingStats: readingStats,
-                        bookmarks: bookmarks,
-                        likes: likes,
-                        onRead: handleReadBook,
-                        onToggleBookmark: handleToggleBookmark,
-                        onLike: handleLike,
-                        setShowAddBook: setShowAddBook,
-                        setShowBookmarks: setShowBookmarks,
-                        isDark: isDark,
-                        lastReadPosition: lastReadPosition,
-                        onResumeReading: handleResumeReading,
-                        isLoading: isLoading
-                    }) : 
-                    React.createElement(ReaderView, {
-                        book: currentBook,
-                        books: books,
-                        onClose: () => setView('library'),
-                        isDark: isDark,
-                        bookmarks: bookmarks,
-                        likes: likes,
-                        onToggleBookmark: handleToggleBookmark,
-                        onLike: handleLike,
-                        onRead: handleReadBook,
-                        onUpdateProgress: setLastReadPosition
-                    }),
+            const handleUpdateProgress = (progressData) => {
+                setLastReadPosition(progressData);
+                localStorage.setItem('mythmehalfway_last_read', JSON.stringify(progressData));
+            };
 
-                React.createElement(Modal, {
-                    isOpen: showBookmarks,
-                    onClose: () => setShowBookmarks(false),
-                    title: "My Bookmarks",
-                    isDark: isDark
-                },
-                    bookmarks.length === 0 ? 
-                        React.createElement('div', { className: "text-center py-10 opacity-50" },
-                            '🔖',
-                            React.createElement('p', null, "No bookmarks yet.")
-                        ) :
-                        React.createElement('div', { className: "grid gap-4" },
-                            books.filter(b => bookmarks.includes(b.id)).map(book => 
-                                React.createElement('div', {
-                                    key: book.id,
-                                    className: `flex gap-4 p-3 rounded-lg border transition cursor-pointer ${isDark ? 'border-gray-700 hover:bg-gray-700' : 'border-gray-100 hover:bg-gray-50'}`,
-                                    onClick: () => { setShowBookmarks(false); handleReadBook(book); }
-                                },
-                                    React.createElement('img', {
-                                        src: book.cover,
-                                        alt: book.title,
-                                        className: "w-16 h-16 object-cover rounded"
-                                    }),
-                                    React.createElement('div', { className: "flex-1" },
-                                        React.createElement('h4', {
-                                            className: `font-bold ${isDark ? 'text-white' : 'text-gray-800'}`
-                                        }, book.title),
-                                        React.createElement('p', {
-                                            className: `text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`
-                                        }, book.author)
-                                    ),
-                                    React.createElement('button', {
-                                        onClick: (e) => { e.stopPropagation(); handleToggleBookmark(book.id); },
-                                        className: "text-red-400 hover:text-red-600 p-2"
-                                    }, '✕')
-                                )
-                            )
-                        )
-                ),
+            const handleResumeReading = () => {
+                const book = books.find(b => b.id === lastReadPosition.bookId);
+                if (book) {
+                    handleRead(book, lastReadPosition.progress);
+                }
+            };
 
-                React.createElement(Modal, {
-                    isOpen: showAddBook,
-                    onClose: () => setShowAddBook(false),
-                    title: "Add Custom Story",
-                    isDark: isDark
-                },
-                    React.createElement('form', { onSubmit: handleAddBook, className: "space-y-4" },
-                        React.createElement('div', null,
-                            React.createElement('label', {
-                                className: `block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`
-                            }, "Story Title"),
-                            React.createElement('input', {
-                                name: "title",
-                                required: true,
-                                className: `w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 ${isDark ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-300'}`,
-                                placeholder: "e.g. The Midnight Train"
-                            })
-                        ),
-                        React.createElement('div', null,
-                            React.createElement('label', {
-                                className: `block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`
-                            }, "Author"),
-                            React.createElement('input', {
-                                name: "author",
-                                required: true,
-                                className: `w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 ${isDark ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-300'}`,
-                                placeholder: "e.g. John Doe"
-                            })
-                        ),
-                        React.createElement('div', null,
-                            React.createElement('label', {
-                                className: `block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`
-                            }, "Category"),
-                            React.createElement('select', {
-                                name: "category",
-                                className: `w-full px-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 ${isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`
-                            },
-                                React.createElement('option', { value: "Fiction" }, "Fiction"),
-                                React.createElement('option', { value: "Non-Fiction" }, "Non-Fiction"),
-                                React.createElement('option', { value: "Blog" }, "Blog")
-                            )
-                        ),
-                        React.createElement('div', {
-                            className: `p-3 rounded-lg text-sm ${isDark ? 'bg-gray-700 text-blue-300' : 'bg-blue-50 text-blue-700'}`
-                        },
-                            React.createElement('p', null, "Note: This adds a story locally to your browser. It won't be saved to the GitHub repository.")
-                        ),
-                        React.createElement('button', {
-                            type: "submit",
-                            className: "w-full bg-indigo-600 text-white py-2 rounded-lg font-bold hover:bg-indigo-700 transition"
-                        }, "Add to Local Collection")
-                    )
-                )
-            );
-        }
+            const handleToggleBookmark = (bookId) => {
+                setBookmarks(prev => {
+                    const isBookmarked = prev.includes(bookId);
+                    let newBookmarks;
+                    if (isBookmarked) {
+                        newBookmarks = prev.filter(id => id !== bookId);
+                        showNotification('Bookmark Removed', 'info');
+                    } else {
+                        newBookmarks = [...prev, bookId];
+                        showNotification('Bookmarked!', 'success');
+                    }
+                    return newBookmarks;
+                });
+            };
 
-        // Render the app
-        ReactDOM.render(React.createElement(App), document.getElementById('root'));
-    </script>
+            const handleLike = (bookId) => {
+                setLikes(prev => {
+                    const currentLikes = prev[bookId] || (books.find(b => b.id === bookId)?.likes || 0);
+                    const newLikes = { ...prev };
+                    if (prev[bookId] === currentLikes + 1) { // User unlikes
+                        newLikes[bookId] = currentLikes - 1;
+                    } else { // User likes
+                        newLikes[bookId] = currentLikes + 1;
+                    }
+                    return newLikes;
+                });
+            };
+
+            const handleToggleSound = (sound) => {
+                if (!sound || activeSound?.id === sound.id) {
+                    setActiveSound(null);
+                    showNotification('Background audio stopped.', 'info');
+                } else {
+                    setActiveSound(sound);
+                    showNotification(`Now playing: ${sound.name}`, 'info');
+                }
+            };
+            
+            const handleSuggestStory = (suggestion) => {
+                console.log("Story Suggestion:", suggestion);
+                showNotification('Thank you for your suggestion!', 'success');
+            };
+            
+            return React.createElement(React.Fragment, null,
+                // Main View
+                currentBook ? (
+                    React.createElement(ReaderView, {
+                        book: currentBook,
+                        books: books,
+                        onClose: handleCloseReader,
+                        isDark: isDark,
+                        bookmarks: bookmarks,
+                        likes: likes,
+                        onToggleBookmark: handleToggleBookmark,
+                        onLike: handleLike,
+                        onRead: handleRead,
+                        onUpdateProgress: handleUpdateProgress
+                    })
+                ) : (
+                    React.createElement(LibraryView, {
+                        books: books,
+                        readingStats: readingStats,
+                        bookmarks: bookmarks,
+                        likes: likes,
+                        onRead: handleRead,
+                        onToggleBookmark: handleToggleBookmark,
+                        onLike: handleLike,
+                        setShowAddBook: setShowAddBook,
+                        setShowBookmarks: setShowBookmarks,
+                        isDark: isDark,
+                        lastReadPosition: lastReadPosition,
+                        onResumeReading: handleResumeReading,
+                        isLoading: isLoading
+                    })
+                ),
+
+                // Floating Widgets
+                React.createElement('button', {
+                    onClick: () => setIsDark(prev => !prev),
+                    className: `fixed top-6 right-6 p-3 rounded-full shadow-lg z-40 transition transform hover:scale-110 ${isDark ? 'bg-gray-800 text-yellow-400 border border-gray-700' : 'bg-white text-gray-800 border border-gray-200'}`
+                }, isDark ? '☀️' : '🌙'),
+
+                React.createElement(SoundWidget, { activeSound: activeSound, onToggleSound: handleToggleSound, isDark: isDark }),
+
+                // Modals
+                React.createElement(AddBookModal, { isOpen: showAddBook, onClose: () => setShowAddBook(false), onSubmit: handleSuggestStory, isDark: isDark }),
+                React.createElement(BookmarkModal, {
+                    isOpen: showBookmarks,
+                    onClose: () => setShowBookmarks(false),
+                    bookmarks: bookmarks,
+                    books: books,
+                    onRead: handleRead,
+                    onToggleBookmark: handleToggleBookmark,
+                    onLike: handleLike,
+                    likes: likes,
+                    isDark: isDark
+                }),
+
+                // Notifications
+                notification && React.createElement(Notification, {
+                    message: notification.message,
+                    type: notification.type,
+                    onClose: () => setNotification(null)
+                })
+            );
+        };
+
+        // Render the app
+        // Using createRoot for React 18 compatibility as indicated by your CDN scripts
+        if (typeof ReactDOM.createRoot === 'function') {
+            const root = ReactDOM.createRoot(document.getElementById('root'));
+            root.render(React.createElement(App));
+        } else {
+            // Fallback for older React versions
+            ReactDOM.render(React.createElement(App), document.getElementById('root'));
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </body>
 </html>
