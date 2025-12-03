@@ -28,32 +28,54 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
           source: ./
           destination: ./_site
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        
-
-      - name: Create public API status
+      
+      - name: Create API directories
         run: |
-          mkdir -p public/api
-          echo '{"status": "API running"}' > public/api/status.json
-
+          mkdir -p _site/api
+          mkdir -p _site/stories
+      
+      - name: Create API status
+        run: |
+          echo '{"status": "API running", "timestamp": "$(date)"}' > _site/api/status.json
+      
       - name: Fetch Stories From Private Repo
         run: |
-          mkdir -p public/stories
+          # First, get the list of story files
           curl -H "Authorization: Bearer ${{ secrets.STORY_TOKEN }}" \
-               -H "Accept: application/vnd.github.raw" \
-               https://api.github.com/repos/InitMode/mythmehalfway/contents/stories \
-          | jq -r '.[] | .download_url' | while read url; do
-               fname=$(basename "$url")
-               curl -L "$url" -o "public/stories/$fname"
-            done
+               -H "Accept: application/vnd.github.v3+json" \
+               https://api.github.com/repos/Initm/mythm/contents/stories \
+          | jq -r '.[] | select(.name | endswith(".md")) | .name' > story_list.txt
+          
+          # Create an index.json file with the list of stories
+          cat story_list.txt | jq -R -s 'split("\n") | .[:-1]' > _site/stories/index.json
+          
+          # Download each story
+          while read -r filename; do
+            if [ -n "$filename" ]; then
+              echo "Downloading $filename..."
+              curl -H "Authorization: Bearer ${{ secrets.STORY_TOKEN }}" \
+                   -H "Accept: application/vnd.github.raw" \
+                   -L "https://api.github.com/repos/InitMode/mythmehalfway/contents/stories/$filename" \
+                   -o "_site/stories/$filename"
+            fi
+          done < story_list.txt
+          
+          echo "Downloaded stories:"
+          ls -la _site/stories/
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./_site
 
   # Deployment job
   deploy:
