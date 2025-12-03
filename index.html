@@ -48,7 +48,7 @@ const GITHUB_API_CONFIG = {
 const storiesPromises = storiesIndex.map(async (storyFile) => {
     try {
         // FIX: Added '/api/' prefix here
-        const storyResponse = await fetch(`${GITHUB_API_CONFIG.apiBaseUrl}/api/stories/${storyFile}`); 
+       const storyResponse = await fetch(`${GITHUB_API_CONFIG.apiBaseUrl}/api/stories/${storyFile}`);
         // ...
 
         // --- Sounds ---
