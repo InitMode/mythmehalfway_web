@@ -481,7 +481,16 @@
         
         // Configuration
         const CONFIG = {
-            API_BASE: window.location.origin + '/api',
+            const getBasePath = () => {
+    const path = window.location.pathname;
+    // If we are in a repo subfolder (like /mythmehalfway_web/), keep it.
+    // Otherwise, if at root, use empty string.
+    const repoName = path.substring(0, path.lastIndexOf('/'));
+    return window.location.origin + repoName + '/api';
+};
+
+const API_BASE = getBasePath();
+console.log('Fetching from:', API_BASE);
             STORIES_ENDPOINT: '/api/stories/index.json',
             STORY_PREFIX: 'story',
             STORY_EXTENSION: '.md',
