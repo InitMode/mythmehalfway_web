@@ -61,7 +61,10 @@ jobs:
                -L "https://api.github.com/repos/InitMode/mythmehalfway/contents/stories" \
                -o stories_list.json
 
+          #mkdir -p _site/api/stories
+          rm -rf _site/api/stories/*
           mkdir -p _site/api/stories
+
 
           # Download only real .md files
           jq -r '.[] | select(.name | endswith(".md")) | .name' stories_list.json | while read filename; do
