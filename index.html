@@ -1,233 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Myth Me Halfway – Story Library</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hadithi Stories</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #111;
-            color: #fff;
-        }
-
-        header {
-            background: #222;
-            padding: 15px;
-            text-align: center;
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .controls {
-            display: flex;
-            gap: 10px;
-            padding: 10px;
-            background: #1a1a1a;
-            position: sticky;
-            top: 0;
-            z-index: 20;
-        }
-
-        input, select {
-            padding: 8px;
-            border-radius: 6px;
-            border: none;
-        }
-
-        #storiesContainer {
-            padding: 15px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
-            gap: 15px;
-        }
-
-        .story-card {
-            background: #222;
-            padding: 15px;
-            border-radius: 10px;
-            cursor: pointer;
-            border: 1px solid #333;
-        }
-
-        .story-card:hover {
-            background: #333;
-        }
-
-        /* Modal */
-        #storyModal {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        #modalContent {
-            background: #222;
-            padding: 20px;
-            max-width: 800px;
-            width: 100%;
-            border-radius: 12px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        #closeModal {
-            float: right;
-            cursor: pointer;
-            font-size: 20px;
-            padding: 5px;
-        }
-    </style>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #111;
+        color: #f0f0f0;
+        margin: 0;
+        padding: 20px;
+    }
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .story-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 15px;
+        padding: 10px;
+    }
+    .story-card {
+        background: #1d1d1d;
+        padding: 15px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.2s;
+        border: 1px solid #333;
+    }
+    .story-card:hover {
+        background: #272727;
+        transform: scale(1.02);
+    }
+    .pagination {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .pagination button {
+        background: #333;
+        color: white;
+        border: none;
+        padding: 10px 14px;
+        margin: 5px;
+        cursor: pointer;
+        border-radius: 8px;
+    }
+    .pagination button.active {
+        background: #007bff;
+    }
+    .pagination button:hover {
+        background: #555;
+    }
+</style>
 </head>
 
 <body>
 
-<header>
-    Myth Me Halfway &middot; <span id="currentYear"></span>
-</header>
+<h1>📚 Hadithi Stories</h1>
 
-<div class="controls">
-    <input type="text" id="searchInput" placeholder="Search stories...">
-    <select id="typeFilter">
-        <option value="all">All Types</option>
-    </select>
-    <select id="sortFilter">
-        <option value="newest">Newest</option>
-        <option value="oldest">Oldest</option>
-    </select>
-</div>
-
-<div id="statusText">Loading stories…</div>
-<div id="storyCount"></div>
-
-<div id="storiesContainer"></div>
-
-<!-- Modal -->
-<div id="storyModal">
-    <div id="modalContent">
-        <span id="closeModal">✖</span>
-        <h2 id="modalTitle"></h2>
-        <div id="modalStoryContent"></div>
-    </div>
-</div>
+<div id="storyContainer" class="story-list"></div>
+<div id="pagination" class="pagination"></div>
 
 <script>
-document.getElementById("currentYear").textContent = new Date().getFullYear();
+const API_URL = "/api/stories/index.json";
+const ITEMS_PER_PAGE = 10;
+let stories = [];
+let currentPage = 1;
 
-//
-// FIX FOR GITHUB PAGES HOSTED UNDER A REPO SUBFOLDER
-//
-const BASE_PATH = window.location.pathname.replace(/\/$/, "");
-const API_BASE = BASE_PATH + "/api";
-const STORIES_INDEX = API_BASE + "/stories/index.json";
-
-let allStories = [];
-let displayedStories = [];
-
-const storyContainer = document.getElementById("storiesContainer");
-const statusText = document.getElementById("statusText");
-const searchInput = document.getElementById("searchInput");
-const typeFilter = document.getElementById("typeFilter");
-const sortFilter = document.getElementById("sortFilter");
-
-const storyModal = document.getElementById("storyModal");
-const closeModal = document.getElementById("closeModal");
-const modalTitle = document.getElementById("modalTitle");
-const modalStoryContent = document.getElementById("modalStoryContent");
-
-//
-// 1. Fetch story list
-//
 async function loadStories() {
     try {
-        const res = await fetch(STORIES_INDEX);
-        if (!res.ok) throw new Error("Bad status " + res.status);
+        const res = await fetch(API_URL);
+        const data = await res.json();
 
-        const files = await res.json();
-        allStories = files.map(f => ({
-            id: f.replace(".md", ""),
-            filename: f,
-            path: API_BASE + "/stories/" + f
-        }));
+        stories = data.filter(f => f.endsWith(".md"));
+        stories.sort(); // ensures story0001.md comes before story0010.md
 
-        displayedStories = [...allStories];
-        renderStories();
-        statusText.textContent = "Stories loaded ✓";
-    } catch (err) {
-        statusText.textContent = "Failed to load stories.";
-        console.error("ERROR:", err);
+        renderPage(currentPage);
+        renderPagination();
+    } catch (error) {
+        console.error("Failed to load stories:", error);
     }
 }
 
-//
-// 2. Render cards
-//
-function renderStories() {
-    storyContainer.innerHTML = "";
-    displayedStories.forEach(story => {
-        const div = document.createElement("div");
-        div.className = "story-card";
-        div.innerHTML = `
-            <h3>${story.id}</h3>
-            <small>${story.filename}</small>
-        `;
-        div.onclick = () => openStory(story);
-        storyContainer.appendChild(div);
+function renderPage(page) {
+    const container = document.getElementById("storyContainer");
+    container.innerHTML = "";
+
+    const start = (page - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+
+    const pageItems = stories.slice(start, end);
+
+    pageItems.forEach(filename => {
+        const id = filename.replace(".md", "").toUpperCase();
+
+        const card = document.createElement("div");
+        card.className = "story-card";
+        card.innerHTML = `<h3>${id}</h3><p>Read Story →</p>`;
+        card.onclick = () => openStory(filename);
+
+        container.appendChild(card);
     });
-
-    document.getElementById("storyCount").textContent =
-        displayedStories.length + " stories";
 }
 
-//
-// 3. Open modal + load markdown
-//
-async function openStory(story) {
-    modalTitle.textContent = story.id;
-    modalStoryContent.innerHTML = "Loading…";
+function renderPagination() {
+    const totalPages = Math.ceil(stories.length / ITEMS_PER_PAGE);
+    const pagDiv = document.getElementById("pagination");
+    pagDiv.innerHTML = "";
 
-    storyModal.style.display = "flex";
+    if (totalPages <= 1) return; // Hide pagination if not needed
 
-    const res = await fetch(story.path);
-    if (res.ok) {
-        const text = await res.text();
-        modalStoryContent.innerHTML = `<pre style="white-space: pre-wrap;">${text}</pre>`;
-    } else {
-        modalStoryContent.innerHTML = "Error loading file.";
+    // Prev Button
+    const prevBtn = document.createElement("button");
+    prevBtn.textContent = "Prev";
+    prevBtn.onclick = () => changePage(currentPage - 1);
+    prevBtn.disabled = currentPage === 1;
+    pagDiv.appendChild(prevBtn);
+
+    // Page numbers
+    for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement("button");
+        btn.textContent = i;
+        if (i === currentPage) btn.classList.add("active");
+        btn.onclick = () => changePage(i);
+        pagDiv.appendChild(btn);
     }
+
+    // Next Button
+    const nextBtn = document.createElement("button");
+    nextBtn.textContent = "Next";
+    nextBtn.onclick = () => changePage(currentPage + 1);
+    nextBtn.disabled = currentPage === totalPages;
+    pagDiv.appendChild(nextBtn);
 }
 
-closeModal.onclick = () => {
-    storyModal.style.display = "none";
-};
+function changePage(page) {
+    const totalPages = Math.ceil(stories.length / ITEMS_PER_PAGE);
+    if (page < 1 || page > totalPages) return;
+    currentPage = page;
+    renderPage(currentPage);
+    renderPagination();
+}
 
-//
-// 4. Search & filters
-//
-searchInput.oninput = () => applyFilters();
-sortFilter.onchange = () => applyFilters();
-
-function applyFilters() {
-    const q = searchInput.value.toLowerCase();
-
-    displayedStories = allStories.filter(story =>
-        story.id.toLowerCase().includes(q) ||
-        story.filename.toLowerCase().includes(q)
-    );
-
-    if (sortFilter.value === "newest") {
-        displayedStories.reverse();
-    }
-
-    renderStories();
+function openStory(filename) {
+    window.location.href = `/api/stories/${filename}`;
 }
 
 loadStories();
