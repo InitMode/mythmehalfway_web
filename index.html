@@ -3,156 +3,340 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Story Library</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Story Gallery - Mythical Tales Collection</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* [Keep all your existing CSS styles exactly as they are] */
-        :root {
-            --primary-color: #4f46e5;
-            --secondary-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-color: #1e293b;
-            --border-color: #e2e8f0;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        body.dark-mode {
-            --primary-color: #6366f1;
-            --secondary-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-color: #f1f5f9;
-            --border-color: #334155;
-            background-color: var(--secondary-color);
-            color: var(--text-color);
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--secondary-color);
-            color: var(--text-color);
-            transition: all 0.3s ease;
-            padding-bottom: 2rem;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+            padding-bottom: 50px;
         }
 
-        .header {
-            background: linear-gradient(135deg, var(--primary-color), #7c3aed);
-            padding: 2rem 1rem;
-            border-radius: 0 0 20px 20px;
-            margin-bottom: 2rem;
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
             color: white;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-controls select {
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+        }
+
+        .status-bar {
+            background: #e8f4fc;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+        .stories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
         }
 
         .story-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-            height: 100%;
+            background: white;
+            border-radius: var(--border-radius);
             overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
 
         .story-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            border-color: var(--primary-color);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
         }
 
-        .story-image {
+        .story-cover {
             height: 200px;
             width: 100%;
             object-fit: cover;
-            border-radius: 12px 12px 0 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-color: #eee;
         }
 
         .story-content {
             padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .story-title {
-            font-size: 1.25rem;
-            font-weight: 600;
+            font-size: 1.5rem;
             margin-bottom: 0.5rem;
-            color: var(--text-color);
-            line-height: 1.4;
+            color: var(--primary-color);
         }
 
         .story-author {
-            color: #64748b;
-            font-size: 0.875rem;
-            margin-bottom: 0.75rem;
+            color: var(--secondary-color);
+            font-weight: 600;
+            margin-bottom: 1rem;
         }
 
         .story-description {
-            color: #475569;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            margin-bottom: 1rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+            color: #555;
+        }
+
+        .story-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .story-type {
+            background: var(--light-color);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 600;
         }
 
         .story-tags {
             display: flex;
             flex-wrap: wrap;
             gap: 0.5rem;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
 
-        .story-tag {
-            background: rgba(79, 70, 229, 0.1);
-            color: var(--primary-color);
-            padding: 0.25rem 0.75rem;
+        .tag {
+            background: #f1f1f1;
+            padding: 0.3rem 0.8rem;
             border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 500;
+            font-size: 0.8rem;
+            color: #555;
         }
 
-        .story-meta {
+        .story-actions {
+            margin-top: auto;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            font-size: 0.875rem;
-            color: #64748b;
-            border-top: 1px solid var(--border-color);
-            padding-top: 1rem;
-            margin-top: auto;
         }
 
-        .read-btn {
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-secondary {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #ddd;
+        }
+
+        .story-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 800px;
+            margin: 2rem auto;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .modal-header {
             background: var(--primary-color);
             color: white;
-            border: none;
-            padding: 0.5rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
+            padding: 1.5rem;
+            position: relative;
         }
 
-        .read-btn:hover {
-            background: #4338ca;
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
             color: white;
-            transform: scale(1.05);
+            font-size: 1.8rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+        }
+
+        .modal-close:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 2rem;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .modal-story-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .modal-story-content h1 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 2.2rem;
+        }
+
+        .modal-story-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-story-content blockquote {
+            border-left: 4px solid var(--secondary-color);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+            color: #555;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #777;
+            border-top: 1px solid #eee;
+            margin-top: 2rem;
         }
 
         .loading {
             text-align: center;
             padding: 3rem;
-            color: #64748b;
+            font-size: 1.2rem;
+            color: #777;
         }
 
         .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--secondary-color);
+            border-radius: 50%;
             width: 40px;
             height: 40px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary-color);
-            border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 1rem;
         }
@@ -162,658 +346,470 @@
             100% { transform: rotate(360deg); }
         }
 
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            background: var(--card-bg);
-            border-radius: 12px;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-
-        .theme-toggle {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .theme-toggle:hover {
-            background: #4338ca;
-        }
-
-        .search-box {
-            flex: 1;
-            max-width: 400px;
-            margin: 0 1rem;
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background: var(--card-bg);
-            color: var(--text-color);
-        }
-
-        .no-stories {
+        .empty-state {
             text-align: center;
             padding: 3rem;
-            color: #64748b;
-            font-size: 1.1rem;
+            grid-column: 1 / -1;
         }
 
-        .category-filter {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 0.5rem;
-            border-radius: 8px;
-            margin-right: 1rem;
-        }
-
-        .footer {
-            text-align: center;
-            padding: 2rem;
-            margin-top: 3rem;
-            color: #64748b;
-            font-size: 0.875rem;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
+        .empty-state i {
+            font-size: 4rem;
+            color: #ddd;
+            margin-bottom: 1rem;
         }
 
         @media (max-width: 768px) {
+            .stories-grid {
+                grid-template-columns: 1fr;
+            }
+            
             .controls {
                 flex-direction: column;
-                gap: 1rem;
+                align-items: stretch;
             }
             
             .search-box {
-                max-width: 100%;
-                margin: 0;
+                min-width: 100%;
             }
             
-            .category-filter {
-                margin-right: 0;
-                width: 100%;
+            .modal-content {
+                margin: 1rem;
+                padding: 0;
+            }
+            
+            header h1 {
+                font-size: 2rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header text-center">
-            <h1 class="mb-3">📚 MythMeHalfway Stories</h1>
-            <p class="mb-0">Discover amazing stories from our collection</p>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-book-open"></i> Story Gallery</h1>
+            <p>Discover magical tales from around the world. Browse our collection of mythical stories, folklore, and imaginative fiction.</p>
         </div>
+    </header>
 
-        <!-- Controls -->
+    <main class="container">
         <div class="controls">
-            <button class="theme-toggle" id="themeToggle">
-                🌙 Toggle Theme
-            </button>
-            
-            <input 
-                type="text" 
-                class="search-box" 
-                id="searchBox" 
-                placeholder="Search stories by title, author, or tags..."
-            >
-            
-            <select class="category-filter" id="categoryFilter">
-                <option value="">All Categories</option>
-                <option value="fiction">Fiction</option>
-                <option value="non-fiction">Non-Fiction</option>
-                <option value="blog">Blog</option>
-            </select>
-            
-            <button class="read-btn" id="refreshBtn">
-                🔄 Refresh
-            </button>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search stories by title, author, or tags...">
+            </div>
+            <div class="filter-controls">
+                <select id="typeFilter">
+                    <option value="">All Types</option>
+                    <option value="fiction">Fiction</option>
+                    <option value="non-fiction">Non-Fiction</option>
+                    <option value="folklore">Folklore</option>
+                    <option value="mythology">Mythology</option>
+                </select>
+                <select id="sortFilter">
+                    <option value="title">Sort by Title</option>
+                    <option value="author">Sort by Author</option>
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                </select>
+            </div>
         </div>
 
-        <!-- Loading State -->
-        <div id="loading" class="loading">
-            <div class="loading-spinner"></div>
-            <p>Loading stories...</p>
+        <div class="status-bar">
+            <div id="statusText">Loading stories...</div>
+            <div id="storyCount">0 stories</div>
         </div>
 
-        <!-- Stories Grid -->
-        <div id="storiesGrid" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" style="display: none;">
-            <!-- Stories will be inserted here by JavaScript -->
+        <div id="storiesContainer" class="stories-grid">
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p>Loading stories from API...</p>
+            </div>
         </div>
+    </main>
 
-        <!-- No Stories Message -->
-        <div id="noStories" class="no-stories" style="display: none;">
-            <p>No stories found. Try refreshing or check your connection.</p>
-            <button class="read-btn mt-3" id="retryBtn">Retry Loading</button>
-        </div>
-
-        <!-- Demo Stories (hidden by default) -->
-        <div id="demoStories" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" style="display: none;">
-            <!-- Demo stories will be inserted here if API fails -->
-        </div>
-
-        <!-- Footer -->
-        <div class="footer">
-            <p>© 2024 MythMeHalfway | Total Stories: <span id="storyCount">0</span></p>
-            <p><small id="apiStatus">Loading stories...</small></p>
+    <div id="storyModal" class="story-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Story Title</h2>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="modalStoryContent" class="modal-story-content">
+                    <!-- Story content will be loaded here -->
+                </div>
+            </div>
         </div>
     </div>
 
+    <footer>
+        <div class="container">
+            <p>Story Gallery &copy; <span id="currentYear"></span> | Stories fetched from API</p>
+            <p>All stories are property of their respective authors.</p>
+        </div>
+    </footer>
+
     <script>
-        // Configuration - Using current path as base
-        const CONFIG = {
-            // Use relative paths from current location
-            basePath: window.location.pathname.includes('/mythmehalfway_web/') 
-                ? '/mythmehalfway_web/' 
-                : '/',
-            get statusEndpoint() {
-                return this.basePath + 'api/status.json';
-            },
-            get storiesIndexEndpoint() {
-                return this.basePath + 'api/stories/index.json';
-            },
-            get storiesPath() {
-                return this.basePath + 'api/stories/';
-            }
-        };
-
-        console.log('Base path:', CONFIG.basePath);
-        console.log('Status endpoint:', CONFIG.statusEndpoint);
-
+        // Current year for footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        
+        // API endpoints
+        const API_BASE = window.location.origin + '/api';
+        const STORIES_ENDPOINT = API_BASE + '/stories/index.json';
+        
         // State
         let allStories = [];
-        let filteredStories = [];
-
-        // DOM Elements
-        const storiesGrid = document.getElementById('storiesGrid');
-        const demoStoriesGrid = document.getElementById('demoStories');
-        const loadingElement = document.getElementById('loading');
-        const noStoriesElement = document.getElementById('noStories');
-        const storyCountElement = document.getElementById('storyCount');
-        const apiStatusElement = document.getElementById('apiStatus');
-        const searchBox = document.getElementById('searchBox');
-        const categoryFilter = document.getElementById('categoryFilter');
-        const refreshBtn = document.getElementById('refreshBtn');
-        const retryBtn = document.getElementById('retryBtn');
-        const themeToggle = document.getElementById('themeToggle');
-
-        // Demo stories data (fallback)
-        const DEMO_STORIES = [
-            {
-                id: 'demo1',
-                title: "The Girl Who Borrowed the Wind",
-                author: "Salt Merchant",
-                category: "fiction",
-                cover: "https://source.unsplash.com/featured/?baobab,wind",
-                description: "A short magical tale from Ukambani about courage, sacrifice, and the Wind Spirit Mwenga Mkuu.",
-                content: `# The Girl Who Borrowed the Wind
-
-In the drought-stricken plains of Ukambani, there lived a young girl named Mumo.  
-Her village had not felt a breeze in many moons, and the wells were turning into dust.
-
-One evening, Mumo wandered to the sacred hill where the old stories say the **Wind Spirit**,  
-_Mwenga Mkuu_, sleeps inside a giant baobab tree.  
-Most children feared the place—but Mumo was brave.
-
-She placed her palms on the rough bark.
-
-> "Great Mwenga," she whispered.  
-> "My people grow weak. Please, wake, even for a moment."
-
-The baobab groaned.  
-A cool swirl of air wrapped around her wrists like bracelets of morning mist.
-
-The Wind Spirit spoke:
-
-> "Child of courage, I can lend you a breeze.  
-> But when I give, something must be returned."
-
-Mumo thought hard. She had no water.  
-She had no cattle.  
-But she had her voice.
-
-So she offered it.
-
-> "Take my songs, Mwenga.  
-> My voice carries stories, and stories are part of the wind."
-
-The spirit agreed.  
-A powerful gust spiraled into her hands, glowing like soft blue fire.
-
-Mumo ran home, releasing the wind across the dry fields.  
-Clouds gathered, rain fell, children danced.
-
-But Mumo could no longer sing.
-
-Weeks later, the Wind Spirit returned, moved by her sacrifice.  
-It placed a warm breeze in her throat.
-
-> "Your songs are now part of every wind," it said.  
-> "Each time the breeze touches your village, it brings your voice home."
-
-And so the people of Ukambani say that when the wind hums through the baobab trees,  
-you can hear a soft girl's song—  
-a reminder of Mumo, who borrowed the wind to save her people.`,
-                tags: ["African mythology", "Kenyan folklore", "magical realism"],
-                readTime: 3
-            },
-            {
-                id: 'demo2',
-                title: "Digital Gardens",
-                author: "Marcus Chen",
-                category: "blog",
-                cover: "https://source.unsplash.com/featured/?technology,garden",
-                description: "Why tending to your personal notes is better than social media.",
-                content: `# Digital Gardens
-
-In the age of social media feeds, we've forgotten the joy of cultivation.  
-A digital garden is not a polished portfolio or a chronological blog.  
-It's a collection of evolving ideas, half-formed thoughts, and interconnected concepts.
-
-Unlike social media, which demands instant perfection, a digital garden celebrates growth.  
-Pages can be messy, incomplete, and interconnected.  
-They grow organically, just like a real garden.
-
-Start small. Plant a seed of an idea. Water it with regular updates.  
-Watch it grow, branch out, and connect with other ideas in your garden.
-
-Your digital garden is for you first, others second.  
-It's a space for thinking in public, for showing your work, for embracing the process over the product.
-
-In a world of consumption, be a creator.  
-In a world of feeds, tend a garden.`,
-                tags: ["technology", "blog", "personal growth"],
-                readTime: 2
-            },
-            {
-                id: 'demo3',
-                title: "Echoes of History",
-                author: "Sarah J. Miller",
-                category: "non-fiction",
-                cover: "https://source.unsplash.com/featured/?history,library",
-                description: "Understanding the patterns of the past to predict the future.",
-                content: `# Echoes of History
-
-History doesn't repeat itself, but it often rhymes.  
-The patterns we see in ancient civilizations echo through time to our modern world.
-
-From the rise and fall of empires to economic cycles, human behavior follows predictable patterns.  
-By studying these echoes, we can better understand our present and anticipate our future.
-
-The key is not to look for exact repetitions, but for thematic parallels.  
-How do societies respond to technological disruption?  
-What happens when wealth becomes too concentrated?  
-How do civilizations maintain stability in times of change?
-
-These questions have been answered before, in different times and places.  
-The answers are waiting in the echoes of history, if we're willing to listen.`,
-                tags: ["history", "non-fiction", "analysis"],
-                readTime: 4
-            }
-        ];
-
-        // Parse markdown frontmatter
-        function parseMarkdownFrontmatter(content) {
-            const lines = content.split('\n');
-            const frontmatter = {};
-            let inFrontmatter = false;
-            let contentStart = 0;
+        let displayedStories = [];
+        
+        // DOM elements
+        const storiesContainer = document.getElementById('storiesContainer');
+        const statusText = document.getElementById('statusText');
+        const storyCount = document.getElementById('storyCount');
+        const searchInput = document.getElementById('searchInput');
+        const typeFilter = document.getElementById('typeFilter');
+        const sortFilter = document.getElementById('sortFilter');
+        const storyModal = document.getElementById('storyModal');
+        const closeModal = document.getElementById('closeModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalStoryContent = document.getElementById('modalStoryContent');
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchStories();
             
-            if (lines[0] === '---') {
-                inFrontmatter = true;
-                for (let i = 1; i < lines.length; i++) {
-                    if (lines[i] === '---') {
-                        inFrontmatter = false;
-                        contentStart = i + 1;
-                        break;
-                    }
-                    const match = lines[i].match(/^(\w+):\s*(.+)$/);
-                    if (match) {
-                        const [, key, value] = match;
-                        frontmatter[key.trim()] = value.trim().replace(/^["']|["']$/g, '');
-                    }
+            // Set up event listeners
+            searchInput.addEventListener('input', filterStories);
+            typeFilter.addEventListener('change', filterStories);
+            sortFilter.addEventListener('change', filterStories);
+            closeModal.addEventListener('click', () => {
+                storyModal.style.display = 'none';
+            });
+            
+            // Close modal when clicking outside
+            storyModal.addEventListener('click', (e) => {
+                if (e.target === storyModal) {
+                    storyModal.style.display = 'none';
                 }
-            }
-            
-            const storyContent = lines.slice(contentStart).join('\n').trim();
-            return { frontmatter, content: storyContent };
-        }
-
-        // Check if API is available
-        async function checkAPIStatus() {
+            });
+        });
+        
+        // Fetch stories from API
+        async function fetchStories() {
             try {
-                console.log('Checking API at:', CONFIG.statusEndpoint);
-                const response = await fetch(CONFIG.statusEndpoint, {
-                    cache: 'no-cache'
-                });
+                statusText.textContent = 'Fetching stories from API...';
                 
-                if (response.ok) {
-                    const data = await response.json();
-                    apiStatusElement.textContent = `API Status: ${data.status}`;
-                    return true;
-                } else {
-                    console.log('API responded but not OK:', response.status);
-                    apiStatusElement.textContent = `API Status: Error (${response.status})`;
-                    return false;
-                }
-            } catch (error) {
-                console.log('API check failed:', error);
-                apiStatusElement.textContent = 'API Status: Not available (using demo stories)';
-                return false;
-            }
-        }
-
-        // Get list of story files from API
-        async function getStoryFiles() {
-            try {
-                console.log('Fetching story index from:', CONFIG.storiesIndexEndpoint);
-                const response = await fetch(CONFIG.storiesIndexEndpoint, {
-                    cache: 'no-cache'
-                });
+                // First, get the list of stories
+                const response = await fetch(STORIES_ENDPOINT);
                 
                 if (!response.ok) {
-                    console.log('Story index fetch failed:', response.status);
-                    throw new Error('Failed to fetch story index');
+                    throw new Error(`API error: ${response.status}`);
                 }
                 
-                const files = await response.json();
-                console.log('Found story files:', files);
-                return Array.isArray(files) ? files : [];
-            } catch (error) {
-                console.error('Error fetching story index:', error);
-                return [];
-            }
-        }
-
-        // Fetch a single story from the API
-        async function fetchStory(filename) {
-            try {
-                const storyUrl = CONFIG.storiesPath + filename;
-                console.log('Fetching story:', storyUrl);
+                const storyFiles = await response.json();
                 
-                const response = await fetch(storyUrl, {
-                    cache: 'no-cache'
-                });
-                
-                if (!response.ok) {
-                    console.warn(`Failed to fetch ${filename}: ${response.status}`);
-                    return null;
+                if (!storyFiles || storyFiles.length === 0) {
+                    displayEmptyState();
+                    return;
                 }
                 
-                const markdown = await response.text();
-                const { frontmatter, content } = parseMarkdownFrontmatter(markdown);
+                // Now fetch each story
+                allStories = [];
                 
-                return {
-                    id: filename.replace('.md', ''),
-                    filename: filename,
-                    title: frontmatter.title || filename.replace('.md', '').replace('story', 'Story '),
-                    author: frontmatter.author || 'Unknown Author',
-                    category: (frontmatter.type || 'fiction').toLowerCase(),
-                    cover: frontmatter.cover || `https://source.unsplash.com/featured/?story,${frontmatter.tags?.[0] || 'book'}`,
-                    description: frontmatter.description || 'A captivating story waiting to be read...',
-                    content: content,
-                    tags: frontmatter.tags ? 
-                        (Array.isArray(frontmatter.tags) ? 
-                            frontmatter.tags : 
-                            frontmatter.tags.split(',').map(tag => tag.trim())
-                        ) : [],
-                    readTime: Math.max(1, Math.ceil(content.split(/\s+/).length / 200))
-                };
-            } catch (error) {
-                console.error(`Error loading ${filename}:`, error);
-                return null;
-            }
-        }
-
-        // Fetch all stories from API
-        async function fetchAllStories() {
-            loadingElement.style.display = 'block';
-            storiesGrid.style.display = 'none';
-            demoStoriesGrid.style.display = 'none';
-            noStoriesElement.style.display = 'none';
-            apiStatusElement.textContent = 'Loading...';
-            
-            try {
-                // Check if API is running
-                const isApiRunning = await checkAPIStatus();
-                
-                if (isApiRunning) {
-                    // Get list of story files
-                    const storyFiles = await getStoryFiles();
-                    
-                    if (storyFiles && storyFiles.length > 0) {
-                        // Fetch each story
-                        const storiesPromises = storyFiles.map(filename => fetchStory(filename));
-                        const stories = (await Promise.all(storiesPromises)).filter(story => story !== null);
+                for (const filename of storyFiles) {
+                    try {
+                        const storyResponse = await fetch(`${API_BASE}/stories/${filename}`);
                         
-                        if (stories.length > 0) {
-                            allStories = stories;
-                            filteredStories = [...stories];
-                            updateStoryDisplay();
-                            apiStatusElement.textContent = `Loaded ${stories.length} stories from API`;
-                            return;
+                        if (storyResponse.ok) {
+                            const storyText = await storyResponse.text();
+                            const storyData = parseStoryMarkdown(storyText, filename);
+                            
+                            if (storyData) {
+                                allStories.push(storyData);
+                            }
                         }
+                    } catch (error) {
+                        console.error(`Error fetching ${filename}:`, error);
                     }
                 }
                 
-                // If API fails or returns no stories, use demo stories
-                console.log('Using demo stories');
-                useDemoStories();
+                if (allStories.length === 0) {
+                    displayEmptyState();
+                    return;
+                }
+                
+                // Display all stories initially
+                displayedStories = [...allStories];
+                displayStories();
                 
             } catch (error) {
                 console.error('Error fetching stories:', error);
-                useDemoStories();
+                statusText.textContent = 'Error loading stories. Please try again later.';
+                storiesContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Unable to load stories</h3>
+                        <p>There was an error fetching stories from the API. Please check if the API is running.</p>
+                        <button class="btn btn-primary" onclick="fetchStories()">
+                            <i class="fas fa-redo"></i> Retry
+                        </button>
+                    </div>
+                `;
             }
         }
-
-        // Use demo stories as fallback
-        function useDemoStories() {
-            allStories = DEMO_STORIES;
-            filteredStories = [...DEMO_STORIES];
-            
-            loadingElement.style.display = 'none';
-            storiesGrid.style.display = 'none';
-            demoStoriesGrid.innerHTML = filteredStories.map(createStoryCard).join('');
-            demoStoriesGrid.style.display = 'flex';
-            storyCountElement.textContent = filteredStories.length;
-            
-            apiStatusElement.textContent = 'Using demo stories (API not available)';
+        
+        // Parse markdown story file
+        function parseStoryMarkdown(markdown, filename) {
+            try {
+                // Extract frontmatter (between --- and ---)
+                const frontmatterMatch = markdown.match(/^---\n([\s\S]*?)\n---/);
+                
+                if (!frontmatterMatch) {
+                    // If no frontmatter, try to extract basic info
+                    const titleMatch = markdown.match(/^#\s+(.+)$/m);
+                    return {
+                        id: filename.replace('.md', ''),
+                        title: titleMatch ? titleMatch[1] : filename.replace('.md', '').replace('story', 'Story '),
+                        author: 'Unknown Author',
+                        cover: 'https://source.unsplash.com/featured/?story,book',
+                        description: markdown.substring(0, 150) + '...',
+                        type: 'fiction',
+                        tags: ['story'],
+                        content: markdown
+                    };
+                }
+                
+                const frontmatter = frontmatterMatch[1];
+                const content = markdown.substring(frontmatterMatch[0].length).trim();
+                
+                // Parse frontmatter lines
+                const lines = frontmatter.split('\n');
+                const data = {
+                    id: filename.replace('.md', ''),
+                    content: content
+                };
+                
+                lines.forEach(line => {
+                    const colonIndex = line.indexOf(':');
+                    if (colonIndex > 0) {
+                        const key = line.substring(0, colonIndex).trim();
+                        let value = line.substring(colonIndex + 1).trim();
+                        
+                        // Remove quotes if present
+                        if (value.startsWith('"') && value.endsWith('"')) {
+                            value = value.substring(1, value.length - 1);
+                        }
+                        
+                        // Parse arrays (tags)
+                        if (key === 'tags') {
+                            try {
+                                value = JSON.parse(value.replace(/'/g, '"'));
+                            } catch {
+                                // If not valid JSON, try to parse as comma-separated
+                                value = value.split(',').map(tag => tag.trim());
+                            }
+                        }
+                        
+                        data[key] = value;
+                    }
+                });
+                
+                return data;
+            } catch (error) {
+                console.error('Error parsing story:', error);
+                return null;
+            }
         }
-
-        // Create story card HTML
-        function createStoryCard(story) {
-            return `
-                <div class="col">
-                    <div class="story-card">
-                        <img src="${story.cover}" alt="${story.title}" class="story-image" 
-                             onerror="this.src='https://source.unsplash.com/featured/?${story.category},book'">
-                        <div class="story-content d-flex flex-column">
-                            <h3 class="story-title">${story.title}</h3>
-                            <div class="story-author">By ${story.author}</div>
-                            
-                            <p class="story-description">${story.description}</p>
-                            
-                            ${story.tags && story.tags.length > 0 ? `
-                                <div class="story-tags">
-                                    ${story.tags.slice(0, 3).map(tag => `
-                                        <span class="story-tag">${tag}</span>
-                                    `).join('')}
-                                </div>
-                            ` : ''}
-                            
-                            <div class="story-meta mt-auto">
-                                <span>📖 ${story.readTime} min read</span>
-                                <span class="text-capitalize">${story.category}</span>
-                            </div>
-                            
-                            <button class="read-btn mt-3" onclick="readStory('${story.id}')">
-                                Read Story
+        
+        // Display stories in the grid
+        function displayStories() {
+            if (displayedStories.length === 0) {
+                displayEmptyState();
+                return;
+            }
+            
+            statusText.textContent = `Showing ${displayedStories.length} of ${allStories.length} stories`;
+            storyCount.textContent = `${displayedStories.length} stories`;
+            
+            const storiesHTML = displayedStories.map(story => `
+                <div class="story-card" data-id="${story.id}">
+                    <img src="${story.cover || 'https://source.unsplash.com/featured/?story,book'}" 
+                         alt="${story.title}" 
+                         class="story-cover"
+                         onerror="this.src='https://source.unsplash.com/featured/?story,book'">
+                    <div class="story-content">
+                        <h3 class="story-title">${story.title}</h3>
+                        <div class="story-author">
+                            <i class="fas fa-user-pen"></i> ${story.author || 'Unknown Author'}
+                        </div>
+                        <p class="story-description">${story.description || 'A captivating story without a description.'}</p>
+                        
+                        <div class="story-meta">
+                            <span class="story-type">${story.type || 'fiction'}</span>
+                            <span><i class="far fa-file-alt"></i> ${estimateReadingTime(story.content)} min read</span>
+                        </div>
+                        
+                        <div class="story-tags">
+                            ${(story.tags || []).slice(0, 4).map(tag => `
+                                <span class="tag">${tag}</span>
+                            `).join('')}
+                            ${(story.tags || []).length > 4 ? `<span class="tag">+${(story.tags || []).length - 4} more</span>` : ''}
+                        </div>
+                        
+                        <div class="story-actions">
+                            <button class="btn btn-primary" onclick="viewStory('${story.id}')">
+                                <i class="fas fa-book-open"></i> Read Story
+                            </button>
+                            <button class="btn btn-secondary" onclick="shareStory('${story.title}')">
+                                <i class="fas fa-share-alt"></i> Share
                             </button>
                         </div>
                     </div>
                 </div>
+            `).join('');
+            
+            storiesContainer.innerHTML = storiesHTML;
+        }
+        
+        // Display empty state
+        function displayEmptyState() {
+            statusText.textContent = 'No stories found';
+            storyCount.textContent = '0 stories';
+            
+            storiesContainer.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-book"></i>
+                    <h3>No stories found</h3>
+                    <p>Try changing your search or filter criteria.</p>
+                    <button class="btn btn-primary" onclick="clearFilters()">
+                        <i class="fas fa-filter-circle-xmark"></i> Clear Filters
+                    </button>
+                </div>
             `;
         }
-
-        // Update the stories display
-        function updateStoryDisplay() {
-            loadingElement.style.display = 'none';
-            demoStoriesGrid.style.display = 'none';
-            
-            if (filteredStories.length === 0) {
-                showNoStories('No stories match your search criteria.');
-                return;
-            }
-            
-            storiesGrid.innerHTML = filteredStories.map(createStoryCard).join('');
-            storiesGrid.style.display = 'flex';
-            storyCountElement.textContent = filteredStories.length;
-        }
-
-        // Show no stories message
-        function showNoStories(message = 'No stories found.') {
-            storiesGrid.style.display = 'none';
-            demoStoriesGrid.style.display = 'none';
-            loadingElement.style.display = 'none';
-            noStoriesElement.innerHTML = `
-                <p>${message}</p>
-                <button class="read-btn mt-3" id="retryBtn">Retry Loading</button>
-            `;
-            noStoriesElement.style.display = 'block';
-            storyCountElement.textContent = '0';
-            
-            // Re-attach event listener to retry button
-            setTimeout(() => {
-                document.getElementById('retryBtn').addEventListener('click', fetchAllStories);
-            }, 100);
-        }
-
-        // Filter stories based on search and category
+        
+        // Filter and sort stories based on criteria
         function filterStories() {
-            const searchTerm = searchBox.value.toLowerCase();
-            const selectedCategory = categoryFilter.value.toLowerCase();
+            const searchTerm = searchInput.value.toLowerCase();
+            const typeValue = typeFilter.value;
+            const sortValue = sortFilter.value;
             
-            filteredStories = allStories.filter(story => {
+            // Filter stories
+            let filtered = allStories.filter(story => {
+                // Search filter
                 const matchesSearch = !searchTerm || 
                     story.title.toLowerCase().includes(searchTerm) ||
                     story.author.toLowerCase().includes(searchTerm) ||
-                    story.description.toLowerCase().includes(searchTerm) ||
+                    (story.description && story.description.toLowerCase().includes(searchTerm)) ||
                     (story.tags && story.tags.some(tag => tag.toLowerCase().includes(searchTerm)));
                 
-                const matchesCategory = !selectedCategory || 
-                    story.category.toLowerCase() === selectedCategory;
+                // Type filter
+                const matchesType = !typeValue || 
+                    (story.type && story.type.toLowerCase() === typeValue.toLowerCase());
                 
-                return matchesSearch && matchesCategory;
+                return matchesSearch && matchesType;
             });
             
-            // Check if we're showing demo stories or API stories
-            if (demoStoriesGrid.style.display === 'flex') {
-                demoStoriesGrid.innerHTML = filteredStories.map(createStoryCard).join('');
-                demoStoriesGrid.style.display = filteredStories.length > 0 ? 'flex' : 'none';
-                storiesGrid.style.display = 'none';
-            } else {
-                updateStoryDisplay();
+            // Sort stories
+            filtered.sort((a, b) => {
+                switch (sortValue) {
+                    case 'title':
+                        return a.title.localeCompare(b.title);
+                    case 'author':
+                        return (a.author || '').localeCompare(b.author || '');
+                    case 'newest':
+                        // Assuming higher ID = newer (story0001, story0002, etc.)
+                        return b.id.localeCompare(a.id);
+                    case 'oldest':
+                        return a.id.localeCompare(b.id);
+                    default:
+                        return 0;
+                }
+            });
+            
+            displayedStories = filtered;
+            displayStories();
+        }
+        
+        // Clear all filters
+        function clearFilters() {
+            searchInput.value = '';
+            typeFilter.value = '';
+            sortFilter.value = 'title';
+            filterStories();
+        }
+        
+        // View a story in modal
+        function viewStory(storyId) {
+            const story = allStories.find(s => s.id === storyId);
+            
+            if (!story) {
+                alert('Story not found');
+                return;
             }
             
-            storyCountElement.textContent = filteredStories.length;
-        }
-
-        // Read story function
-        function readStory(storyId) {
-            const story = allStories.find(s => s.id === storyId);
-            if (story) {
-                // Create a modal to display the story
-                const modalHTML = `
-                    <div class="modal fade" id="storyModal" tabindex="-1">
-                        <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">${story.title}</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="text-center mb-4">
-                                        <img src="${story.cover}" alt="${story.title}" 
-                                             class="img-fluid rounded" style="max-height: 300px;"
-                                             onerror="this.src='https://source.unsplash.com/featured/?book,story'">
-                                    </div>
-                                    <div class="d-flex justify-content-between mb-3">
-                                        <span class="text-muted">By ${story.author}</span>
-                                        <span class="text-muted">${story.readTime} min read • <span class="text-capitalize">${story.category}</span></span>
-                                    </div>
-                                    <hr>
-                                    <div class="story-content" style="line-height: 1.8; font-size: 1.1rem; white-space: pre-line;">
-                                        ${story.content}
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                </div>
-                            </div>
-                        </div>
+            modalTitle.textContent = story.title;
+            
+            // Convert markdown to HTML (simplified)
+            let htmlContent = story.content
+                .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>')
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/\n/g, '<br>');
+            
+            // Wrap in paragraph if not already
+            if (!htmlContent.startsWith('<h1>') && !htmlContent.startsWith('<blockquote>')) {
+                htmlContent = `<p>${htmlContent}</p>`;
+            }
+            
+            modalStoryContent.innerHTML = `
+                <div class="story-meta" style="margin-bottom: 2rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                        <span><i class="fas fa-user-pen"></i> <strong>${story.author || 'Unknown Author'}</strong></span>
+                        <span class="story-type">${story.type || 'fiction'}</span>
+                        <span><i class="far fa-clock"></i> ${estimateReadingTime(story.content)} min read</span>
                     </div>
-                `;
-                
-                // Add modal to body
-                const modalContainer = document.createElement('div');
-                modalContainer.innerHTML = modalHTML;
-                document.body.appendChild(modalContainer);
-                
-                // Show modal
-                const modal = new bootstrap.Modal(document.getElementById('storyModal'));
-                modal.show();
-                
-                // Remove modal from DOM after hiding
-                document.getElementById('storyModal').addEventListener('hidden.bs.modal', function() {
-                    modalContainer.remove();
+                    <div class="story-tags">
+                        ${(story.tags || []).map(tag => `<span class="tag">${tag}</span>`).join('')}
+                    </div>
+                </div>
+                ${htmlContent}
+            `;
+            
+            storyModal.style.display = 'block';
+        }
+        
+        // Share a story
+        function shareStory(storyTitle) {
+            if (navigator.share) {
+                navigator.share({
+                    title: storyTitle,
+                    text: `Check out this story: ${storyTitle}`,
+                    url: window.location.href
+                });
+            } else {
+                // Fallback: copy to clipboard
+                const url = window.location.href;
+                navigator.clipboard.writeText(`${storyTitle} - ${url}`).then(() => {
+                    alert('Link copied to clipboard!');
                 });
             }
-            return false;
         }
-
-        // Theme toggle
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            themeToggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        
+        // Estimate reading time
+        function estimateReadingTime(content) {
+            const wordsPerMinute = 200;
+            const wordCount = content.split(/\s+/).length;
+            const readingTime = Math.ceil(wordCount / wordsPerMinute);
+            return readingTime || 1;
         }
-
-        // Initialize
-        function init() {
-            // Load theme preference
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark-mode');
-                themeToggle.textContent = '☀️ Light Mode';
-            }
-
-            // Event listeners
-            searchBox.addEventListener('input', filterStories);
-            categoryFilter.addEventListener('change', filterStories);
-            refreshBtn.addEventListener('click', fetchAllStories);
-            retryBtn.addEventListener('click', fetchAllStories);
-            themeToggle.addEventListener('click', toggleTheme);
-
-            // Load stories
-            fetchAllStories();
-        }
-
-        // Start the app when DOM is loaded
-        document.addEventListener('DOMContentLoaded', init);
+        
+        // Expose functions to global scope for onclick handlers
+        window.viewStory = viewStory;
+        window.shareStory = shareStory;
+        window.clearFilters = clearFilters;
+        window.fetchStories = fetchStories;
     </script>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
