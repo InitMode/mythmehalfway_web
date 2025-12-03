@@ -3,53 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MythMeHalfway </title>
-    
-    <!-- Tailwind CSS -->
+    <title>MythMeHalfway</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- React Libraries -->
+
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    
-    <!-- Babel for JSX -->
+
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <!-- Lucide Icons -->
+
     <script src="https://unpkg.com/lucide-react"></script>
-    
+
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
         .line-clamp-2 { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+        
+        /* Custom styles for dark mode content rendering */
+        .markdown-content h1, .markdown-content h2, .markdown-content h3 {
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+            font-weight: 700;
+        }
+        .markdown-content h1 { font-size: 1.875rem; }
+        .markdown-content h2 { font-size: 1.5rem; }
+        .markdown-content h3 { font-size: 1.25rem; }
+        .markdown-content p, .markdown-content ul, .markdown-content ol, .markdown-content blockquote {
+            margin-bottom: 1em;
+            line-height: 1.75;
+        }
+        .markdown-content ul, .markdown-content ol { padding-left: 20px; }
+        .markdown-content ul > li { list-style: disc; }
+        .markdown-content ol > li { list-style: decimal; }
+        .markdown-content blockquote {
+            border-left: 4px solid #4f46e5;
+            padding-left: 1rem;
+            margin-left: 0;
+            color: #4b5563; /* text-gray-600 */
+            font-style: italic;
+            background-color: #f3f4f6; /* bg-gray-50 */
+            padding: 0.5rem 1rem;
+            border-radius: 0 8px 8px 0;
+        }
+        .markdown-content.dark blockquote {
+            border-left-color: #818cf8; /* indigo-400 */
+            color: #9ca3af; /* text-gray-400 */
+            background-color: #374151; /* bg-gray-700 */
+        }
+        .markdown-content a { color: #4f46e5; text-decoration: underline; }
+        .markdown-content.dark a { color: #a5b4fc; }
+        .markdown-content strong { font-weight: 700; }
+        .markdown-content em { font-style: italic; }
     </style>
 </head>
 <body class="bg-gray-100">
     <div id="root"></div>
-    
+
     <script type="text/babel" data-type="module">
         // Import React hooks (they're available globally from CDN)
         const { useState, useEffect, useRef, useMemo } = React;
 
-        // --- Configuration ---
-       // --- Configuration ---
-const GITHUB_API_CONFIG = {
-    // API endpoints (using GitHub Pages API)
-    apiBaseUrl: '', // Leave empty for same-origin requests (GitHub Pages)
-    // CORRECTED: Ensure the index path includes /api/
-    statusEndpoint: '/api/status.json',
-    storiesIndexEndpoint: '/api/stories/index.json', // FIX: Added '/api/' prefix back
-};
+        // Helper to check if Lucide is available globally
+        const Lucide = window['lucide-react'];
+        const Icon = Lucide ? Lucide.Icon : null;
+        
+        // Custom component to handle missing Lucide
+        const IconPlaceholder = ({ name, size = 20, color = "currentColor", className = "" }) => {
+            if (Icon && Lucide[name]) {
+                const SpecificIcon = Lucide[name];
+                // Use React.createElement for lucide icons if available
+                return React.createElement(SpecificIcon, { size, color, className });
+            }
+            // Fallback placeholder if lucide-react failed to load
+            return React.createElement('span', {
+                className: `inline-block w-5 h-5 align-middle text-center leading-5 ${className}`,
+                style: { fontSize: size + 'px', color }
+            }, '★');
+        };
 
-// ...
-// FIX: You also need to correct the individual story fetch path (Line 89)
-const storiesPromises = storiesIndex.map(async (storyFile) => {
-    try {
-        // FIX: Added '/api/' prefix here
-       const storyResponse = await fetch(`${GITHUB_API_CONFIG.apiBaseUrl}/api/stories/${storyFile}`);
-        // ...
+        // --- Configuration ---
+        const GITHUB_API_CONFIG = {
+            // API endpoints (using GitHub Pages API)
+            apiBaseUrl: '', // Leave empty for same-origin requests (GitHub Pages)
+            // CORRECTED: Assuming your API paths are relative to the root with an explicit /api/
+            statusEndpoint: '/api/status.json',
+            storiesIndexEndpoint: '/api/stories/index.json', 
+        };
 
         // --- Sounds ---
         const SOUNDS = [
@@ -65,7 +106,7 @@ const storiesPromises = storiesIndex.map(async (storyFile) => {
             const frontmatter = {};
             let inFrontmatter = false;
             let contentStart = 0;
-            
+
             if (lines[0] === '---') {
                 inFrontmatter = true;
                 for (let i = 1; i < lines.length; i++) {
@@ -81,7 +122,7 @@ const storiesPromises = storiesIndex.map(async (storyFile) => {
                     }
                 }
             }
-            
+
             const storyContent = lines.slice(contentStart).join('\n').trim();
             return { frontmatter, content: storyContent };
         };
@@ -92,28 +133,61 @@ const storiesPromises = storiesIndex.map(async (storyFile) => {
             return Math.max(1, Math.ceil(wordCount / wordsPerMinute));
         };
 
+        // Simple Markdown to HTML converter (for display purposes)
+        const convertMarkdownToHtml = (markdown, isDark) => {
+            // Simplified conversion (not a full parser)
+            let html = markdown
+                .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>') // Bold
+                .replace(/\*(.*?)\*/gim, '<em>$1</em>') // Italic
+                .replace(/^(>.*)$/gim, '<blockquote>$1</blockquote>'); // Blockquotes
+                
+            // Handle lists and paragraphs (very basic)
+            html = html.split('\n\n').map(p => {
+                if (p.startsWith('<h1>') || p.startsWith('<h2>') || p.startsWith('<h3>') || p.startsWith('<blockquote>')) {
+                    return p;
+                }
+                if (p.startsWith('* ') || p.startsWith('- ')) {
+                    return '<ul>' + p.split('\n').map(li => `<li>${li.substring(2).trim()}</li>`).join('') + '</ul>';
+                }
+                return `<p>${p.trim()}</p>`;
+            }).join('');
+            
+            // Clean up blockquote content
+            html = html.replace(/<blockquote>\s*>\s*(.*?)\s*<\/blockquote>/gim, '<blockquote>$1</blockquote>');
+            
+            return React.createElement('div', {
+                className: `markdown-content text-base leading-relaxed ${isDark ? 'text-gray-200 dark' : 'text-gray-700'}`,
+                dangerouslySetInnerHTML: { __html: html }
+            });
+        };
+
+
         // --- Data Fetching Functions ---
         const fetchStoriesFromAPI = async () => {
             try {
                 // First check if API is running
                 const statusResponse = await fetch(`${GITHUB_API_CONFIG.apiBaseUrl}${GITHUB_API_CONFIG.statusEndpoint}`);
                 if (!statusResponse.ok) throw new Error('API not available');
-                
+
                 // Fetch stories index
                 const storiesResponse = await fetch(`${GITHUB_API_CONFIG.apiBaseUrl}${GITHUB_API_CONFIG.storiesIndexEndpoint}`);
                 if (!storiesResponse.ok) throw new Error('Failed to fetch stories index');
-                
+
                 const storiesIndex = await storiesResponse.json();
-                
+
                 // Load each story
                 const storiesPromises = storiesIndex.map(async (storyFile) => {
                     try {
-                        const storyResponse = await fetch(`${GITHUB_API_CONFIG.apiBaseUrl}/stories/${storyFile}`);
+                        // FIX APPLIED: Corrected API path for individual story files
+                        const storyResponse = await fetch(`${GITHUB_API_CONFIG.apiBaseUrl}/api/stories/${storyFile}`);
                         if (!storyResponse.ok) throw new Error(`Failed to fetch ${storyFile}`);
-                        
+
                         const markdown = await storyResponse.text();
                         const { frontmatter, content } = parseMarkdownFrontmatter(markdown);
-                        
+
                         return {
                             id: storyFile.replace('.md', '').replace('story', ''),
                             title: frontmatter.title || 'Untitled Story',
@@ -132,10 +206,10 @@ const storiesPromises = storiesIndex.map(async (storyFile) => {
                         return null;
                     }
                 });
-                
+
                 const stories = (await Promise.all(storiesPromises)).filter(story => story !== null);
                 return stories;
-                
+
             } catch (error) {
                 console.error('Error fetching from API:', error);
                 throw error;
@@ -167,51 +241,51 @@ const storiesPromises = storiesIndex.map(async (storyFile) => {
                     description: "A short magical tale from Ukambani about courage, sacrifice, and the Wind Spirit Mwenga Mkuu.",
                     content: `# The Girl Who Borrowed the Wind
 
-In the drought-stricken plains of Ukambani, there lived a young girl named Mumo.  
+In the drought-stricken plains of Ukambani, there lived a young girl named Mumo.
 Her village had not felt a breeze in many moons, and the wells were turning into dust.
 
-One evening, Mumo wandered to the sacred hill where the old stories say the **Wind Spirit**,  
-_Mwenga Mkuu_, sleeps inside a giant baobab tree.  
+One evening, Mumo wandered to the sacred hill where the old stories say the **Wind Spirit**,
+_Mwenga Mkuu_, sleeps inside a giant baobab tree.
 Most children feared the place—but Mumo was brave.
 
 She placed her palms on the rough bark.
 
-> "Great Mwenga," she whispered.  
+> "Great Mwenga," she whispered.
 > "My people grow weak. Please, wake, even for a moment."
 
-The baobab groaned.  
+The baobab groaned.
 A cool swirl of air wrapped around her wrists like bracelets of morning mist.
 
 The Wind Spirit spoke:
 
-> "Child of courage, I can lend you a breeze.  
+> "Child of courage, I can lend you a breeze.
 > But when I give, something must be returned."
 
-Mumo thought hard. She had no water.  
-She had no cattle.  
+Mumo thought hard. She had no water.
+She had no cattle.
 But she had her voice.
 
 So she offered it.
 
-> "Take my songs, Mwenga.  
+> "Take my songs, Mwenga.
 > My voice carries stories, and stories are part of the wind."
 
-The spirit agreed.  
+The spirit agreed.
 A powerful gust spiraled into her hands, glowing like soft blue fire.
 
-Mumo ran home, releasing the wind across the dry fields.  
+Mumo ran home, releasing the wind across the dry fields.
 Clouds gathered, rain fell, children danced.
 
 But Mumo could no longer sing.
 
-Weeks later, the Wind Spirit returned, moved by her sacrifice.  
+Weeks later, the Wind Spirit returned, moved by her sacrifice.
 It placed a warm breeze in her throat.
 
-> "Your songs are now part of every wind," it said.  
+> "Your songs are now part of every wind," it said.
 > "Each time the breeze touches your village, it brings your voice home."
 
-And so the people of Ukambani say that when the wind hums through the baobab trees,  
-you can hear a soft girl's song—  
+And so the people of Ukambani say that when the wind hums through the baobab trees,
+you can hear a soft girl's song—
 a reminder of Mumo, who borrowed the wind to save her people.`,
                     readTimeMin: 3,
                     likes: 124,
@@ -287,7 +361,7 @@ a reminder of Mumo, who borrowed the wind to save her people.`,
 
         const Modal = ({ isOpen, onClose, title, children, isDark }) => {
             if (!isOpen) return null;
-            
+
             return React.createElement('div', {
                 className: "fixed inset-0 z-[70] flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm p-4"
             },
@@ -308,6 +382,56 @@ a reminder of Mumo, who borrowed the wind to save her people.`,
             );
         };
 
+        // NEW COMPONENT: ReaderModal
+        const ReaderModal = ({ book, onClose, isDark, onUpdateProgress, lastReadPosition }) => {
+            const readerRef = useRef(null);
+            
+            useEffect(() => {
+                const readerElement = readerRef.current;
+                if (!readerElement || !book) return;
+
+                const savedPosition = lastReadPosition?.position || 0;
+                readerElement.scrollTop = savedPosition;
+
+                const handleScroll = () => {
+                    const scrollPosition = readerElement.scrollTop;
+                    const maxScroll = readerElement.scrollHeight - readerElement.clientHeight;
+                    const progress = maxScroll > 0 ? (scrollPosition / maxScroll) * 100 : 0;
+                    
+                    if (onUpdateProgress) {
+                        onUpdateProgress(book.id, progress, scrollPosition);
+                    }
+                };
+
+                readerElement.addEventListener('scroll', handleScroll);
+                return () => readerElement.removeEventListener('scroll', handleScroll);
+            }, [book, onUpdateProgress, lastReadPosition]);
+
+            if (!book) return null;
+
+            return React.createElement(Modal, {
+                isOpen: true,
+                onClose: onClose,
+                title: book.title,
+                isDark: isDark
+            },
+                React.createElement('div', {
+                    ref: readerRef,
+                    className: `p-4 h-[70vh] overflow-y-auto no-scrollbar rounded-lg ${isDark ? 'bg-gray-900' : 'bg-white'}`
+                },
+                    React.createElement('h1', { className: `text-3xl font-extrabold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}` }, book.title),
+                    React.createElement('p', { className: `text-sm font-medium mb-8 ${isDark ? 'text-indigo-400' : 'text-indigo-600'}` }, `By ${book.author} (${book.readTimeMin} min read)`),
+                    
+                    convertMarkdownToHtml(book.content, isDark),
+
+                    React.createElement('div', { className: "mt-12 pt-4 border-t border-dashed border-gray-300" },
+                        React.createElement('p', { className: `text-center text-sm ${isDark ? 'text-gray-500' : 'text-gray-400'}` }, '--- End of Story ---')
+                    )
+                )
+            );
+        };
+        // END NEW COMPONENT: ReaderModal
+        
         const BookCard = ({ book, onRead, isBookmarked, onToggleBookmark, onLike, likes, isDark }) => {
             return React.createElement('div', {
                 className: `${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group border flex flex-col h-full animate-fade-in`
@@ -325,8 +449,8 @@ a reminder of Mumo, who borrowed the wind to save her people.`,
                         React.createElement('button', {
                             onClick: (e) => { e.stopPropagation(); onToggleBookmark(book.id); },
                             className: `p-2 rounded-full backdrop-blur-md transition shadow-sm ${
-                                isBookmarked 
-                                ? 'bg-yellow-400 text-white' 
+                                isBookmarked
+                                ? 'bg-yellow-400 text-white'
                                 : 'bg-white/90 text-gray-600 hover:bg-white'
                             }`
                         }, '🔖')
@@ -392,20 +516,20 @@ a reminder of Mumo, who borrowed the wind to save her people.`,
 
             return React.createElement('div', { className: "fixed bottom-24 right-6 z-50 flex flex-col items-end gap-2" },
                 React.createElement('audio', { ref: audioRef, loop: true }),
-                
+
                 isOpen && React.createElement('div', {
                     className: `mb-2 p-2 rounded-lg shadow-xl border ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} animate-fade-in flex flex-col gap-1 w-48`
                 },
                     React.createElement('div', {
                         className: `text-xs font-bold uppercase tracking-wider px-2 py-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`
                     }, 'Background Sounds'),
-                    SOUNDS.map(sound => 
+                    SOUNDS.map(sound =>
                         React.createElement('button', {
                             key: sound.id,
                             onClick: () => onToggleSound(sound),
                             className: `w-full text-left px-3 py-2 rounded-md text-sm transition flex items-center justify-between
-                                ${activeSound?.id === sound.id 
-                                    ? 'bg-indigo-100 text-indigo-700 font-semibold' 
+                                ${activeSound?.id === sound.id
+                                    ? 'bg-indigo-100 text-indigo-700 font-semibold'
                                     : isDark ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-50'
                                 }`
                         },
@@ -421,8 +545,8 @@ a reminder of Mumo, who borrowed the wind to save her people.`,
                 React.createElement('button', {
                     onClick: () => setIsOpen(!isOpen),
                     className: `p-4 rounded-full shadow-lg transition transform hover:scale-105 ${
-                        activeSound 
-                        ? 'bg-indigo-600 text-white ring-4 ring-indigo-200' 
+                        activeSound
+                        ? 'bg-indigo-600 text-white ring-4 ring-indigo-200'
                         : isDark ? 'bg-gray-800 text-indigo-400 border border-gray-700' : 'bg-white text-indigo-600 border border-gray-200'
                     }`,
                     title: "Background Sounds"
@@ -476,15 +600,38 @@ a reminder of Mumo, who borrowed the wind to save her people.`,
             );
         };
 
-        const LibraryView = ({ 
-            books, readingStats, bookmarks, likes, 
-            onRead, onToggleBookmark, onLike, 
+        const LibraryView = ({
+            books, readingStats, bookmarks, likes,
+            onRead, onToggleBookmark, onLike,
             setShowAddBook, setShowBookmarks, isDark,
             lastReadPosition, onResumeReading,
             isLoading
         }) => {
             const lastReadBook = books.find(b => b.id === lastReadPosition.bookId);
             const shouldShowContinueReading = lastReadBook && lastReadPosition.progress > 5 && lastReadPosition.progress < 95;
+
+            // Simple search/filter state (for Library View logic)
+            const [searchTerm, setSearchTerm] = useState('');
+            const [filterCategory, setFilterCategory] = useState('All');
+            const categories = useMemo(() => ['All', ...new Set(books.map(b => b.category))], [books]);
+
+            const filteredBooks = useMemo(() => {
+                let filtered = books;
+
+                if (filterCategory !== 'All') {
+                    filtered = filtered.filter(book => book.category === filterCategory);
+                }
+
+                if (searchTerm) {
+                    const lowerSearchTerm = searchTerm.toLowerCase();
+                    filtered = filtered.filter(book => 
+                        book.title.toLowerCase().includes(lowerSearchTerm) ||
+                        book.author.toLowerCase().includes(lowerSearchTerm) ||
+                        book.description.toLowerCase().includes(lowerSearchTerm)
+                    );
+                }
+                return filtered;
+            }, [books, filterCategory, searchTerm]);
 
             if (isLoading) {
                 return React.createElement('div', { className: "container mx-auto px-4 py-8 max-w-7xl animate-fade-in pb-32" },
@@ -493,525 +640,367 @@ a reminder of Mumo, who borrowed the wind to save her people.`,
             }
 
             return React.createElement('div', { className: "container mx-auto px-4 py-8 max-w-7xl animate-fade-in pb-32" },
-                React.createElement('div', { className: "flex flex-col md:flex-row justify-between items-center mb-10 gap-4" },
-                    React.createElement('div', null,
-                        React.createElement('h1', {
-                            className: `text-4xl font-black tracking-tight mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`
-                        }, 'MythMeHalfway'),
-                        React.createElement('p', {
-                            className: `${isDark ? 'text-gray-400' : 'text-gray-500'}`
-                        }, 'Curated stories, infinite imaginations.')
-                    ),
-                    React.createElement('div', { className: "flex gap-4" },
-                        React.createElement('div', {
-                            className: `px-4 py-2 rounded-lg shadow-sm border flex items-center gap-2 ${isDark ? 'bg-gray-800 border-gray-700 text-gray-200' : 'bg-white border-gray-100 text-gray-700'}`
-                        }, '⏱️', React.createElement('span', { className: "font-bold" }, Math.floor(readingStats.totalMinutes), ' mins')),
-                        React.createElement('div', {
-                            className: `px-4 py-2 rounded-lg shadow-sm border flex items-center gap-2 ${isDark ? 'bg-gray-800 border-gray-700 text-gray-200' : 'bg-white border-gray-100 text-gray-700'}`
-                        }, '📖', React.createElement('span', { className: "font-bold" }, readingStats.booksRead, ' read')),
-                        React.createElement('div', {
-                            className: `px-4 py-2 rounded-lg shadow-sm border flex items-center gap-2 ${isDark ? 'bg-gray-800 border-gray-700 text-gray-200' : 'bg-white border-gray-100 text-gray-700'}`
-                        }, '📚', React.createElement('span', { className: "font-bold" }, books.length, ' stories'))
+                // FIX APPLIED: Completed the React.createElement call here which was incomplete
+                React.createElement('div', { className: "flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4" },
+                    React.createElement('h1', { className: `text-4xl font-extrabold ${isDark ? 'text-white' : 'text-gray-900'}` }, "The MythMeHalfway Library"),
+                    React.createElement('div', { className: "flex gap-2" },
+                        React.createElement('button', {
+                            onClick: setShowBookmarks,
+                            className: `px-4 py-2 text-sm font-medium rounded-lg transition shadow-md ${isDark ? 'bg-gray-700 text-yellow-400 hover:bg-gray-600' : 'bg-white text-yellow-600 hover:bg-gray-50'} flex items-center gap-1`
+                        }, 'Bookmarks 🔖'),
+                        React.createElement('button', {
+                            onClick: setShowAddBook,
+                            className: "px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition shadow-md flex items-center gap-1"
+                        }, 'Add Story +')
                     )
                 ),
-                
+
                 shouldShowContinueReading && React.createElement(ContinueReadingCard, {
                     book: lastReadBook,
                     progress: lastReadPosition.progress,
-                    onResume: onResumeReading,
+                    onResume: () => onResumeReading(lastReadBook),
                     isDark: isDark
                 }),
-
-                books.length === 0 ? 
-                    React.createElement('div', {
-                        className: `text-center py-20 ${isDark ? 'text-gray-400' : 'text-gray-600'}`
+                
+                // Search and Filter controls
+                React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-3 gap-4 mb-8" },
+                    React.createElement('input', {
+                        type: "text",
+                        placeholder: "Search titles or authors...",
+                        value: searchTerm,
+                        onChange: (e) => setSearchTerm(e.target.value),
+                        className: `p-3 rounded-lg border focus:ring-indigo-500 focus:border-indigo-500 transition ${isDark ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900'}`
+                    }),
+                    React.createElement('select', {
+                        value: filterCategory,
+                        onChange: (e) => setFilterCategory(e.target.value),
+                        className: `p-3 rounded-lg border focus:ring-indigo-500 focus:border-indigo-500 transition appearance-none ${isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`
                     },
-                        '📖',
-                        React.createElement('p', { className: "text-xl font-medium mb-2" }, "No stories found"),
-                        React.createElement('p', { className: "text-sm" }, "Try refreshing the page or check your connection")
-                    ) :
-                    React.createElement('div', { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" },
-                        books.map(book => 
-                            React.createElement(BookCard, {
-                                key: book.id,
-                                book: book,
-                                onRead: onRead,
-                                isBookmarked: bookmarks.includes(book.id),
-                                onToggleBookmark: onToggleBookmark,
-                                onLike: onLike,
-                                likes: likes,
-                                isDark: isDark
-                            })
-                        )
+                        categories.map(category => React.createElement('option', { key: category, value: category }, category))
                     ),
-
-                React.createElement('div', { className: "fixed bottom-6 right-6 flex flex-col gap-3 z-30" },
-                    React.createElement('button', {
-                        onClick: () => setShowAddBook(true),
-                        className: "bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-full shadow-lg transition transform hover:scale-110",
-                        title: "Add Book"
-                    }, '➕')
+                    React.createElement('div', { className: `p-3 rounded-lg flex items-center justify-center text-sm font-medium ${isDark ? 'bg-gray-700 text-gray-300' : 'bg-white text-gray-500'}` },
+                        `${filteredBooks.length} Story${filteredBooks.length !== 1 ? 's' : ''} Found`
+                    )
                 ),
 
-                React.createElement('div', { className: "fixed bottom-6 left-6 z-30" },
-                    React.createElement('button', {
-                        onClick: () => setShowBookmarks(true),
-                        className: `p-4 rounded-full shadow-lg border transition transform hover:scale-110 ${isDark ? 'bg-gray-800 text-indigo-400 border-gray-700 hover:bg-gray-700' : 'bg-white text-indigo-600 border-gray-200 hover:bg-gray-50'}`,
-                        title: "View Bookmarks"
-                    }, '🔖')
+                // Book Grid
+                React.createElement('div', { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8" },
+                    filteredBooks.map(book => React.createElement(BookCard, {
+                        key: book.id,
+                        book: book,
+                        onRead: onRead,
+                        isBookmarked: bookmarks.includes(book.id),
+                        onToggleBookmark: onToggleBookmark,
+                        onLike: onLike,
+                        likes: likes,
+                        isDark: isDark
+                    }))
+                ),
+                
+                filteredBooks.length === 0 && React.createElement('div', { className: "text-center py-20" },
+                    React.createElement('p', { className: `text-xl font-medium ${isDark ? 'text-gray-400' : 'text-gray-600'}` }, "No stories match your search criteria.")
                 )
             );
         };
 
-        const ReaderView = ({ 
-            book, books, onClose, isDark, 
-            bookmarks, likes, onToggleBookmark, onLike, onRead, 
-            onUpdateProgress
-        }) => {
-            const [fontSize, setFontSize] = useState(18);
-            const [progress, setProgress] = useState(0);
-            const contentRef = useRef(null);
+        const BookmarksView = ({ bookmarks, books, onRead, onToggleBookmark, onLike, likes, isDark }) => {
+            const bookmarkedStories = books.filter(book => bookmarks.includes(book.id));
 
-            const relatedBooks = useMemo(() => {
-                let related = books.filter(b => b.id !== book.id && b.category === book.category);
+            return React.createElement('div', { className: "container mx-auto px-4 py-8 max-w-7xl animate-fade-in pb-32" },
+                React.createElement('h1', { className: `text-4xl font-extrabold mb-8 ${isDark ? 'text-white' : 'text-gray-900'}` }, "Your Bookmarks 🔖"),
                 
-                if (related.length < 3) {
-                    const newest = books
-                        .filter(b => b.id !== book.id && b.category !== book.category && !related.find(r => r.id === b.id))
-                        .sort((a, b) => b.id - a.id);
-                    related = [...related, ...newest];
-                }
+                bookmarkedStories.length > 0 ? (
+                    React.createElement('div', { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8" },
+                        bookmarkedStories.map(book => React.createElement(BookCard, {
+                            key: book.id,
+                            book: book,
+                            onRead: onRead,
+                            isBookmarked: true,
+                            onToggleBookmark: onToggleBookmark,
+                            onLike: onLike,
+                            likes: likes,
+                            isDark: isDark
+                        }))
+                    )
+                ) : (
+                    React.createElement('div', { className: "text-center py-20" },
+                        React.createElement('p', { className: `text-xl font-medium ${isDark ? 'text-gray-400' : 'text-gray-600'}` }, "You haven't bookmarked any stories yet!"),
+                        React.createElement('p', { className: `text-sm mt-2 ${isDark ? 'text-gray-500' : 'text-gray-400'}` }, "Find a story you love and hit the bookmark icon.")
+                    )
+                )
+            );
+        };
 
-                return related.slice(0, 3);
-            }, [book, books]);
+        const AddBookView = ({ isDark, onNotification }) => {
+            // This is a placeholder/mockup for adding a book since you don't have a backend UI for it.
+            // In a real application, this would contain form inputs and API calls.
+            
+            const handleAdd = (e) => {
+                e.preventDefault();
+                // Mock success message
+                onNotification("Story submitted for review!", "success");
+            };
+
+            return React.createElement('div', { className: "container mx-auto px-4 py-8 max-w-2xl animate-fade-in pb-32" },
+                React.createElement('h1', { className: `text-4xl font-extrabold mb-8 ${isDark ? 'text-white' : 'text-gray-900'}` }, "Submit a New Story"),
+                React.createElement('p', { className: `mb-6 ${isDark ? 'text-gray-400' : 'text-gray-600'}` }, "Want to share a tale? Submit your story details below. Note: This form is currently a mockup and will not save data permanently."),
+                
+                React.createElement('form', { 
+                    className: `${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'} p-8 rounded-xl shadow-lg border`,
+                    onSubmit: handleAdd
+                },
+                    React.createElement('div', { className: "mb-4" },
+                        React.createElement('label', { className: `block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}` }, "Title"),
+                        React.createElement('input', { type: "text", required: true, className: `w-full p-3 border rounded-lg ${isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-gray-50 border-gray-300'}` })
+                    ),
+                    React.createElement('div', { className: "mb-4" },
+                        React.createElement('label', { className: `block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}` }, "Author"),
+                        React.createElement('input', { type: "text", required: true, className: `w-full p-3 border rounded-lg ${isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-gray-50 border-gray-300'}` })
+                    ),
+                    React.createElement('div', { className: "mb-4" },
+                        React.createElement('label', { className: `block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}` }, "Story Content (Markdown)"),
+                        React.createElement('textarea', { rows: 10, required: true, className: `w-full p-3 border rounded-lg font-mono text-sm ${isDark ? 'bg-gray-900 border-gray-600 text-white' : 'bg-gray-50 border-gray-300'}` })
+                    ),
+                    React.createElement('button', {
+                        type: "submit",
+                        className: "w-full py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition"
+                    }, "Submit Story")
+                )
+            );
+        };
+
+        const Footer = ({ isDark }) => {
+            return React.createElement('footer', {
+                className: `fixed bottom-0 left-0 right-0 p-4 border-t shadow-inner z-40 ${isDark ? 'bg-gray-900 border-gray-800 text-gray-400' : 'bg-white border-gray-200 text-gray-600'}`
+            },
+                React.createElement('div', { className: "container mx-auto max-w-7xl flex justify-between items-center text-xs" },
+                    React.createElement('span', null, 'MythMeHalfway © 2024'),
+                    React.createElement('span', null, 'Made with React and Tailwind CSS')
+                )
+            );
+        };
+
+        const NavBar = ({ onViewChange, currentView, isDark, toggleDarkMode }) => {
+            const views = [
+                { id: 'library', name: 'Library', icon: 'BookOpen' },
+                { id: 'bookmarks', name: 'Bookmarks', icon: 'Bookmark' },
+                { id: 'add', name: 'Submit', icon: 'Upload' },
+            ];
+            
+            const Link = ({ viewId, name, iconName }) => {
+                const isActive = currentView === viewId;
+                const activeClasses = 'text-indigo-600 border-indigo-600';
+                const inactiveClasses = isDark ? 'text-gray-400 border-transparent hover:text-white' : 'text-gray-500 border-transparent hover:text-gray-900';
+
+                return React.createElement('button', {
+                    onClick: () => onViewChange(viewId),
+                    className: `flex flex-col items-center p-2 border-b-2 transition duration-300 ${isActive ? activeClasses : inactiveClasses}`
+                },
+                    React.createElement(IconPlaceholder, { name: iconName, size: 20, color: isActive ? '#4f46e5' : (isDark ? '#9ca3af' : 'currentColor') }),
+                    React.createElement('span', { className: "mt-1 text-xs font-medium hidden sm:inline" }, name)
+                );
+            };
+
+            return React.createElement('header', {
+                className: `sticky top-0 z-50 shadow-md ${isDark ? 'bg-gray-800 border-b border-gray-700' : 'bg-white border-b border-gray-200'}`
+            },
+                React.createElement('div', { className: "container mx-auto max-w-7xl px-4 flex justify-between items-center h-16" },
+                    React.createElement('div', {
+                        className: `text-xl font-extrabold cursor-pointer ${isDark ? 'text-indigo-400' : 'text-indigo-600'}`
+                    }, 'MythMeHalfway'),
+
+                    React.createElement('nav', { className: "flex items-center space-x-6" },
+                        views.map(view => React.createElement(Link, {
+                            key: view.id,
+                            viewId: view.id,
+                            name: view.name,
+                            iconName: view.icon
+                        })),
+                        React.createElement('button', {
+                            onClick: toggleDarkMode,
+                            className: `p-2 rounded-full transition ${isDark ? 'text-yellow-300 hover:bg-gray-700' : 'text-gray-800 hover:bg-gray-100'}`
+                        }, isDark ? '☀️' : '🌙')
+                    )
+                )
+            );
+        };
+
+
+        // --- Main App Component ---
+        const App = () => {
+            const [stories, setStories] = useState([]);
+            const [isLoading, setIsLoading] = useState(true);
+            const [error, setError] = useState(null);
+            const [currentView, setCurrentView] = useState('library'); // 'library', 'bookmarks', 'add'
+            const [activeBook, setActiveBook] = useState(null);
+            const [bookmarks, setBookmarks] = useState(JSON.parse(localStorage.getItem('bookmarks') || '[]'));
+            const [likes, setLikes] = useState(JSON.parse(localStorage.getItem('likes') || '{}'));
+            const [activeSound, setActiveSound] = useState(null);
+            const [notification, setNotification] = useState(null);
+            const [isDark, setIsDark] = useState(JSON.parse(localStorage.getItem('isDark') || 'false'));
+            // { bookId: '1', progress: 50, position: 1200 }
+            const [lastReadPosition, setLastReadPosition] = useState(JSON.parse(localStorage.getItem('lastReadPosition') || '{}'));
 
             useEffect(() => {
-                if (contentRef.current) {
-                    const initialProgress = book.initialScrollProgress || 0;
-                    const { scrollHeight, clientHeight } = contentRef.current;
-                    const maxScroll = scrollHeight - clientHeight;
-                    const targetScroll = (maxScroll * initialProgress) / 100;
-                    
-                    contentRef.current.scrollTo({ 
-                        top: targetScroll, 
-                        behavior: initialProgress > 0 ? 'smooth' : 'auto' 
+                document.body.className = isDark ? 'bg-gray-900 transition-colors' : 'bg-gray-100 transition-colors';
+            }, [isDark]);
+            
+            useEffect(() => {
+                fetchStoriesFromAPI()
+                    .then(data => {
+                        setStories(data);
+                        setIsLoading(false);
+                    })
+                    .catch(() => {
+                        console.log("Falling back to dummy data...");
+                        setStories(getFallbackStories());
+                        setIsLoading(false);
+                        handleNotification('Could not fetch external stories. Using local dummy data.', 'error');
                     });
+            }, []);
 
-                    setProgress(initialProgress);
+            useEffect(() => {
+                localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+            }, [bookmarks]);
+
+            useEffect(() => {
+                localStorage.setItem('likes', JSON.stringify(likes));
+            }, [likes]);
+
+            useEffect(() => {
+                localStorage.setItem('isDark', JSON.stringify(isDark));
+            }, [isDark]);
+
+            useEffect(() => {
+                localStorage.setItem('lastReadPosition', JSON.stringify(lastReadPosition));
+            }, [lastReadPosition]);
+
+            const handleNotification = (message, type = 'info') => {
+                setNotification({ message, type });
+            };
+
+            const handleToggleBookmark = (bookId) => {
+                setBookmarks(prev => {
+                    if (prev.includes(bookId)) {
+                        handleNotification('Bookmark removed', 'info');
+                        return prev.filter(id => id !== bookId);
+                    } else {
+                        handleNotification('Story bookmarked!', 'success');
+                        return [...prev, bookId];
+                    }
+                });
+            };
+
+            const handleLike = (bookId) => {
+                setLikes(prev => {
+                    const currentLikes = prev[bookId] !== undefined ? prev[bookId] : stories.find(s => s.id === bookId)?.likes || 0;
+                    if (prev.hasOwnProperty(bookId)) {
+                        // Unlike
+                        handleNotification('Unliked', 'info');
+                        const newLikes = { ...prev };
+                        delete newLikes[bookId]; // Use original value from stories instead
+                        return newLikes;
+                    } else {
+                        // Like
+                        handleNotification('Liked!', 'success');
+                        return { ...prev, [bookId]: currentLikes + 1 };
+                    }
+                });
+            };
+
+            const handleToggleSound = (sound) => {
+                if (activeSound?.id === sound?.id) {
+                    setActiveSound(null);
+                    handleNotification('Background audio stopped', 'info');
+                } else if (sound) {
+                    setActiveSound(sound);
+                    handleNotification(`Playing: ${sound.name}`, 'success');
+                } else {
+                    setActiveSound(null);
+                    handleNotification('Background audio stopped', 'info');
                 }
-            }, [book.id, book.initialScrollProgress]);
+            };
+            
+            const handleRead = (book) => {
+                setActiveBook(book);
+            };
 
-            const handleScroll = (e) => {
-                const { scrollTop, scrollHeight, clientHeight } = e.target;
-                const maxScroll = scrollHeight - clientHeight;
-                
-                if (maxScroll <= 0) return;
+            const handleResumeReading = (book) => {
+                setActiveBook(book);
+            };
 
-                const percentage = (scrollTop / maxScroll) * 100;
-                setProgress(percentage);
-                
-                if (percentage < 95) {
-                    onUpdateProgress({ bookId: book.id, progress: percentage });
+            const handleUpdateProgress = (bookId, progress, position) => {
+                setLastReadPosition({ bookId, progress, position });
+            };
+
+            const handleViewChange = (viewId) => {
+                setCurrentView(viewId);
+            };
+
+            const toggleDarkMode = () => {
+                setIsDark(prev => !prev);
+            };
+
+            const renderView = () => {
+                switch (currentView) {
+                    case 'bookmarks':
+                        return React.createElement(BookmarksView, {
+                            bookmarks, books: stories, onRead: handleRead, onToggleBookmark: handleToggleBookmark, onLike: handleLike, likes, isDark
+                        });
+                    case 'add':
+                        return React.createElement(AddBookView, {
+                            isDark, onNotification: handleNotification
+                        });
+                    case 'library':
+                    default:
+                        return React.createElement(LibraryView, {
+                            books: stories,
+                            bookmarks,
+                            likes,
+                            onRead: handleRead,
+                            onToggleBookmark: handleToggleBookmark,
+                            onLike: handleLike,
+                            setShowAddBook: () => handleViewChange('add'),
+                            setShowBookmarks: () => handleViewChange('bookmarks'),
+                            isDark: isDark,
+                            lastReadPosition: lastReadPosition,
+                            onResumeReading: handleResumeReading,
+                            isLoading
+                        });
                 }
             };
 
-            const isBookmarked = bookmarks.includes(book.id);
-           // ... inside ReaderView (around line 906)
-            const likeCount = likes[book.id] || book.likes;
+            return React.createElement(React.Fragment, null,
+                React.createElement(NavBar, { onViewChange: handleViewChange, currentView, isDark, toggleDarkMode }),
+                
+                React.createElement('main', null,
+                    renderView()
+                ),
+                
+                React.createElement(SoundWidget, { activeSound, onToggleSound: handleToggleSound, isDark }),
+                
+                notification && React.createElement(Notification, {
+                    message: notification.message,
+                    type: notification.type,
+                    onClose: () => setNotification(null)
+                }),
+                
+                activeBook && React.createElement(ReaderModal, {
+                    book: activeBook,
+                    onClose: () => setActiveBook(null),
+                    isDark: isDark,
+                    onUpdateProgress: handleUpdateProgress,
+                    lastReadPosition: lastReadPosition.bookId === activeBook.id ? lastReadPosition : {}
+                }),
+                
+                React.createElement(Footer, { isDark })
+            );
+        };
 
-            return React.createElement('div', {
-                className: `fixed inset-0 z-50 flex flex-col ${isDark ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'} transition-colors duration-300`
-            },
-                // Header Bar
-                React.createElement('div', {
-                    className: `flex items-center justify-between p-4 shadow-md ${isDark ? 'bg-gray-800 border-b border-gray-700' : 'bg-white border-b border-gray-100'}`
-                },
-                    React.createElement('button', {
-                        onClick: onClose,
-                        className: `p-2 rounded-full transition ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`
-                    }, '← Back'),
-                    React.createElement('div', { className: "text-lg font-semibold truncate max-w-xs sm:max-w-md" }, book.title),
-                    React.createElement('div', { className: "flex items-center gap-2" },
-                        React.createElement('button', {
-                            onClick: () => setFontSize(s => Math.min(s + 2, 32)),
-                            className: `p-2 rounded-full transition text-xl ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`
-                        }, 'A+'),
-                        React.createElement('button', {
-                            onClick: () => setFontSize(s => Math.max(s - 2, 14)),
-                            className: `p-2 rounded-full transition text-sm ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`
-                        }, 'A-')
-                    )
-                ),
-                
-                // Reading Content Area
-                React.createElement('div', {
-                    ref: contentRef,
-                    onScroll: handleScroll,
-                    className: "flex-1 overflow-y-auto p-4 sm:p-8 no-scrollbar"
-                },
-                    React.createElement('div', { className: "max-w-3xl mx-auto" },
-                        // Metadata
-                        React.createElement('div', { className: "mb-6 text-center" },
-                            React.createElement('h2', { className: "text-4xl font-extrabold mb-1" }, book.title),
-                            React.createElement('p', { className: `text-xl font-medium ${isDark ? 'text-indigo-300' : 'text-indigo-600'} mb-4` }, `by ${book.author}`),
-                            React.createElement('div', { className: "flex justify-center gap-4 text-sm" },
-                                React.createElement('span', { className: `px-3 py-1 rounded-full text-xs font-semibold ${isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'}` }, book.category),
-                                React.createElement('span', { className: `px-3 py-1 rounded-full text-xs font-semibold ${isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'}` }, `${book.readTimeMin} min read`)
-                            )
-                        ),
-                        // Content
-                        React.createElement('div', {
-                            className: `prose ${isDark ? 'prose-invert prose-p:text-gray-300' : 'prose-p:text-gray-700'} max-w-none space-y-4 leading-relaxed transition-all`,
-                            style: { fontSize: `${fontSize}px` },
-                            dangerouslySetInnerHTML: { __html: marked.parse(book.content) }
-                        }),
-                        // End of Story/Actions
-                        React.createElement('div', { className: `mt-10 pt-6 border-t ${isDark ? 'border-gray-700' : 'border-gray-200'} flex justify-between items-center` },
-                            React.createElement('button', {
-                                onClick: () => onLike(book.id),
-                                className: "flex items-center gap-2 px-4 py-2 rounded-full transition bg-red-100 text-red-600 hover:bg-red-200"
-                            }, '❤️', likeCount),
-                            React.createElement('button', {
-                                onClick: () => onToggleBookmark(book.id),
-                                className: `flex items-center gap-2 px-4 py-2 rounded-full transition ${
-                                    isBookmarked ? 'bg-yellow-400 text-white hover:bg-yellow-500' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`
-                            }, isBookmarked ? 'Bookmarked 🔖' : 'Bookmark'),
-                        )
-                    )
-                ),
-                
-                // Progress Bar
-                React.createElement('div', { className: `w-full h-1 ${isDark ? 'bg-gray-700' : 'bg-gray-200'} sticky bottom-0` },
-                    React.createElement('div', {
-                        className: "h-full bg-indigo-500 transition-all duration-300",
-                        style: { width: `${progress}%` }
-                    })
-                ),
-
-                // Related Stories (Footer)
-                React.createElement('div', { className: `p-4 sm:p-8 ${isDark ? 'bg-gray-800 border-t border-gray-700' : 'bg-gray-50 border-t border-gray-200'}` },
-                    React.createElement('div', { className: "max-w-3xl mx-auto" },
-                        React.createElement('h3', { className: "text-xl font-bold mb-4" }, "More Stories Like This"),
-                        relatedBooks.length > 0 ? (
-                            React.createElement('div', { className: "flex flex-col sm:flex-row gap-4" },
-                                relatedBooks.map(relBook =>
-                                    React.createElement('div', {
-                                        key: relBook.id,
-                                        className: "flex-1 cursor-pointer hover:text-indigo-500 transition",
-                                        onClick: () => { onClose(); onRead(relBook); }
-                                    },
-                                        React.createElement('img', { src: relBook.cover, alt: relBook.title, className: "w-full h-24 object-cover rounded-lg mb-2" }),
-                                        React.createElement('p', { className: "font-medium text-sm line-clamp-2" }, relBook.title),
-                                        React.createElement('p', { className: `text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}` }, relBook.author)
-                                    )
-                                )
-                            )
-                        ) : (
-                            React.createElement('p', { className: `${isDark ? 'text-gray-400' : 'text-gray-500'}` }, "No related stories found.")
-                        )
-                    )
-                )
-            );
-        };
-
-
-        const AddBookModal = ({ isOpen, onClose, onSubmit, isDark }) => {
-            const [title, setTitle] = useState('');
-            const [author, setAuthor] = useState('');
-            const [category, setCategory] = useState('');
-            const [description, setDescription] = useState('');
-
-            const handleSubmit = (e) => {
-                e.preventDefault();
-                onSubmit({ title, author, category, description });
-                onClose();
-            };
-
-            const inputClass = `w-full p-3 border rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition ${isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-gray-50 border-gray-300 text-gray-900'}`;
-            const labelClass = `block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`;
-
-            return React.createElement(Modal, { isOpen: isOpen, onClose: onClose, title: "Suggest a Story", isDark: isDark },
-                React.createElement('form', { onSubmit: handleSubmit, className: "space-y-4" },
-                    React.createElement('div', null,
-                        React.createElement('label', { className: labelClass }, "Title"),
-                        React.createElement('input', { type: "text", value: title, onChange: (e) => setTitle(e.target.value), required: true, className: inputClass })
-                    ),
-                    React.createElement('div', null,
-                        React.createElement('label', { className: labelClass }, "Author (Your Name)"),
-                        React.createElement('input', { type: "text", value: author, onChange: (e) => setAuthor(e.target.value), required: true, className: inputClass })
-                    ),
-                    React.createElement('div', null,
-                        React.createElement('label', { className: labelClass }, "Category/Type"),
-                        React.createElement('input', { type: "text", value: category, onChange: (e) => setCategory(e.target.value), required: true, className: inputClass })
-                    ),
-                    React.createElement('div', null,
-                        React.createElement('label', { className: labelClass }, "Short Description"),
-                        React.createElement('textarea', { value: description, onChange: (e) => setDescription(e.target.value), required: true, className: inputClass, rows: 3 })
-                    ),
-                    React.createElement('button', {
-                        type: "submit",
-                        className: "w-full p-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition"
-                    }, "Submit Suggestion")
-                )
-            );
-        };
-
-        const BookmarkModal = ({ isOpen, onClose, bookmarks, books, onRead, onToggleBookmark, onLike, likes, isDark }) => {
-            const bookmarkedStories = bookmarks
-                .map(id => books.find(b => b.id === id))
-                .filter(book => book);
-
-            return React.createElement(Modal, { isOpen: isOpen, onClose: onClose, title: "Your Bookmarks", isDark: isDark },
-                bookmarkedStories.length === 0 ? (
-                    React.createElement('p', { className: `${isDark ? 'text-gray-400' : 'text-gray-600'}` }, "You haven't bookmarked any stories yet. Start exploring the library!")
-                ) : (
-                    React.createElement('div', { className: "space-y-4" },
-                        bookmarkedStories.map(book =>
-                            React.createElement('div', {
-                                key: book.id,
-                                className: `flex items-center p-3 rounded-lg border transition ${isDark ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-100'}`
-                            },
-                                React.createElement('img', { src: book.cover, alt: book.title, className: "w-12 h-12 object-cover rounded-md mr-4" }),
-                                React.createElement('div', { className: "flex-1" },
-                                    React.createElement('p', { className: `font-semibold cursor-pointer hover:text-indigo-500 ${isDark ? 'text-white' : 'text-gray-900'}`, onClick: () => { onClose(); onRead(book); } }, book.title),
-                                    React.createElement('p', { className: `text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}` }, `by ${book.author}`)
-                                ),
-                                React.createElement('button', {
-                                    onClick: () => onToggleBookmark(book.id),
-                                    className: "text-red-500 hover:text-red-700 p-2 ml-4"
-                                }, '❌')
-                            )
-                    )
-                )
-            );
-        };
-
-
-        // --- Main App Component ---
-        const App = () => {
-            const [books, setBooks] = useState([]);
-            const [isLoading, setIsLoading] = useState(true);
-            const [currentBook, setCurrentBook] = useState(null);
-            const [bookmarks, setBookmarks] = useState(() => JSON.parse(localStorage.getItem('mythmehalfway_bookmarks') || '[]'));
-            const [likes, setLikes] = useState(() => JSON.parse(localStorage.getItem('mythmehalfway_likes') || '{}'));
-            const [readingStats, setReadingStats] = useState(() => JSON.parse(localStorage.getItem('mythmehalfway_stats') || '{ "totalMinutes": 0, "booksRead": 0 }'));
-            const [lastReadPosition, setLastReadPosition] = useState(() => JSON.parse(localStorage.getItem('mythmehalfway_last_read') || '{ "bookId": null, "progress": 0 }'));
-            const [activeSound, setActiveSound] = useState(null);
-            const [isDark, setIsDark] = useState(false);
-            const [notification, setNotification] = useState(null);
-
-            const [showAddBook, setShowAddBook] = useState(false);
-            const [showBookmarks, setShowBookmarks] = useState(false);
-            
-            const showNotification = (message, type = 'info') => {
-                setNotification({ message, type });
-                setTimeout(() => setNotification(null), 3000);
-            };
-
-            useEffect(() => {
-                // Load stories on mount
-                const loadStories = async () => {
-                    try {
-                        const apiStories = await fetchStoriesFromAPI();
-                        setBooks(apiStories);
-                    } catch (e) {
-                        console.warn('API fetch failed, falling back to dummy data:', e.message);
-                        setBooks(getFallbackStories());
-                        showNotification('Could not connect to API. Using local stories.', 'error');
-                    } finally {
-                        setIsLoading(false);
-                    }
-                };
-
-                // Load Marked.js for markdown rendering
-                if (typeof marked === 'undefined') {
-                    const script = document.createElement('script');
-                    script.src = "https://cdn.jsdelivr.net/npm/marked/marked.min.js";
-                    script.onload = loadStories;
-                    document.head.appendChild(script);
-                } else {
-                    loadStories();
-                }
-
-                // Dark Mode based on system preference
-                const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-                setIsDark(prefersDark);
-                document.body.className = prefersDark ? 'bg-gray-900' : 'bg-gray-100';
-            }, []);
-
-            useEffect(() => {
-                localStorage.setItem('mythmehalfway_bookmarks', JSON.stringify(bookmarks));
-            }, [bookmarks]);
-            
-            useEffect(() => {
-                localStorage.setItem('mythmehalfway_likes', JSON.stringify(likes));
-            }, [likes]);
-
-            useEffect(() => {
-                localStorage.setItem('mythmehalfway_stats', JSON.stringify(readingStats));
-            }, [readingStats]);
-            
-            useEffect(() => {
-                document.body.className = isDark ? 'bg-gray-900 transition-colors' : 'bg-gray-100 transition-colors';
-            }, [isDark]);
-
-
-            const handleRead = (book, initialScrollProgress = 0) => {
-                const bookWithProgress = { ...book, initialScrollProgress };
-                setCurrentBook(bookWithProgress);
-                setLastReadPosition({ bookId: book.id, progress: initialScrollProgress });
-                localStorage.setItem('mythmehalfway_last_read', JSON.stringify({ bookId: book.id, progress: initialScrollProgress }));
-            };
-
-            const handleCloseReader = () => {
-                // Check if story was finished
-                if (lastReadPosition.bookId === currentBook.id && lastReadPosition.progress > 95) {
-                    setReadingStats(prev => ({
-                        totalMinutes: prev.totalMinutes + currentBook.readTimeMin,
-                        booksRead: prev.booksRead + 1
-                    }));
-                    showNotification(`Completed: ${currentBook.title}!`, 'success');
-                    setLastReadPosition({ bookId: null, progress: 0 }); // Clear completed book from 'Continue Reading'
-                } else {
-                    // Only show this if they started the book
-                    if (lastReadPosition.progress > 0) {
-                        showNotification('Progress Saved.', 'info');
-                    }
-                }
-                setCurrentBook(null);
-            };
-
-            const handleUpdateProgress = (progressData) => {
-                setLastReadPosition(progressData);
-                localStorage.setItem('mythmehalfway_last_read', JSON.stringify(progressData));
-            };
-
-            const handleResumeReading = () => {
-                const book = books.find(b => b.id === lastReadPosition.bookId);
-                if (book) {
-                    handleRead(book, lastReadPosition.progress);
-                }
-            };
-
-            const handleToggleBookmark = (bookId) => {
-                setBookmarks(prev => {
-                    const isBookmarked = prev.includes(bookId);
-                    let newBookmarks;
-                    if (isBookmarked) {
-                        newBookmarks = prev.filter(id => id !== bookId);
-                        showNotification('Bookmark Removed', 'info');
-                    } else {
-                        newBookmarks = [...prev, bookId];
-                        showNotification('Bookmarked!', 'success');
-                    }
-                    return newBookmarks;
-                });
-            };
-
-            const handleLike = (bookId) => {
-                setLikes(prev => {
-                    const currentLikes = prev[bookId] || (books.find(b => b.id === bookId)?.likes || 0);
-                    const newLikes = { ...prev };
-                    if (prev[bookId] === currentLikes + 1) { // User unlikes
-                        newLikes[bookId] = currentLikes - 1;
-                    } else { // User likes
-                        newLikes[bookId] = currentLikes + 1;
-                    }
-                    return newLikes;
-                });
-            };
-
-            const handleToggleSound = (sound) => {
-                if (!sound || activeSound?.id === sound.id) {
-                    setActiveSound(null);
-                    showNotification('Background audio stopped.', 'info');
-                } else {
-                    setActiveSound(sound);
-                    showNotification(`Now playing: ${sound.name}`, 'info');
-                }
-            };
-            
-            const handleSuggestStory = (suggestion) => {
-                console.log("Story Suggestion:", suggestion);
-                showNotification('Thank you for your suggestion!', 'success');
-            };
-            
-            return React.createElement(React.Fragment, null,
-                // Main View
-                currentBook ? (
-                    React.createElement(ReaderView, {
-                        book: currentBook,
-                        books: books,
-                        onClose: handleCloseReader,
-                        isDark: isDark,
-                        bookmarks: bookmarks,
-                        likes: likes,
-                        onToggleBookmark: handleToggleBookmark,
-                        onLike: handleLike,
-                        onRead: handleRead,
-                        onUpdateProgress: handleUpdateProgress
-                    })
-                ) : (
-                    React.createElement(LibraryView, {
-                        books: books,
-                        readingStats: readingStats,
-                        bookmarks: bookmarks,
-                        likes: likes,
-                        onRead: handleRead,
-                        onToggleBookmark: handleToggleBookmark,
-                        onLike: handleLike,
-                        setShowAddBook: setShowAddBook,
-                        setShowBookmarks: setShowBookmarks,
-                        isDark: isDark,
-                        lastReadPosition: lastReadPosition,
-                        onResumeReading: handleResumeReading,
-                        isLoading: isLoading
-                    })
-                ),
-
-                // Floating Widgets
-                React.createElement('button', {
-                    onClick: () => setIsDark(prev => !prev),
-                    className: `fixed top-6 right-6 p-3 rounded-full shadow-lg z-40 transition transform hover:scale-110 ${isDark ? 'bg-gray-800 text-yellow-400 border border-gray-700' : 'bg-white text-gray-800 border border-gray-200'}`
-                }, isDark ? '☀️' : '🌙'),
-
-                React.createElement(SoundWidget, { activeSound: activeSound, onToggleSound: handleToggleSound, isDark: isDark }),
-
-                // Modals
-                React.createElement(AddBookModal, { isOpen: showAddBook, onClose: () => setShowAddBook(false), onSubmit: handleSuggestStory, isDark: isDark }),
-                React.createElement(BookmarkModal, {
-                    isOpen: showBookmarks,
-                    onClose: () => setShowBookmarks(false),
-                    bookmarks: bookmarks,
-                    books: books,
-                    onRead: handleRead,
-                    onToggleBookmark: handleToggleBookmark,
-                    onLike: handleLike,
-                    likes: likes,
-                    isDark: isDark
-                }),
-
-                // Notifications
-                notification && React.createElement(Notification, {
-                    message: notification.message,
-                    type: notification.type,
-                    onClose: () => setNotification(null)
-                })
-            );
-        };
-
-        // Render the app
-        // Using createRoot for React 18 compatibility as indicated by your CDN scripts
-        if (typeof ReactDOM.createRoot === 'function') {
-            const root = ReactDOM.createRoot(document.getElementById('root'));
-            root.render(React.createElement(App));
-        } else {
-            // Fallback for older React versions
-            ReactDOM.render(React.createElement(App), document.getElementById('root'));
-        }
-    </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+        // Render the App
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(React.createElement(App));
+    </script>
 </body>
 </html>
