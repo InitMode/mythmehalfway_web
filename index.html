@@ -1,91 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Myth Me Halfway – Story Library</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<title>Myth Me Halfway – Story Library</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #111;
-            color: #fff;
-        }
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #111;
+    color: #fff;
+}
 
-        header {
-            background: #222;
-            padding: 15px;
-            text-align: center;
-            font-size: 20px;
-            font-weight: bold;
-        }
+header {
+    background: #222;
+    padding: 15px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+}
 
-        .controls {
-            display: flex;
-            gap: 10px;
-            padding: 10px;
-            background: #1a1a1a;
-            position: sticky;
-            top: 0;
-            z-index: 20;
-        }
+.controls {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    background: #1a1a1a;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
 
-        input, select {
-            padding: 8px;
-            border-radius: 6px;
-            border: none;
-        }
+input, select {
+    padding: 8px;
+    border-radius: 6px;
+    border: none;
+}
 
-        #storiesContainer {
-            padding: 15px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
-            gap: 15px;
-        }
+#storiesContainer {
+    padding: 15px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+    gap: 15px;
+}
 
-        .story-card {
-            background: #222;
-            padding: 15px;
-            border-radius: 10px;
-            cursor: pointer;
-            border: 1px solid #333;
-        }
+.story-card {
+    background: #222;
+    padding: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid #333;
+}
 
-        .story-card:hover {
-            background: #333;
-        }
+.story-card:hover {
+    background: #333;
+}
 
-        /* Modal */
-        #storyModal {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+/* Modal */
+#storyModal {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
 
-        #modalContent {
-            background: #222;
-            padding: 20px;
-            max-width: 800px;
-            width: 100%;
-            border-radius: 12px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
+#modalContent {
+    background: #222;
+    padding: 20px;
+    max-width: 800px;
+    width: 100%;
+    border-radius: 12px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
 
-        #closeModal {
-            float: right;
-            cursor: pointer;
-            font-size: 20px;
-            padding: 5px;
-        }
-    </style>
+#closeModal {
+    float: right;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 5px;
+}
+</style>
 </head>
 
 <body>
@@ -122,9 +122,6 @@
 <script>
 document.getElementById("currentYear").textContent = new Date().getFullYear();
 
-//
-// FIX FOR GITHUB PAGES HOSTED UNDER A REPO SUBFOLDER
-//
 const BASE_PATH = window.location.pathname.replace(/\/$/, "");
 const API_BASE = BASE_PATH + "/api";
 const STORIES_INDEX = API_BASE + "/stories/index.json";
@@ -135,7 +132,6 @@ let displayedStories = [];
 const storyContainer = document.getElementById("storiesContainer");
 const statusText = document.getElementById("statusText");
 const searchInput = document.getElementById("searchInput");
-const typeFilter = document.getElementById("typeFilter");
 const sortFilter = document.getElementById("sortFilter");
 
 const storyModal = document.getElementById("storyModal");
@@ -143,57 +139,58 @@ const closeModal = document.getElementById("closeModal");
 const modalTitle = document.getElementById("modalTitle");
 const modalStoryContent = document.getElementById("modalStoryContent");
 
-//
-// 1. Fetch story list
-//
-async function loadStories() {
+async function fetchStories() {
     try {
-        const res = await fetch(STORIES_INDEX);
+        const res = await fetch(STORIES_INDEX + "?t=" + Date.now());
         if (!res.ok) throw new Error("Bad status " + res.status);
-
-        const files = await res.json();
-        allStories = files.map(f => ({
-            id: f.replace(".md", ""),
-            filename: f,
-            path: API_BASE + "/stories/" + f
-        }));
-
-        displayedStories = [...allStories];
-        renderStories();
-        statusText.textContent = "Stories loaded ✓";
+        return await res.json();
     } catch (err) {
-        statusText.textContent = "Failed to load stories.";
-        console.error("ERROR:", err);
+        console.error("Failed to fetch stories:", err);
+        return [];
     }
 }
 
-//
-// 2. Render cards
-//
+async function loadStories(initial = true) {
+    const files = await fetchStories();
+    const newStories = files.map(f => ({
+        id: f.replace(".md", ""),
+        filename: f,
+        path: API_BASE + "/stories/" + f
+    }));
+
+    if (initial) {
+        allStories = newStories;
+        displayedStories = [...allStories];
+        renderStories();
+        statusText.textContent = "Stories loaded ✓";
+    } else {
+        // Detect newly added stories
+        const existingIds = allStories.map(s => s.id);
+        const added = newStories.filter(s => !existingIds.includes(s.id));
+        if (added.length > 0) {
+            allStories.push(...added);
+            displayedStories = [...allStories];
+            renderStories();
+            statusText.textContent = "Stories updated ✓";
+        }
+    }
+}
+
 function renderStories() {
     storyContainer.innerHTML = "";
     displayedStories.forEach(story => {
         const div = document.createElement("div");
         div.className = "story-card";
-        div.innerHTML = `
-            <h3>${story.id}</h3>
-            <small>${story.filename}</small>
-        `;
+        div.innerHTML = `<h3>${story.id}</h3><small>${story.filename}</small>`;
         div.onclick = () => openStory(story);
         storyContainer.appendChild(div);
     });
-
-    document.getElementById("storyCount").textContent =
-        displayedStories.length + " stories";
+    document.getElementById("storyCount").textContent = displayedStories.length + " stories";
 }
 
-//
-// 3. Open modal + load markdown
-//
 async function openStory(story) {
     modalTitle.textContent = story.id;
     modalStoryContent.innerHTML = "Loading…";
-
     storyModal.style.display = "flex";
 
     const res = await fetch(story.path);
@@ -205,32 +202,25 @@ async function openStory(story) {
     }
 }
 
-closeModal.onclick = () => {
-    storyModal.style.display = "none";
-};
+closeModal.onclick = () => storyModal.style.display = "none";
 
-//
-// 4. Search & filters
-//
-searchInput.oninput = () => applyFilters();
-sortFilter.onchange = () => applyFilters();
+searchInput.oninput = applyFilters;
+sortFilter.onchange = applyFilters;
 
 function applyFilters() {
     const q = searchInput.value.toLowerCase();
-
-    displayedStories = allStories.filter(story =>
-        story.id.toLowerCase().includes(q) ||
-        story.filename.toLowerCase().includes(q)
+    displayedStories = allStories.filter(s =>
+        s.id.toLowerCase().includes(q) || s.filename.toLowerCase().includes(q)
     );
-
-    if (sortFilter.value === "newest") {
-        displayedStories.reverse();
-    }
-
+    if (sortFilter.value === "newest") displayedStories.reverse();
     renderStories();
 }
 
+// Initial load
 loadStories();
+
+// Auto-refresh / auto-detect new stories every 30 seconds
+setInterval(() => loadStories(false), 30000);
 </script>
 
 </body>
