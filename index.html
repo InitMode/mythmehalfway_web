@@ -34,12 +34,22 @@
         const { useState, useEffect, useRef, useMemo } = React;
 
         // --- Configuration ---
-        const GITHUB_API_CONFIG = {
-            // API endpoints (using GitHub Pages API)
-            apiBaseUrl: '', // Leave empty for same-origin requests (GitHub Pages)
-            statusEndpoint: '/api/status.json',
-            storiesIndexEndpoint: '/stories/index.json', // Changed from /api/stories/index.json
-        };
+       // --- Configuration ---
+const GITHUB_API_CONFIG = {
+    // API endpoints (using GitHub Pages API)
+    apiBaseUrl: '', // Leave empty for same-origin requests (GitHub Pages)
+    // CORRECTED: Ensure the index path includes /api/
+    statusEndpoint: '/api/status.json',
+    storiesIndexEndpoint: '/api/stories/index.json', // FIX: Added '/api/' prefix back
+};
+
+// ...
+// FIX: You also need to correct the individual story fetch path (Line 89)
+const storiesPromises = storiesIndex.map(async (storyFile) => {
+    try {
+        // FIX: Added '/api/' prefix here
+        const storyResponse = await fetch(`${GITHUB_API_CONFIG.apiBaseUrl}/api/stories/${storyFile}`); 
+        // ...
 
         // --- Sounds ---
         const SOUNDS = [
