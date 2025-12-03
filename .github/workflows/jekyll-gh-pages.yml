@@ -37,6 +37,23 @@ jobs:
           destination: ./_site
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
+        
+
+      - name: Create public API status
+        run: |
+          mkdir -p public/api
+          echo '{"status": "API running"}' > public/api/status.json
+
+      - name: Fetch Stories From Private Repo
+        run: |
+          mkdir -p public/stories
+          curl -H "Authorization: Bearer ${{ secrets.STORY_TOKEN }}" \
+               -H "Accept: application/vnd.github.raw" \
+               https://api.github.com/repos/InitMode/mythmehalfway/contents/stories \
+          | jq -r '.[] | .download_url' | while read url; do
+               fname=$(basename "$url")
+               curl -L "$url" -o "public/stories/$fname"
+            done
 
   # Deployment job
   deploy:
