@@ -296,17 +296,22 @@
             <button class="read-btn mt-3" id="retryBtn">Retry Loading</button>
         </div>
 
+        <!-- Demo Stories (hidden by default) -->
+        <div id="demoStories" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" style="display: none;">
+            <!-- Demo stories will be inserted here if API fails -->
+        </div>
+
         <!-- Footer -->
         <div class="footer">
             <p>© 2024 Story Library | Total Stories: <span id="storyCount">0</span></p>
-            <p>All stories are fetched from your deployed API</p>
+            <p><small id="apiStatus">API Status: Checking...</small></p>
         </div>
     </div>
 
     <script>
-        // Configuration - Using your deployed API endpoints
+        // Configuration
         const CONFIG = {
-            apiBaseUrl: window.location.origin, // Uses current domain (GitHub Pages)
+            apiBaseUrl: window.location.origin,
             statusEndpoint: '/api/status.json',
             storiesIndexEndpoint: '/api/stories/index.json',
             storiesPath: '/api/stories/'
@@ -318,14 +323,131 @@
 
         // DOM Elements
         const storiesGrid = document.getElementById('storiesGrid');
+        const demoStoriesGrid = document.getElementById('demoStories');
         const loadingElement = document.getElementById('loading');
         const noStoriesElement = document.getElementById('noStories');
         const storyCountElement = document.getElementById('storyCount');
+        const apiStatusElement = document.getElementById('apiStatus');
         const searchBox = document.getElementById('searchBox');
         const categoryFilter = document.getElementById('categoryFilter');
         const refreshBtn = document.getElementById('refreshBtn');
         const retryBtn = document.getElementById('retryBtn');
         const themeToggle = document.getElementById('themeToggle');
+
+        // Demo stories data (fallback)
+        const DEMO_STORIES = [
+            {
+                id: 'demo1',
+                title: "The Girl Who Borrowed the Wind",
+                author: "Salt Merchant",
+                category: "fiction",
+                cover: "https://source.unsplash.com/featured/?baobab,wind",
+                description: "A short magical tale from Ukambani about courage, sacrifice, and the Wind Spirit Mwenga Mkuu.",
+                content: `# The Girl Who Borrowed the Wind
+
+In the drought-stricken plains of Ukambani, there lived a young girl named Mumo.  
+Her village had not felt a breeze in many moons, and the wells were turning into dust.
+
+One evening, Mumo wandered to the sacred hill where the old stories say the **Wind Spirit**,  
+_Mwenga Mkuu_, sleeps inside a giant baobab tree.  
+Most children feared the place—but Mumo was brave.
+
+She placed her palms on the rough bark.
+
+> "Great Mwenga," she whispered.  
+> "My people grow weak. Please, wake, even for a moment."
+
+The baobab groaned.  
+A cool swirl of air wrapped around her wrists like bracelets of morning mist.
+
+The Wind Spirit spoke:
+
+> "Child of courage, I can lend you a breeze.  
+> But when I give, something must be returned."
+
+Mumo thought hard. She had no water.  
+She had no cattle.  
+But she had her voice.
+
+So she offered it.
+
+> "Take my songs, Mwenga.  
+> My voice carries stories, and stories are part of the wind."
+
+The spirit agreed.  
+A powerful gust spiraled into her hands, glowing like soft blue fire.
+
+Mumo ran home, releasing the wind across the dry fields.  
+Clouds gathered, rain fell, children danced.
+
+But Mumo could no longer sing.
+
+Weeks later, the Wind Spirit returned, moved by her sacrifice.  
+It placed a warm breeze in her throat.
+
+> "Your songs are now part of every wind," it said.  
+> "Each time the breeze touches your village, it brings your voice home."
+
+And so the people of Ukambani say that when the wind hums through the baobab trees,  
+you can hear a soft girl's song—  
+a reminder of Mumo, who borrowed the wind to save her people.`,
+                tags: ["African mythology", "Kenyan folklore", "magical realism"],
+                readTime: 3
+            },
+            {
+                id: 'demo2',
+                title: "Digital Gardens",
+                author: "Marcus Chen",
+                category: "blog",
+                cover: "https://source.unsplash.com/featured/?technology,garden",
+                description: "Why tending to your personal notes is better than social media.",
+                content: `# Digital Gardens
+
+In the age of social media feeds, we've forgotten the joy of cultivation.  
+A digital garden is not a polished portfolio or a chronological blog.  
+It's a collection of evolving ideas, half-formed thoughts, and interconnected concepts.
+
+Unlike social media, which demands instant perfection, a digital garden celebrates growth.  
+Pages can be messy, incomplete, and interconnected.  
+They grow organically, just like a real garden.
+
+Start small. Plant a seed of an idea. Water it with regular updates.  
+Watch it grow, branch out, and connect with other ideas in your garden.
+
+Your digital garden is for you first, others second.  
+It's a space for thinking in public, for showing your work, for embracing the process over the product.
+
+In a world of consumption, be a creator.  
+In a world of feeds, tend a garden.`,
+                tags: ["technology", "blog", "personal growth"],
+                readTime: 2
+            },
+            {
+                id: 'demo3',
+                title: "Echoes of History",
+                author: "Sarah J. Miller",
+                category: "non-fiction",
+                cover: "https://source.unsplash.com/featured/?history,library",
+                description: "Understanding the patterns of the past to predict the future.",
+                content: `# Echoes of History
+
+History doesn't repeat itself, but it often rhymes.  
+The patterns we see in ancient civilizations echo through time to our modern world.
+
+From the rise and fall of empires to economic cycles, human behavior follows predictable patterns.  
+By studying these echoes, we can better understand our present and anticipate our future.
+
+The key is not to look for exact repetitions, but for thematic parallels.  
+How do societies respond to technological disruption?  
+What happens when wealth becomes too concentrated?  
+How do civilizations maintain stability in times of change?
+
+These questions have been answered before, in different times and places.  
+The answers are waiting in the echoes of history, if we're willing to listen.`,
+                tags: ["history", "non-fiction", "analysis"],
+                readTime: 4
+            }
+        ];
 
         // Parse markdown frontmatter
         function parseMarkdownFrontmatter(content) {
@@ -357,38 +479,39 @@
         // Check if API is available
         async function checkAPIStatus() {
             try {
-                const response = await fetch(`${CONFIG.apiBaseUrl}${CONFIG.statusEndpoint}`);
-                return response.ok;
+                const response = await fetch(CONFIG.statusEndpoint);
+                if (response.ok) {
+                    const data = await response.json();
+                    apiStatusElement.textContent = `API Status: ${data.status}`;
+                    return true;
+                }
             } catch (error) {
                 console.log('API status check failed:', error);
-                return false;
             }
+            apiStatusElement.textContent = 'API Status: Not available (using demo stories)';
+            return false;
         }
 
         // Get list of story files from API
         async function getStoryFiles() {
             try {
-                const response = await fetch(`${CONFIG.apiBaseUrl}${CONFIG.storiesIndexEndpoint}`);
+                const response = await fetch(CONFIG.storiesIndexEndpoint);
                 if (!response.ok) {
                     throw new Error('Failed to fetch story index');
                 }
-                return await response.json();
+                const files = await response.json();
+                console.log('Found story files:', files);
+                return files;
             } catch (error) {
                 console.error('Error fetching story index:', error);
-                
-                // Fallback: Try to discover common story files
-                const fallbackFiles = [];
-                for (let i = 1; i <= 10; i++) {
-                    fallbackFiles.push(`story${i.toString().padStart(4, '0')}.md`);
-                }
-                return fallbackFiles;
+                return [];
             }
         }
 
         // Fetch a single story from the API
         async function fetchStory(filename) {
             try {
-                const storyUrl = `${CONFIG.apiBaseUrl}${CONFIG.storiesPath}${filename}`;
+                const storyUrl = `${CONFIG.storiesPath}${filename}`;
                 const response = await fetch(storyUrl);
                 
                 if (!response.ok) {
@@ -425,40 +548,53 @@
         async function fetchAllStories() {
             loadingElement.style.display = 'block';
             storiesGrid.style.display = 'none';
+            demoStoriesGrid.style.display = 'none';
             noStoriesElement.style.display = 'none';
             
             try {
                 // Check if API is running
                 const isApiRunning = await checkAPIStatus();
-                if (!isApiRunning) {
-                    throw new Error('API is not available');
+                
+                if (isApiRunning) {
+                    // Get list of story files
+                    const storyFiles = await getStoryFiles();
+                    
+                    if (storyFiles && storyFiles.length > 0) {
+                        // Fetch each story
+                        const storiesPromises = storyFiles.map(filename => fetchStory(filename));
+                        const stories = (await Promise.all(storiesPromises)).filter(story => story !== null);
+                        
+                        if (stories.length > 0) {
+                            allStories = stories;
+                            filteredStories = [...stories];
+                            updateStoryDisplay();
+                            return;
+                        }
+                    }
                 }
                 
-                // Get list of story files
-                const storyFiles = await getStoryFiles();
-                console.log('Available story files:', storyFiles);
-                
-                if (!storyFiles || storyFiles.length === 0) {
-                    throw new Error('No story files found');
-                }
-                
-                // Fetch each story
-                const storiesPromises = storyFiles.map(filename => fetchStory(filename));
-                const stories = (await Promise.all(storiesPromises)).filter(story => story !== null);
-                
-                if (stories.length === 0) {
-                    throw new Error('Failed to load any stories');
-                }
-                
-                allStories = stories;
-                filteredStories = [...stories];
-                
-                updateStoryDisplay();
+                // If API fails or returns no stories, use demo stories
+                console.log('Using demo stories');
+                useDemoStories();
                 
             } catch (error) {
                 console.error('Error fetching stories:', error);
-                showNoStories('Failed to load stories. The API might not be available yet.');
+                useDemoStories();
             }
+        }
+
+        // Use demo stories as fallback
+        function useDemoStories() {
+            allStories = DEMO_STORIES;
+            filteredStories = [...DEMO_STORIES];
+            
+            loadingElement.style.display = 'none';
+            storiesGrid.style.display = 'none';
+            demoStoriesGrid.innerHTML = filteredStories.map(createStoryCard).join('');
+            demoStoriesGrid.style.display = 'flex';
+            storyCountElement.textContent = filteredStories.length;
+            
+            apiStatusElement.textContent = 'API Status: Using demo stories';
         }
 
         // Create story card HTML
@@ -499,6 +635,7 @@
         // Update the stories display
         function updateStoryDisplay() {
             loadingElement.style.display = 'none';
+            demoStoriesGrid.style.display = 'none';
             
             if (filteredStories.length === 0) {
                 showNoStories('No stories match your search criteria.');
@@ -513,6 +650,7 @@
         // Show no stories message
         function showNoStories(message = 'No stories found.') {
             storiesGrid.style.display = 'none';
+            demoStoriesGrid.style.display = 'none';
             loadingElement.style.display = 'none';
             noStoriesElement.innerHTML = `
                 <p>${message}</p>
@@ -543,7 +681,16 @@
                 return matchesSearch && matchesCategory;
             });
             
-            updateStoryDisplay();
+            // Check if we're showing demo stories or API stories
+            if (demoStoriesGrid.style.display === 'flex') {
+                demoStoriesGrid.innerHTML = filteredStories.map(createStoryCard).join('');
+                demoStoriesGrid.style.display = filteredStories.length > 0 ? 'flex' : 'none';
+                storiesGrid.style.display = 'none';
+            } else {
+                updateStoryDisplay();
+            }
+            
+            storyCountElement.textContent = filteredStories.length;
         }
 
         // Read story function
@@ -570,8 +717,8 @@
                                         <span class="text-muted">${story.readTime} min read • ${story.category}</span>
                                     </div>
                                     <hr>
-                                    <div class="story-content" style="line-height: 1.8; font-size: 1.1rem;">
-                                        ${story.content.replace(/\n/g, '<br>')}
+                                    <div class="story-content" style="line-height: 1.8; font-size: 1.1rem; white-space: pre-line;">
+                                        ${story.content}
                                     </div>
                                 </div>
                                 <div class="modal-footer">
