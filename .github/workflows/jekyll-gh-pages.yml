@@ -51,25 +51,32 @@ jobs:
           echo '{"status": "API running", "timestamp": "'$(date)'"}' > _site/api/status.json
       
       # Fetch stories from private repo
-      - name: Fetch Stories From Private Repo
+            - name: Fetch Stories From Private Repo
         run: |
-          echo "Fetching stories from private repository..."
-          
-          # Try to fetch story list
-          for i in {1..10}; do
-            filename=$(printf "story%04d.md" $i)
-            echo "Downloading $filename..."
-            
+          echo "Fetching list of stories from private repo..."
+
+          # Fetch directory listing
+          curl -H "Authorization: Bearer ${{ secrets.STORY_TOKEN }}" \
+               -H "Accept: application/vnd.github.v3+json" \
+               -L "https://api.github.com/repos/InitMode/mythmehalfway/contents/stories" \
+               -o stories_list.json
+
+          mkdir -p _site/api/stories
+
+          # Download only real .md files
+          jq -r '.[] | select(.name | endswith(".md")) | .name' stories_list.json | while read filename; do
+            echo "Downloading $filename"
             curl -H "Authorization: Bearer ${{ secrets.STORY_TOKEN }}" \
                  -H "Accept: application/vnd.github.raw" \
                  -L "https://api.github.com/repos/InitMode/mythmehalfway/contents/stories/$filename" \
-                 -o "_site/api/stories/$filename" || echo "Failed to download $filename"
+                 -o "_site/api/stories/$filename"
           done
-          
-          # Create index.json with actual files that exist
+
+          # Build index.json containing ONLY the real files
           cd _site/api/stories
-          ls *.md 2>/dev/null | jq -R -s 'split("\n") | map(select(length > 0))' > index.json || echo '[]' > index.json
+          ls *.md 2>/dev/null | jq -R -s 'split("\n") | map(select(length > 0))' > index.json
           cd ../../..
+
           
           echo "Files downloaded:"
           ls -la _site/api/stories/
