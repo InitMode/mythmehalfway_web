@@ -2,985 +2,236 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Story Gallery - Mythical Tales Collection</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Myth Me Halfway – Story Library</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <style>
-        /* ... (keep all your existing CSS styles) ... */
-        * {
+        body {
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --accent-color: #e74c3c;
-            --light-color: #ecf0f1;
-            --dark-color: #2c3e50;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --border-radius: 8px;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f9f9f9;
-            padding-bottom: 50px;
+            background: #111;
+            color: #fff;
         }
 
         header {
-            background: linear-gradient(135deg, var(--primary-color), var(--dark-color));
-            color: white;
-            padding: 2rem 1rem;
+            background: #222;
+            padding: 15px;
             text-align: center;
-            box-shadow: var(--shadow);
-            margin-bottom: 2rem;
-        }
-
-        header h1 {
-            font-size: 2.8rem;
-            margin-bottom: 0.5rem;
-        }
-
-        header p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
+            font-size: 20px;
+            font-weight: bold;
         }
 
         .controls {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-            background: white;
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
+            gap: 10px;
+            padding: 10px;
+            background: #1a1a1a;
+            position: sticky;
+            top: 0;
+            z-index: 20;
         }
 
-        .search-box {
-            flex: 1;
-            min-width: 300px;
+        input, select {
+            padding: 8px;
+            border-radius: 6px;
+            border: none;
         }
 
-        .search-box input {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            border: 2px solid #ddd;
-            border-radius: var(--border-radius);
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--secondary-color);
-        }
-
-        .filter-controls {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .filter-controls select {
-            padding: 0.8rem;
-            border: 2px solid #ddd;
-            border-radius: var(--border-radius);
-            font-size: 1rem;
-            background: white;
-            cursor: pointer;
-        }
-
-        .status-bar {
-            background: #e8f4fc;
-            padding: 1rem;
-            border-radius: var(--border-radius);
-            margin-bottom: 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: var(--shadow);
-        }
-
-        .stories-grid {
+        #storiesContainer {
+            padding: 15px;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
+            grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+            gap: 15px;
         }
 
         .story-card {
-            background: white;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s, box-shadow 0.3s;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
+            background: #222;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 1px solid #333;
         }
 
         .story-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            background: #333;
         }
 
-        .story-cover {
-            height: 200px;
-            width: 100%;
-            object-fit: cover;
-            background-color: #eee;
-        }
-
-        .story-content {
-            padding: 1.5rem;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .story-title {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-            color: var(--primary-color);
-        }
-
-        .story-author {
-            color: var(--secondary-color);
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .story-description {
-            margin-bottom: 1.5rem;
-            flex-grow: 1;
-            color: #555;
-        }
-
-        .story-meta {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
-            font-size: 0.9rem;
-        }
-
-        .story-type {
-            background: var(--light-color);
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-weight: 600;
-        }
-
-        .story-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .tag {
-            background: #f1f1f1;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            color: #555;
-        }
-
-        .story-actions {
-            margin-top: auto;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .btn {
-            padding: 0.7rem 1.5rem;
-            border: none;
-            border-radius: var(--border-radius);
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background-color: var(--secondary-color);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: #2980b9;
-        }
-
-        .btn-secondary {
-            background-color: var(--light-color);
-            color: var(--dark-color);
-        }
-
-        .btn-secondary:hover {
-            background-color: #ddd;
-        }
-
-        .story-modal {
-            display: none;
+        /* Modal */
+        #storyModal {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            overflow-y: auto;
-            padding: 2rem;
-        }
-
-        .modal-content {
-            background: white;
-            max-width: 800px;
-            margin: 2rem auto;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            position: relative;
-        }
-
-        .modal-header {
-            background: var(--primary-color);
-            color: white;
-            padding: 1.5rem;
-            position: relative;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.8rem;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: background-color 0.3s;
-        }
-
-        .modal-close:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .modal-body {
-            padding: 2rem;
-            max-height: 70vh;
-            overflow-y: auto;
-        }
-
-        .modal-story-content {
-            font-size: 1.1rem;
-            line-height: 1.8;
-        }
-
-        .modal-story-content h1 {
-            color: var(--primary-color);
-            margin-bottom: 1.5rem;
-            font-size: 2.2rem;
-        }
-
-        .modal-story-content p {
-            margin-bottom: 1.5rem;
-        }
-
-        .modal-story-content blockquote {
-            border-left: 4px solid var(--secondary-color);
-            padding-left: 1.5rem;
-            margin: 1.5rem 0;
-            font-style: italic;
-            color: #555;
-        }
-
-        footer {
-            text-align: center;
-            padding: 2rem;
-            color: #777;
-            border-top: px solid #eee;
-            margin-top: 2rem;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 3rem;
-            font-size: 1.2rem;
-            color: #777;
-        }
-
-        .loading-spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--secondary-color);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            grid-column: 1 / -1;
-        }
-
-        .empty-state i {
-            font-size: 4rem;
-            color: #ddd;
-            margin-bottom: 1rem;
-        }
-
-        .debug-panel {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: var(--border-radius);
-            padding: 1rem;
-            margin-bottom: 1rem;
-            font-family: monospace;
-            font-size: 0.9rem;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
             display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
 
-        .debug-toggle {
-            background: #6c757d;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: var(--border-radius);
+        #modalContent {
+            background: #222;
+            padding: 20px;
+            max-width: 800px;
+            width: 100%;
+            border-radius: 12px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        #closeModal {
+            float: right;
             cursor: pointer;
-            margin-bottom: 1rem;
-        }
-
-        @media (max-width: 768px) {
-            .stories-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .search-box {
-                min-width: 100%;
-            }
-            
-            .modal-content {
-                margin: 1rem;
-                padding: 0;
-            }
-            
-            header h1 {
-                font-size: 2rem;
-            }
+            font-size: 20px;
+            padding: 5px;
         }
     </style>
 </head>
+
 <body>
-    <header>
-        <div class="container">
-            <h1><i class="fas fa-book-open"></i> Story Gallery</h1>
-            <p>Discover magical tales from around the world. Browse our collection of mythical stories, folklore, and imaginative fiction.</p>
-        </div>
-    </header>
 
-    <main class="container">
-        <button class="debug-toggle" id="toggleDebug">Show Debug Info</button>
-        <div class="debug-panel" id="debugPanel">
-            <h3>Debug Information</h3>
-            <div id="debugContent">Loading...</div>
-        </div>
+<header>
+    Myth Me Halfway &middot; <span id="currentYear"></span>
+</header>
 
-        <div class="controls">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Search stories by title, author, or tags...">
-            </div>
-            <div class="filter-controls">
-                <select id="typeFilter">
-                    <option value="">All Types</option>
-                    <option value="fiction">Fiction</option>
-                    <option value="non-fiction">Non-Fiction</option>
-                    <option value="folklore">Folklore</option>
-                    <option value="mythology">Mythology</option>
-                </select>
-                <select id="sortFilter">
-                    <option value="title">Sort by Title</option>
-                    <option value="author">Sort by Author</option>
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
-                </select>
-            </div>
-        </div>
+<div class="controls">
+    <input type="text" id="searchInput" placeholder="Search stories...">
+    <select id="typeFilter">
+        <option value="all">All Types</option>
+    </select>
+    <select id="sortFilter">
+        <option value="newest">Newest</option>
+        <option value="oldest">Oldest</option>
+    </select>
+</div>
 
-        <div class="status-bar">
-            <div id="statusText">Loading stories...</div>
-            <div id="storyCount">0 stories</div>
-        </div>
+<div id="statusText">Loading stories…</div>
+<div id="storyCount"></div>
 
-        <div id="storiesContainer" class="stories-grid">
-            <div class="loading">
-                <div class="loading-spinner"></div>
-                <p>Loading stories from API...</p>
-            </div>
-        </div>
-    </main>
+<div id="storiesContainer"></div>
 
-    <div id="storyModal" class="story-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalTitle">Story Title</h2>
-                <button class="modal-close" id="closeModal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div id="modalStoryContent" class="modal-story-content">
-                    <!-- Story content will be loaded here -->
-                </div>
-            </div>
-        </div>
+<!-- Modal -->
+<div id="storyModal">
+    <div id="modalContent">
+        <span id="closeModal">✖</span>
+        <h2 id="modalTitle"></h2>
+        <div id="modalStoryContent"></div>
     </div>
+</div>
 
-    <footer>
-        <div class="container">
-            <p>Story Gallery &copy; <span id="currentYear"></span> | Stories fetched from API</p>
-            <p>All stories are property of their respective authors.</p>
-        </div>
-    </footer>
+<script>
+document.getElementById("currentYear").textContent = new Date().getFullYear();
 
-    <script>
-        // Current year for footer
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
-        
-        // Configuration
-        const CONFIG = {
-            const getBasePath = () => {
-    const path = window.location.pathname;
-    // If we are in a repo subfolder (like /mythmehalfway_web/), keep it.
-    // Otherwise, if at root, use empty string.
-    const repoName = path.substring(0, path.lastIndexOf('/'));
-    return window.location.origin + repoName + '/api';
+//
+// FIX FOR GITHUB PAGES HOSTED UNDER A REPO SUBFOLDER
+//
+const BASE_PATH = window.location.pathname.replace(/\/$/, "");
+const API_BASE = BASE_PATH + "/api";
+const STORIES_INDEX = API_BASE + "/stories/index.json";
+
+let allStories = [];
+let displayedStories = [];
+
+const storyContainer = document.getElementById("storiesContainer");
+const statusText = document.getElementById("statusText");
+const searchInput = document.getElementById("searchInput");
+const typeFilter = document.getElementById("typeFilter");
+const sortFilter = document.getElementById("sortFilter");
+
+const storyModal = document.getElementById("storyModal");
+const closeModal = document.getElementById("closeModal");
+const modalTitle = document.getElementById("modalTitle");
+const modalStoryContent = document.getElementById("modalStoryContent");
+
+//
+// 1. Fetch story list
+//
+async function loadStories() {
+    try {
+        const res = await fetch(STORIES_INDEX);
+        if (!res.ok) throw new Error("Bad status " + res.status);
+
+        const files = await res.json();
+        allStories = files.map(f => ({
+            id: f.replace(".md", ""),
+            filename: f,
+            path: API_BASE + "/stories/" + f
+        }));
+
+        displayedStories = [...allStories];
+        renderStories();
+        statusText.textContent = "Stories loaded ✓";
+    } catch (err) {
+        statusText.textContent = "Failed to load stories.";
+        console.error("ERROR:", err);
+    }
+}
+
+//
+// 2. Render cards
+//
+function renderStories() {
+    storyContainer.innerHTML = "";
+    displayedStories.forEach(story => {
+        const div = document.createElement("div");
+        div.className = "story-card";
+        div.innerHTML = `
+            <h3>${story.id}</h3>
+            <small>${story.filename}</small>
+        `;
+        div.onclick = () => openStory(story);
+        storyContainer.appendChild(div);
+    });
+
+    document.getElementById("storyCount").textContent =
+        displayedStories.length + " stories";
+}
+
+//
+// 3. Open modal + load markdown
+//
+async function openStory(story) {
+    modalTitle.textContent = story.id;
+    modalStoryContent.innerHTML = "Loading…";
+
+    storyModal.style.display = "flex";
+
+    const res = await fetch(story.path);
+    if (res.ok) {
+        const text = await res.text();
+        modalStoryContent.innerHTML = `<pre style="white-space: pre-wrap;">${text}</pre>`;
+    } else {
+        modalStoryContent.innerHTML = "Error loading file.";
+    }
+}
+
+closeModal.onclick = () => {
+    storyModal.style.display = "none";
 };
 
-const API_BASE = getBasePath();
-console.log('Fetching from:', API_BASE);
-            STORIES_ENDPOINT: '/api/stories/index.json',
-            STORY_PREFIX: 'story',
-            STORY_EXTENSION: '.md',
-            MAX_STORIES: 10, // Maximum number of stories to try loading
-            FALLBACK_STORIES: [
-                {
-                    id: 'story0001',
-                    title: 'The Girl Who Borrowed the Wind',
-                    author: 'Salt Merchant',
-                    cover: 'https://source.unsplash.com/featured/?baobab,wind',
-                    description: 'A short magical tale from Ukambani about courage, sacrifice, and the Wind Spirit Mwenga Mkuu.',
-                    type: 'fiction',
-                    tags: ['African mythology', 'Kenyan folklore', 'magical realism', 'short story', 'children\'s story', 'courage', 'sacrifice'],
-                    content: `# The Girl Who Borrowed the Wind
+//
+// 4. Search & filters
+//
+searchInput.oninput = () => applyFilters();
+sortFilter.onchange = () => applyFilters();
 
-In the drought-stricken plains of Ukambani, there lived a young girl named Mumo.  
-Her village had not felt a breeze in many moons, and the wells were turning into dust.
+function applyFilters() {
+    const q = searchInput.value.toLowerCase();
 
-One evening, Mumo wandered to the sacred hill where the old stories say the **Wind Spirit**,  
-_Mwenga Mkuu_, sleeps inside a giant baobab tree.  
-Most children feared the place—but Mumo was brave.
+    displayedStories = allStories.filter(story =>
+        story.id.toLowerCase().includes(q) ||
+        story.filename.toLowerCase().includes(q)
+    );
 
-She placed her palms on the rough bark.
+    if (sortFilter.value === "newest") {
+        displayedStories.reverse();
+    }
 
-> "Great Mwenga," she whispered.  
-> "My people grow weak. Please, wake, even for a moment."
+    renderStories();
+}
 
-The baobab groaned.  
-A cool swirl of air wrapped around her wrists like bracelets of morning mist.
+loadStories();
+</script>
 
-The Wind Spirit spoke:
-
-> "Child of courage, I can lend you a breeze.  
-> But when I give, something must be returned."
-
-Mumo thought hard. She had no water.  
-She had no cattle.  
-But she had her voice.
-
-So she offered it.
-
-> "Take my songs, Mwenga.  
-> My voice carries stories, and stories are part of the wind."
-
-The spirit agreed.  
-A powerful gust spiraled into her hands, glowing like soft blue fire.
-
-Mumo ran home, releasing the wind across the dry fields.  
-Clouds gathered, rain fell, children danced.
-
-But Mumo could no longer sing.
-
-Weeks later, the Wind Spirit returned, moved by her sacrifice.  
-It placed a warm breeze in her throat.
-
-> "Your songs are now part of every wind," it said.  
-> "Each time the breeze touches your village, it brings your voice home."
-
-And so the people of Ukambani say that when the wind hums through the baobab trees,  
-you can hear a soft girl's song—  
-a reminder of Mumo, who borrowed the wind to save her people.`
-                }
-            ]
-        };
-        
-        // State
-        let allStories = [];
-        let displayedStories = [];
-        
-        // DOM elements
-        const storiesContainer = document.getElementById('storiesContainer');
-        const statusText = document.getElementById('statusText');
-        const storyCount = document.getElementById('storyCount');
-        const searchInput = document.getElementById('searchInput');
-        const typeFilter = document.getElementById('typeFilter');
-        const sortFilter = document.getElementById('sortFilter');
-        const storyModal = document.getElementById('storyModal');
-        const closeModal = document.getElementById('closeModal');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalStoryContent = document.getElementById('modalStoryContent');
-        const debugPanel = document.getElementById('debugPanel');
-        const debugContent = document.getElementById('debugContent');
-        const toggleDebug = document.getElementById('toggleDebug');
-        
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchStories();
-            
-            // Set up event listeners
-            searchInput.addEventListener('input', filterStories);
-            typeFilter.addEventListener('change', filterStories);
-            sortFilter.addEventListener('change', filterStories);
-            closeModal.addEventListener('click', () => {
-                storyModal.style.display = 'none';
-            });
-            
-            // Close modal when clicking outside
-            storyModal.addEventListener('click', (e) => {
-                if (e.target === storyModal) {
-                    storyModal.style.display = 'none';
-                }
-            });
-            
-            // Debug toggle
-            toggleDebug.addEventListener('click', () => {
-                debugPanel.style.display = debugPanel.style.display === 'none' ? 'block' : 'none';
-            });
-        });
-        
-        // Fetch stories from API
-        async function fetchStories() {
-            try {
-                statusText.textContent = 'Fetching stories from API...';
-                updateDebugInfo('Starting story fetch...');
-                
-                // First, try to get the index.json file
-                let storyFiles = [];
-                
-                try {
-                    const response = await fetch(CONFIG.STORIES_ENDPOINT);
-                    
-                    if (response.ok) {
-                        storyFiles = await response.json();
-                        updateDebugInfo(`Found index.json with ${storyFiles.length} files`);
-                    } else {
-                        updateDebugInfo(`index.json not found (${response.status}), trying direct loading`);
-                        // If index.json doesn't exist, try to load stories directly
-                        storyFiles = await tryDirectStoryLoading();
-                    }
-                } catch (error) {
-                    updateDebugInfo(`Error fetching index.json: ${error.message}`);
-                    // Fallback to direct loading
-                    storyFiles = await tryDirectStoryLoading();
-                }
-                
-                if (!storyFiles || storyFiles.length === 0) {
-                    updateDebugInfo('No stories found, using fallback');
-                    // Use fallback stories
-                    allStories = CONFIG.FALLBACK_STORIES;
-                } else {
-                    // Now fetch each story
-                    allStories = [];
-                    
-                    for (const filename of storyFiles) {
-                        try {
-                            const storyResponse = await fetch(`${CONFIG.API_BASE}/stories/${filename}`);
-                            
-                            if (storyResponse.ok) {
-                                const storyText = await storyResponse.text();
-                                const storyData = parseStoryMarkdown(storyText, filename);
-                                
-                                if (storyData) {
-                                    allStories.push(storyData);
-                                    updateDebugInfo(`Loaded: ${filename}`);
-                                }
-                            } else {
-                                updateDebugInfo(`Failed to load: ${filename} (${storyResponse.status})`);
-                            }
-                        } catch (error) {
-                            updateDebugInfo(`Error fetching ${filename}: ${error.message}`);
-                        }
-                    }
-                }
-                
-                if (allStories.length === 0) {
-                    displayEmptyState();
-                    return;
-                }
-                
-                // Display all stories initially
-                displayedStories = [...allStories];
-                displayStories();
-                updateDebugInfo(`Successfully loaded ${allStories.length} stories`);
-                
-            } catch (error) {
-                console.error('Error fetching stories:', error);
-                statusText.textContent = 'Error loading stories. Please try again later.';
-                updateDebugInfo(`Fatal error: ${error.message}`);
-                
-                // Try to use fallback stories
-                allStories = CONFIG.FALLBACK_STORIES;
-                displayedStories = [...allStories];
-                displayStories();
-                
-                storiesContainer.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h3>Unable to load stories from API</h3>
-                        <p>Using fallback stories. Please check if the API is running.</p>
-                        <button class="btn btn-primary" onclick="fetchStories()">
-                            <i class="fas fa-redo"></i> Retry
-                        </button>
-                    </div>
-                `;
-            }
-        }
-        
-        // Try to load stories directly without index.json
-        async function tryDirectStoryLoading() {
-            const storyFiles = [];
-            
-            // Try to load stories sequentially
-            for (let i = 1; i <= CONFIG.MAX_STORIES; i++) {
-                const filename = `${CONFIG.STORY_PREFIX}${i.toString().padStart(4, '0')}${CONFIG.STORY_EXTENSION}`;
-                
-                try {
-                    // Try to fetch the story
-                    const response = await fetch(`${CONFIG.API_BASE}/stories/${filename}`);
-                    
-                    if (response.ok) {
-                        storyFiles.push(filename);
-                        updateDebugInfo(`Found story: ${filename}`);
-                    } else if (response.status === 404) {
-                        // Story doesn't exist, continue checking
-                        continue;
-                    }
-                } catch (error) {
-                    updateDebugInfo(`Error checking ${filename}: ${error.message}`);
-                }
-            }
-            
-            return storyFiles;
-        }
-        
-        // Parse markdown story file
-        function parseStoryMarkdown(markdown, filename) {
-            try {
-                // Extract frontmatter (between --- and ---)
-                const frontmatterMatch = markdown.match(/^---\n([\s\S]*?)\n---/);
-                
-                if (!frontmatterMatch) {
-                    // If no frontmatter, try to extract basic info
-                    const titleMatch = markdown.match(/^#\s+(.+)$/m);
-                    return {
-                        id: filename.replace(CONFIG.STORY_EXTENSION, ''),
-                        title: titleMatch ? titleMatch[1] : filename.replace(CONFIG.STORY_EXTENSION, '').replace('story', 'Story '),
-                        author: 'Unknown Author',
-                        cover: 'https://source.unsplash.com/featured/?story,book',
-                        description: markdown.substring(0, 150) + '...',
-                        type: 'fiction',
-                        tags: ['story'],
-                        content: markdown
-                    };
-                }
-                
-                const frontmatter = frontmatterMatch[1];
-                const content = markdown.substring(frontmatterMatch[0].length).trim();
-                
-                // Parse frontmatter lines
-                const lines = frontmatter.split('\n');
-                const data = {
-                    id: filename.replace(CONFIG.STORY_EXTENSION, ''),
-                    content: content
-                };
-                
-                lines.forEach(line => {
-                    const colonIndex = line.indexOf(':');
-                    if (colonIndex > 0) {
-                        const key = line.substring(0, colonIndex).trim();
-                        let value = line.substring(colonIndex + 1).trim();
-                        
-                        // Remove quotes if present
-                        if (value.startsWith('"') && value.endsWith('"')) {
-                            value = value.substring(1, value.length - 1);
-                        } else if (value.startsWith("'") && value.endsWith("'")) {
-                            value = value.substring(1, value.length - 1);
-                        }
-                        
-                        // Parse arrays (tags)
-                        if (key === 'tags') {
-                            try {
-                                // Try to parse as JSON array
-                                value = JSON.parse(value.replace(/'/g, '"'));
-                            } catch {
-                                // If not valid JSON, try to parse as comma-separated
-                                value = value.split(',').map(tag => tag.trim());
-                            }
-                        }
-                        
-                        data[key] = value;
-                    }
-                });
-                
-                return data;
-            } catch (error) {
-                console.error('Error parsing story:', error);
-                updateDebugInfo(`Parse error for ${filename}: ${error.message}`);
-                return null;
-            }
-        }
-        
-        // Display stories in the grid
-        function displayStories() {
-            if (displayedStories.length === 0) {
-                displayEmptyState();
-                return;
-            }
-            
-            statusText.textContent = `Showing ${displayedStories.length} of ${allStories.length} stories`;
-            storyCount.textContent = `${displayedStories.length} stories`;
-            
-            const storiesHTML = displayedStories.map(story => `
-                <div class="story-card" data-id="${story.id}">
-                    <img src="${story.cover || 'https://source.unsplash.com/featured/?story,book'}" 
-                         alt="${story.title}" 
-                         class="story-cover"
-                         onerror="this.src='https://source.unsplash.com/featured/?story,book'">
-                    <div class="story-content">
-                        <h3 class="story-title">${story.title}</h3>
-                        <div class="story-author">
-                            <i class="fas fa-user-pen"></i> ${story.author || 'Unknown Author'}
-                        </div>
-                        <p class="story-description">${story.description || 'A captivating story without a description.'}</p>
-                        
-                        <div class="story-meta">
-                            <span class="story-type">${story.type || 'fiction'}</span>
-                            <span><i class="far fa-file-alt"></i> ${estimateReadingTime(story.content)} min read</span>
-                        </div>
-                        
-                        <div class="story-tags">
-                            ${(story.tags || []).slice(0, 4).map(tag => `
-                                <span class="tag">${tag}</span>
-                            `).join('')}
-                            ${(story.tags || []).length > 4 ? `<span class="tag">+${(story.tags || []).length - 4} more</span>` : ''}
-                        </div>
-                        
-                        <div class="story-actions">
-                            <button class="btn btn-primary" onclick="viewStory('${story.id}')">
-                                <i class="fas fa-book-open"></i> Read Story
-                            </button>
-                            <button class="btn btn-secondary" onclick="shareStory('${story.title}')">
-                                <i class="fas fa-share-alt"></i> Share
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-            
-            storiesContainer.innerHTML = storiesHTML;
-        }
-        
-        // Display empty state
-        function displayEmptyState() {
-            statusText.textContent = 'No stories found';
-            storyCount.textContent = '0 stories';
-            
-            storiesContainer.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-book"></i>
-                    <h3>No stories found</h3>
-                    <p>Try changing your search or filter criteria.</p>
-                    <button class="btn btn-primary" onclick="clearFilters()">
-                        <i class="fas fa-filter-circle-xmark"></i> Clear Filters
-                    </button>
-                </div>
-            `;
-        }
-        
-        // Filter and sort stories based on criteria
-        function filterStories() {
-            const searchTerm = searchInput.value.toLowerCase();
-            const typeValue = typeFilter.value;
-            const sortValue = sortFilter.value;
-            
-            // Filter stories
-            let filtered = allStories.filter(story => {
-                // Search filter
-                const matchesSearch = !searchTerm || 
-                    story.title.toLowerCase().includes(searchTerm) ||
-                    story.author.toLowerCase().includes(searchTerm) ||
-                    (story.description && story.description.toLowerCase().includes(searchTerm)) ||
-                    (story.tags && story.tags.some(tag => tag.toLowerCase().includes(searchTerm)));
-                
-                // Type filter
-                const matchesType = !typeValue || 
-                    (story.type && story.type.toLowerCase() === typeValue.toLowerCase());
-                
-                return matchesSearch && matchesType;
-            });
-            
-            // Sort stories
-            filtered.sort((a, b) => {
-                switch (sortValue) {
-                    case 'title':
-                        return a.title.localeCompare(b.title);
-                    case 'author':
-                        return (a.author || '').localeCompare(b.author || '');
-                    case 'newest':
-                        // Assuming higher ID = newer (story0001, story0002, etc.)
-                        return b.id.localeCompare(a.id);
-                    case 'oldest':
-                        return a.id.localeCompare(b.id);
-                    default:
-                        return 0;
-                }
-            });
-            
-            displayedStories = filtered;
-            displayStories();
-        }
-        
-        // Clear all filters
-        function clearFilters() {
-            searchInput.value = '';
-            typeFilter.value = '';
-            sortFilter.value = 'title';
-            filterStories();
-        }
-        
-        // View a story in modal
-        function viewStory(storyId) {
-            const story = allStories.find(s => s.id === storyId);
-            
-            if (!story) {
-                alert('Story not found');
-                return;
-            }
-            
-            modalTitle.textContent = story.title;
-            
-            // Convert markdown to HTML (simplified)
-            let htmlContent = story.content
-                .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                .replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>')
-                .replace(/\n\n/g, '</p><p>')
-                .replace(/\n/g, '<br>');
-            
-            // Wrap in paragraph if not already
-            if (!htmlContent.startsWith('<h1>') && !htmlContent.startsWith('<blockquote>')) {
-                htmlContent = `<p>${htmlContent}</p>`;
-            }
-            
-            modalStoryContent.innerHTML = `
-                <div class="story-meta" style="margin-bottom: 2rem;">
-                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                        <span><i class="fas fa-user-pen"></i> <strong>${story.author || 'Unknown Author'}</strong></span>
-                        <span class="story-type">${story.type || 'fiction'}</span>
-                        <span><i class="far fa-clock"></i> ${estimateReadingTime(story.content)} min read</span>
-                    </div>
-                    <div class="story-tags">
-                        ${(story.tags || []).map(tag => `<span class="tag">${tag}</span>`).join('')}
-                    </div>
-                </div>
-                ${htmlContent}
-            `;
-            
-            storyModal.style.display = 'block';
-        }
-        
-        // Share a story
-        function shareStory(storyTitle) {
-            if (navigator.share) {
-                navigator.share({
-                    title: storyTitle,
-                    text: `Check out this story: ${storyTitle}`,
-                    url: window.location.href
-                });
-            } else {
-                // Fallback: copy to clipboard
-                const url = window.location.href;
-                navigator.clipboard.writeText(`${storyTitle} - ${url}`).then(() => {
-                    alert('Link copied to clipboard!');
-                });
-            }
-        }
-        
-        // Estimate reading time
-        function estimateReadingTime(content) {
-            const wordsPerMinute = 200;
-            const wordCount = content.split(/\s+/).length;
-            const readingTime = Math.ceil(wordCount / wordsPerMinute);
-            return readingTime || 1;
-        }
-        
-        // Update debug information
-        function updateDebugInfo(message) {
-            const timestamp = new Date().toLocaleTimeString();
-            debugContent.innerHTML += `<div><strong>[${timestamp}]</strong> ${message}</div>`;
-            debugContent.scrollTop = debugContent.scrollHeight;
-        }
-        
-        // Expose functions to global scope for onclick handlers
-        window.viewStory = viewStory;
-        window.shareStory = shareStory;
-        window.clearFilters = clearFilters;
-        window.fetchStories = fetchStories;
-    </script>
 </body>
 </html>
