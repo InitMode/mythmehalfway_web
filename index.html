@@ -6,6 +6,7 @@
     <title>Story Gallery - Mythical Tales Collection</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* ... (keep all your existing CSS styles) ... */
         * {
             margin: 0;
             padding: 0;
@@ -320,7 +321,7 @@
             text-align: center;
             padding: 2rem;
             color: #777;
-            border-top: 1px solid #eee;
+            border-top: px solid #eee;
             margin-top: 2rem;
         }
 
@@ -358,6 +359,27 @@
             margin-bottom: 1rem;
         }
 
+        .debug-panel {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-family: monospace;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .debug-toggle {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
         @media (max-width: 768px) {
             .stories-grid {
                 grid-template-columns: 1fr;
@@ -392,6 +414,12 @@
     </header>
 
     <main class="container">
+        <button class="debug-toggle" id="toggleDebug">Show Debug Info</button>
+        <div class="debug-panel" id="debugPanel">
+            <h3>Debug Information</h3>
+            <div id="debugContent">Loading...</div>
+        </div>
+
         <div class="controls">
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Search stories by title, author, or tags...">
@@ -451,9 +479,73 @@
         // Current year for footer
         document.getElementById('currentYear').textContent = new Date().getFullYear();
         
-        // API endpoints
-        const API_BASE = window.location.origin + '/api';
-        const STORIES_ENDPOINT = API_BASE + '/stories/index.json';
+        // Configuration
+        const CONFIG = {
+            API_BASE: window.location.origin + '/api',
+            STORIES_ENDPOINT: '/api/stories/index.json',
+            STORY_PREFIX: 'story',
+            STORY_EXTENSION: '.md',
+            MAX_STORIES: 10, // Maximum number of stories to try loading
+            FALLBACK_STORIES: [
+                {
+                    id: 'story0001',
+                    title: 'The Girl Who Borrowed the Wind',
+                    author: 'Salt Merchant',
+                    cover: 'https://source.unsplash.com/featured/?baobab,wind',
+                    description: 'A short magical tale from Ukambani about courage, sacrifice, and the Wind Spirit Mwenga Mkuu.',
+                    type: 'fiction',
+                    tags: ['African mythology', 'Kenyan folklore', 'magical realism', 'short story', 'children\'s story', 'courage', 'sacrifice'],
+                    content: `# The Girl Who Borrowed the Wind
+
+In the drought-stricken plains of Ukambani, there lived a young girl named Mumo.  
+Her village had not felt a breeze in many moons, and the wells were turning into dust.
+
+One evening, Mumo wandered to the sacred hill where the old stories say the **Wind Spirit**,  
+_Mwenga Mkuu_, sleeps inside a giant baobab tree.  
+Most children feared the place—but Mumo was brave.
+
+She placed her palms on the rough bark.
+
+> "Great Mwenga," she whispered.  
+> "My people grow weak. Please, wake, even for a moment."
+
+The baobab groaned.  
+A cool swirl of air wrapped around her wrists like bracelets of morning mist.
+
+The Wind Spirit spoke:
+
+> "Child of courage, I can lend you a breeze.  
+> But when I give, something must be returned."
+
+Mumo thought hard. She had no water.  
+She had no cattle.  
+But she had her voice.
+
+So she offered it.
+
+> "Take my songs, Mwenga.  
+> My voice carries stories, and stories are part of the wind."
+
+The spirit agreed.  
+A powerful gust spiraled into her hands, glowing like soft blue fire.
+
+Mumo ran home, releasing the wind across the dry fields.  
+Clouds gathered, rain fell, children danced.
+
+But Mumo could no longer sing.
+
+Weeks later, the Wind Spirit returned, moved by her sacrifice.  
+It placed a warm breeze in her throat.
+
+> "Your songs are now part of every wind," it said.  
+> "Each time the breeze touches your village, it brings your voice home."
+
+And so the people of Ukambani say that when the wind hums through the baobab trees,  
+you can hear a soft girl's song—  
+a reminder of Mumo, who borrowed the wind to save her people.`
+                }
+            ]
+        };
         
         // State
         let allStories = [];
@@ -470,6 +562,9 @@
         const closeModal = document.getElementById('closeModal');
         const modalTitle = document.getElementById('modalTitle');
         const modalStoryContent = document.getElementById('modalStoryContent');
+        const debugPanel = document.getElementById('debugPanel');
+        const debugContent = document.getElementById('debugContent');
+        const toggleDebug = document.getElementById('toggleDebug');
         
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
@@ -489,44 +584,65 @@
                     storyModal.style.display = 'none';
                 }
             });
+            
+            // Debug toggle
+            toggleDebug.addEventListener('click', () => {
+                debugPanel.style.display = debugPanel.style.display === 'none' ? 'block' : 'none';
+            });
         });
         
         // Fetch stories from API
         async function fetchStories() {
             try {
                 statusText.textContent = 'Fetching stories from API...';
+                updateDebugInfo('Starting story fetch...');
                 
-                // First, get the list of stories
-                const response = await fetch(STORIES_ENDPOINT);
+                // First, try to get the index.json file
+                let storyFiles = [];
                 
-                if (!response.ok) {
-                    throw new Error(`API error: ${response.status}`);
+                try {
+                    const response = await fetch(CONFIG.STORIES_ENDPOINT);
+                    
+                    if (response.ok) {
+                        storyFiles = await response.json();
+                        updateDebugInfo(`Found index.json with ${storyFiles.length} files`);
+                    } else {
+                        updateDebugInfo(`index.json not found (${response.status}), trying direct loading`);
+                        // If index.json doesn't exist, try to load stories directly
+                        storyFiles = await tryDirectStoryLoading();
+                    }
+                } catch (error) {
+                    updateDebugInfo(`Error fetching index.json: ${error.message}`);
+                    // Fallback to direct loading
+                    storyFiles = await tryDirectStoryLoading();
                 }
-                
-                const storyFiles = await response.json();
                 
                 if (!storyFiles || storyFiles.length === 0) {
-                    displayEmptyState();
-                    return;
-                }
-                
-                // Now fetch each story
-                allStories = [];
-                
-                for (const filename of storyFiles) {
-                    try {
-                        const storyResponse = await fetch(`${API_BASE}/stories/${filename}`);
-                        
-                        if (storyResponse.ok) {
-                            const storyText = await storyResponse.text();
-                            const storyData = parseStoryMarkdown(storyText, filename);
+                    updateDebugInfo('No stories found, using fallback');
+                    // Use fallback stories
+                    allStories = CONFIG.FALLBACK_STORIES;
+                } else {
+                    // Now fetch each story
+                    allStories = [];
+                    
+                    for (const filename of storyFiles) {
+                        try {
+                            const storyResponse = await fetch(`${CONFIG.API_BASE}/stories/${filename}`);
                             
-                            if (storyData) {
-                                allStories.push(storyData);
+                            if (storyResponse.ok) {
+                                const storyText = await storyResponse.text();
+                                const storyData = parseStoryMarkdown(storyText, filename);
+                                
+                                if (storyData) {
+                                    allStories.push(storyData);
+                                    updateDebugInfo(`Loaded: ${filename}`);
+                                }
+                            } else {
+                                updateDebugInfo(`Failed to load: ${filename} (${storyResponse.status})`);
                             }
+                        } catch (error) {
+                            updateDebugInfo(`Error fetching ${filename}: ${error.message}`);
                         }
-                    } catch (error) {
-                        console.error(`Error fetching ${filename}:`, error);
                     }
                 }
                 
@@ -538,21 +654,56 @@
                 // Display all stories initially
                 displayedStories = [...allStories];
                 displayStories();
+                updateDebugInfo(`Successfully loaded ${allStories.length} stories`);
                 
             } catch (error) {
                 console.error('Error fetching stories:', error);
                 statusText.textContent = 'Error loading stories. Please try again later.';
+                updateDebugInfo(`Fatal error: ${error.message}`);
+                
+                // Try to use fallback stories
+                allStories = CONFIG.FALLBACK_STORIES;
+                displayedStories = [...allStories];
+                displayStories();
+                
                 storiesContainer.innerHTML = `
                     <div class="empty-state">
                         <i class="fas fa-exclamation-triangle"></i>
-                        <h3>Unable to load stories</h3>
-                        <p>There was an error fetching stories from the API. Please check if the API is running.</p>
+                        <h3>Unable to load stories from API</h3>
+                        <p>Using fallback stories. Please check if the API is running.</p>
                         <button class="btn btn-primary" onclick="fetchStories()">
                             <i class="fas fa-redo"></i> Retry
                         </button>
                     </div>
                 `;
             }
+        }
+        
+        // Try to load stories directly without index.json
+        async function tryDirectStoryLoading() {
+            const storyFiles = [];
+            
+            // Try to load stories sequentially
+            for (let i = 1; i <= CONFIG.MAX_STORIES; i++) {
+                const filename = `${CONFIG.STORY_PREFIX}${i.toString().padStart(4, '0')}${CONFIG.STORY_EXTENSION}`;
+                
+                try {
+                    // Try to fetch the story
+                    const response = await fetch(`${CONFIG.API_BASE}/stories/${filename}`);
+                    
+                    if (response.ok) {
+                        storyFiles.push(filename);
+                        updateDebugInfo(`Found story: ${filename}`);
+                    } else if (response.status === 404) {
+                        // Story doesn't exist, continue checking
+                        continue;
+                    }
+                } catch (error) {
+                    updateDebugInfo(`Error checking ${filename}: ${error.message}`);
+                }
+            }
+            
+            return storyFiles;
         }
         
         // Parse markdown story file
@@ -565,8 +716,8 @@
                     // If no frontmatter, try to extract basic info
                     const titleMatch = markdown.match(/^#\s+(.+)$/m);
                     return {
-                        id: filename.replace('.md', ''),
-                        title: titleMatch ? titleMatch[1] : filename.replace('.md', '').replace('story', 'Story '),
+                        id: filename.replace(CONFIG.STORY_EXTENSION, ''),
+                        title: titleMatch ? titleMatch[1] : filename.replace(CONFIG.STORY_EXTENSION, '').replace('story', 'Story '),
                         author: 'Unknown Author',
                         cover: 'https://source.unsplash.com/featured/?story,book',
                         description: markdown.substring(0, 150) + '...',
@@ -582,7 +733,7 @@
                 // Parse frontmatter lines
                 const lines = frontmatter.split('\n');
                 const data = {
-                    id: filename.replace('.md', ''),
+                    id: filename.replace(CONFIG.STORY_EXTENSION, ''),
                     content: content
                 };
                 
@@ -595,11 +746,14 @@
                         // Remove quotes if present
                         if (value.startsWith('"') && value.endsWith('"')) {
                             value = value.substring(1, value.length - 1);
+                        } else if (value.startsWith("'") && value.endsWith("'")) {
+                            value = value.substring(1, value.length - 1);
                         }
                         
                         // Parse arrays (tags)
                         if (key === 'tags') {
                             try {
+                                // Try to parse as JSON array
                                 value = JSON.parse(value.replace(/'/g, '"'));
                             } catch {
                                 // If not valid JSON, try to parse as comma-separated
@@ -614,6 +768,7 @@
                 return data;
             } catch (error) {
                 console.error('Error parsing story:', error);
+                updateDebugInfo(`Parse error for ${filename}: ${error.message}`);
                 return null;
             }
         }
@@ -803,6 +958,13 @@
             const wordCount = content.split(/\s+/).length;
             const readingTime = Math.ceil(wordCount / wordsPerMinute);
             return readingTime || 1;
+        }
+        
+        // Update debug information
+        function updateDebugInfo(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            debugContent.innerHTML += `<div><strong>[${timestamp}]</strong> ${message}</div>`;
+            debugContent.scrollTop = debugContent.scrollHeight;
         }
         
         // Expose functions to global scope for onclick handlers
