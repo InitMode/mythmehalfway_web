@@ -9,32 +9,41 @@
         :root {
             --primary: #8a2be2;
             --primary-dark: #5d0e9e;
-            --bg-light: #f5f5f7;
+            --primary-light: #9d4edd;
+            --secondary: #ff6b8b;
+            --accent: #4cc9f0;
+            --bg-light: #f8f5ff;
             --bg-dark: #0f0f1a;
             --card-light: #ffffff;
             --card-dark: #1a1a2e;
-            --text-light: #333333;
-            --text-dark: #e0e0e0;
-            --border-light: #e0e0e0;
+            --text-light: #2d2d3a;
+            --text-dark: #e8e8f0;
+            --border-light: #e5e1ff;
             --border-dark: #2d2d44;
-            --accent: #ff6b8b;
             --success: #4CAF50;
             --warning: #ff9800;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --shadow-dark: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --radius-lg: 16px;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: background-color 0.3s, color 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             line-height: 1.6;
             background: var(--bg-light);
             color: var(--text-light);
             min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         body.dark-mode {
@@ -42,263 +51,212 @@
             color: var(--text-dark);
         }
 
-        /* Header */
-        header {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        /* App Container */
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* App Header */
+        .app-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
-            padding: 1rem 2rem;
+            padding: 1.2rem 0;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 var(--radius) var(--radius);
+        }
+
+        .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            flex-wrap: wrap;
+            gap: 1.5rem;
         }
 
-        .header-left h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .header-left .subtitle {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        .header-right {
+        .brand {
             display: flex;
             align-items: center;
             gap: 1rem;
         }
 
-        /* Theme Toggle */
-        .theme-toggle {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
+        .brand-icon {
+            font-size: 2rem;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            line-height: 1;
+        }
+
+        .brand-subtitle {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-top: 0.2rem;
+        }
+
+        /* Header Controls */
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* Search Bar */
+        .search-container {
+            position: relative;
+            flex: 1;
+            min-width: 280px;
+            max-width: 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.9rem 1.2rem 0.9rem 3rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
             color: white;
-            width: 40px;
-            height: 40px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .search-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Filter Tags */
+        .filter-tags-container {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-tag {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            color: white;
+            font-size: 0.85rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .filter-tag:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .filter-tag.active {
+            background: white;
+            color: var(--primary);
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Header Actions */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
         }
 
-        .theme-toggle:hover {
+        .action-btn:hover {
             background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
 
-        /* Tabs Navigation */
-        .tabs {
-            display: flex;
-            background: var(--card-light);
-            border-bottom: 1px solid var(--border-light);
-            padding: 0 2rem;
-        }
-
-        body.dark-mode .tabs {
-            background: var(--card-dark);
-            border-bottom-color: var(--border-dark);
-        }
-
-        .tab {
-            padding: 1rem 1.5rem;
-            background: none;
-            border: none;
-            font-size: 1rem;
-            cursor: pointer;
-            position: relative;
-            color: var(--text-light);
-        }
-
-        body.dark-mode .tab {
-            color: var(--text-dark);
-        }
-
-        .tab.active {
+        .theme-toggle.active {
+            background: white;
             color: var(--primary);
-            font-weight: 600;
-        }
-
-        .tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--primary);
-            border-radius: 3px 3px 0 0;
-        }
-
-        /* Main Container */
-        .main-container {
-            display: flex;
-            min-height: calc(100vh - 140px);
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 300px;
-            background: var(--card-light);
-            border-right: 1px solid var(--border-light);
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            overflow-y: auto;
-        }
-
-        body.dark-mode .sidebar {
-            background: var(--card-dark);
-            border-right-color: var(--border-dark);
-        }
-
-        /* Search */
-        .search-container {
-            position: relative;
-        }
-
-        .search-container i {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #999;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 0.8rem 1rem 0.8rem 2.5rem;
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            font-size: 1rem;
-            background: var(--bg-light);
-            color: var(--text-light);
-        }
-
-        body.dark-mode .search-input {
-            background: var(--bg-dark);
-            border-color: var(--border-dark);
-            color: var(--text-dark);
-        }
-
-        /* Filters */
-        .filter-section h3 {
-            font-size: 1rem;
-            margin-bottom: 0.8rem;
-            color: var(--primary);
-        }
-
-        .filter-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .tag {
-            padding: 0.3rem 0.8rem;
-            background: #eef2ff;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            border: 1px solid transparent;
-            white-space: nowrap;
-        }
-
-        body.dark-mode .tag {
-            background: #2a2a4a;
-        }
-
-        .tag.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        /* Sounds Panel */
-        .sounds-panel {
-            margin-top: auto;
-        }
-
-        .sound-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.8rem;
-            background: var(--bg-light);
-            border-radius: 8px;
-            margin-bottom: 0.5rem;
-            cursor: pointer;
-            border: 1px solid var(--border-light);
-        }
-
-        body.dark-mode .sound-item {
-            background: var(--bg-dark);
-            border-color: var(--border-dark);
-        }
-
-        .sound-item.active {
-            border-color: var(--accent);
-            background: rgba(255, 107, 139, 0.1);
-        }
-
-        .sound-controls {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .volume-slider {
-            width: 80px;
-        }
-
-        /* Content Area */
-        .content-area {
-            flex: 1;
-            padding: 2rem;
-            overflow-y: auto;
         }
 
         /* Continue Reading Section */
         .continue-reading-section {
+            background: var(--card-light);
+            border-radius: var(--radius);
+            padding: 1.5rem;
             margin-bottom: 2rem;
-            display: none;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-light);
         }
 
-        .continue-reading-section.show {
-            display: block;
+        body.dark-mode .continue-reading-section {
+            background: var(--card-dark);
+            box-shadow: var(--shadow-dark);
+            border-color: var(--border-dark);
         }
 
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
+            margin-bottom: 1.2rem;
         }
 
         .section-title {
-            font-size: 1.2rem;
-            font-weight: 600;
+            font-size: 1.3rem;
+            font-weight: 700;
             color: var(--primary);
-        }
-
-        .view-all-btn {
-            background: transparent;
-            border: none;
-            color: var(--primary);
-            font-size: 0.9rem;
-            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 0.3rem;
+            gap: 0.8rem;
         }
 
-        .view-all-btn:hover {
-            text-decoration: underline;
+        .section-title i {
+            font-size: 1.2rem;
         }
 
-        .continue-reading-list {
+        /* Continue Reading Cards */
+        .continue-reading-cards {
             display: flex;
             gap: 1rem;
             overflow-x: auto;
@@ -306,41 +264,42 @@
             scrollbar-width: thin;
         }
 
-        .continue-reading-list::-webkit-scrollbar {
+        .continue-reading-cards::-webkit-scrollbar {
             height: 6px;
         }
 
-        .continue-reading-list::-webkit-scrollbar-thumb {
+        .continue-reading-cards::-webkit-scrollbar-thumb {
             background: #ccc;
             border-radius: 3px;
         }
 
-        body.dark-mode .continue-reading-list::-webkit-scrollbar-thumb {
+        body.dark-mode .continue-reading-cards::-webkit-scrollbar-thumb {
             background: #555;
         }
 
-        /* Continue Reading Card */
         .continue-card {
-            width: 200px;
-            height: 120px;
-            flex-shrink: 0;
-            background: var(--card-light);
-            border-radius: 8px;
+            min-width: 220px;
+            max-width: 220px;
+            height: 140px;
+            background: var(--bg-light);
+            border-radius: var(--radius-sm);
             overflow: hidden;
             position: relative;
             cursor: pointer;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-            display: flex;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-light);
         }
 
         body.dark-mode .continue-card {
-            background: var(--card-dark);
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+            background: var(--bg-dark);
+            border-color: var(--border-dark);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
         .continue-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
         }
 
         .continue-card-bg {
@@ -351,60 +310,40 @@
             bottom: 0;
             background-size: cover;
             background-position: center;
-            filter: brightness(0.6);
+            filter: brightness(0.5);
         }
 
         .continue-card-content {
             position: relative;
-            z-index: 1;
-            padding: 0.8rem;
-            color: white;
+            z-index: 2;
+            padding: 1rem;
+            height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            flex: 1;
+            color: white;
+        }
+
+        .continue-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
         }
 
         .continue-card-title {
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 1rem;
             line-height: 1.3;
-            margin-bottom: 0.3rem;
-        }
-
-        .continue-card-meta {
-            font-size: 0.75rem;
-            opacity: 0.9;
-        }
-
-        .continue-card-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: auto;
-        }
-
-        .continue-card-progress {
+            margin-bottom: 0.5rem;
             flex: 1;
-            height: 3px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 1.5px;
-            margin-right: 0.5rem;
-            overflow: hidden;
-        }
-
-        .continue-card-progress-bar {
-            height: 100%;
-            background: var(--success);
-            width: 0%;
         }
 
         .continue-card-close {
             background: rgba(255, 255, 255, 0.2);
             border: none;
             color: white;
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -412,316 +351,483 @@
             font-size: 0.7rem;
             cursor: pointer;
             flex-shrink: 0;
+            margin-left: 0.5rem;
         }
 
         .continue-card-close:hover {
             background: rgba(255, 255, 255, 0.3);
         }
 
-        /* History Button */
-        .history-card {
-            width: 200px;
-            height: 120px;
-            flex-shrink: 0;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            cursor: pointer;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+        .continue-card-progress {
+            background: rgba(255, 255, 255, 0.2);
+            height: 4px;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 0.5rem;
         }
 
-        .history-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.25);
+        .continue-card-progress-bar {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
         }
 
-        .history-card i {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .history-card span {
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        /* Stats Bar */
-        .stats-bar {
+        .continue-card-meta {
+            font-size: 0.8rem;
+            opacity: 0.9;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border-light);
         }
 
-        body.dark-mode .stats-bar {
-            border-bottom-color: var(--border-dark);
-        }
-
-        .stats {
-            display: flex;
-            gap: 1.5rem;
-        }
-
-        .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-        }
-
-        .stat-item i {
-            color: var(--primary);
-        }
-
-        /* View Controls */
-        .view-controls {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .view-btn {
-            background: var(--bg-light);
-            border: 1px solid var(--border-light);
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        body.dark-mode .view-btn {
-            background: var(--bg-dark);
-            border-color: var(--border-dark);
-        }
-
-        .view-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        /* Stories Grid/List */
-        .stories-container {
+        /* Main Content */
+        .main-content {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             gap: 1.5rem;
-        }
-
-        .stories-container.list-view {
-            grid-template-columns: 1fr;
+            padding-bottom: 3rem;
         }
 
         /* Story Card */
         .story-card {
             background: var(--card-light);
-            border-radius: 12px;
+            border-radius: var(--radius);
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            position: relative;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            height: 320px;
-            display: flex;
-            flex-direction: column;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-light);
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 300px;
         }
 
         body.dark-mode .story-card {
             background: var(--card-dark);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            box-shadow: var(--shadow-dark);
+            border-color: var(--border-dark);
         }
 
         .story-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
 
-        .story-card.list-view {
-            height: auto;
-            flex-direction: row;
-        }
-
-        /* Card Image */
-        .card-image {
-            height: 200px;
+        .story-card-image {
+            height: 160px;
             background-size: cover;
             background-position: center;
             position: relative;
         }
 
-        .story-card.list-view .card-image {
-            height: 180px;
-            width: 140px;
-            flex-shrink: 0;
-        }
-
-        .card-overlay {
+        .story-card-overlay {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent 50%);
+            background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 100%);
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
             padding: 1rem;
-            color: white;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-        .card-tags {
+        .story-card:hover .story-card-overlay {
+            opacity: 1;
+        }
+
+        .story-card-tags {
             display: flex;
             flex-wrap: wrap;
             gap: 0.3rem;
             margin-bottom: 0.5rem;
         }
 
-        .card-tag {
+        .story-card-tag {
             background: rgba(255, 255, 255, 0.2);
-            padding: 0.2rem 0.5rem;
-            border-radius: 10px;
-            font-size: 0.7rem;
             backdrop-filter: blur(4px);
+            padding: 0.2rem 0.6rem;
+            border-radius: 10px;
+            font-size: 0.65rem;
+            color: white;
+            white-space: nowrap;
         }
 
-        .card-title {
-            font-weight: 700;
-            margin-bottom: 0.3rem;
-            font-size: 1.1rem;
-            line-height: 1.3;
-        }
-
-        .card-author {
-            font-size: 0.85rem;
-            opacity: 0.9;
-            margin-bottom: 0.5rem;
-        }
-
-        /* Card Content */
-        .card-content {
+        .story-card-content {
             padding: 1rem;
-            flex: 1;
             display: flex;
             flex-direction: column;
+            flex: 1;
         }
 
-        .story-card.list-view .card-content {
-            padding: 1.5rem;
-        }
-
-        .card-meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            color: #777;
+        .story-card-header {
             margin-bottom: 0.5rem;
         }
 
-        body.dark-mode .card-meta {
+        .story-card-title {
+            font-weight: 700;
+            font-size: 1rem;
+            line-height: 1.3;
+            margin-bottom: 0.3rem;
+            color: var(--text-light);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        body.dark-mode .story-card-title {
+            color: var(--text-dark);
+        }
+
+        .story-card-author {
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .story-card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        body.dark-mode .story-card-meta {
             color: #aaa;
         }
 
-        .read-time {
+        .story-card-type {
+            background: var(--primary-light);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .story-card-time {
             display: flex;
             align-items: center;
             gap: 0.3rem;
             color: var(--warning);
         }
 
-        .card-description {
-            font-size: 0.9rem;
-            color: #555;
-            margin-bottom: 1rem;
+        .story-card-description {
+            font-size: 0.8rem;
+            color: #777;
+            line-height: 1.4;
             flex: 1;
-            overflow: hidden;
-            text-overflow: ellipsis;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
-        }
-
-        body.dark-mode .card-description {
-            color: #bbb;
-        }
-
-        .story-card.list-view .card-description {
-            -webkit-line-clamp: 3;
-        }
-
-        /* Card Actions */
-        .card-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: auto;
-        }
-
-        .action-btn {
-            background: transparent;
-            border: none;
-            color: #777;
-            font-size: 1rem;
-            cursor: pointer;
-            padding: 0.3rem;
-            border-radius: 4px;
-        }
-
-        .action-btn:hover {
-            background: rgba(0, 0, 0, 0.05);
-        }
-
-        body.dark-mode .action-btn:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .action-btn.active {
-            color: var(--accent);
-        }
-
-        .read-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-
-        .read-btn.continue {
-            background: var(--success);
-        }
-
-        .read-btn:hover {
-            background: var(--primary-dark);
-        }
-
-        .read-btn.continue:hover {
-            background: #3d8b40;
-        }
-
-        /* Progress Indicator */
-        .progress-indicator {
-            height: 4px;
-            background: #eee;
-            border-radius: 2px;
-            margin-top: 0.5rem;
             overflow: hidden;
         }
 
-        body.dark-mode .progress-indicator {
+        body.dark-mode .story-card-description {
+            color: #bbb;
+        }
+
+        .story-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.8rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid var(--border-light);
+        }
+
+        body.dark-mode .story-card-footer {
+            border-top-color: var(--border-dark);
+        }
+
+        .story-card-progress {
+            flex: 1;
+            height: 4px;
+            background: #eee;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-right: 0.8rem;
+        }
+
+        body.dark-mode .story-card-progress {
             background: #333;
         }
 
-        .progress-bar {
+        .story-card-progress-bar {
             height: 100%;
             background: var(--primary);
             width: 0%;
-            transition: width 0.3s;
+        }
+
+        .story-card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .story-card-btn {
+            background: transparent;
+            border: none;
+            color: #999;
+            font-size: 0.9rem;
+            cursor: pointer;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .story-card-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--primary);
+        }
+
+        body.dark-mode .story-card-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .story-card-btn.active {
+            color: var(--secondary);
+        }
+
+        /* FAB Menu */
+        .fab-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+
+        .fab-main {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .fab-main:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .fab-menu {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            background: var(--card-light);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            gap: 0.8rem;
+            min-width: 180px;
+            border: 1px solid var(--border-light);
+        }
+
+        body.dark-mode .fab-menu {
+            background: var(--card-dark);
+            border-color: var(--border-dark);
+        }
+
+        .fab-menu.active {
+            display: flex;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fab-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem 1rem;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-light);
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        body.dark-mode .fab-item {
+            color: var(--text-dark);
+        }
+
+        .fab-item:hover {
+            background: rgba(138, 43, 226, 0.1);
+            color: var(--primary);
+            transform: translateX(-5px);
+        }
+
+        .fab-item i {
+            width: 20px;
+            font-size: 1.1rem;
+        }
+
+        /* Audio Dialog */
+        .audio-dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--card-light);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            gap: 1.5rem;
+            min-width: 320px;
+            max-width: 90vw;
+            border: 1px solid var(--border-light);
+        }
+
+        body.dark-mode .audio-dialog {
+            background: var(--card-dark);
+            border-color: var(--border-dark);
+        }
+
+        .audio-dialog.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -40%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        .audio-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .audio-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .audio-close {
+            background: transparent;
+            border: none;
+            color: #999;
+            font-size: 1.2rem;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .audio-close:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        body.dark-mode .audio-close:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .audio-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .audio-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: var(--bg-light);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        body.dark-mode .audio-option {
+            background: var(--bg-dark);
+        }
+
+        .audio-option:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .audio-option.active {
+            border-color: var(--primary);
+            background: rgba(138, 43, 226, 0.1);
+        }
+
+        .audio-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .audio-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(138, 43, 226, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .audio-name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .audio-volume {
+            width: 100px;
         }
 
         /* Modal */
@@ -732,10 +838,11 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            z-index: 2000;
             padding: 1rem;
         }
 
@@ -746,13 +853,13 @@
         .modal-content {
             background: var(--card-light);
             width: 90%;
-            max-width: 900px;
+            max-width: 800px;
             height: 90vh;
-            border-radius: 16px;
+            border-radius: var(--radius-lg);
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
         }
 
         body.dark-mode .modal-content {
@@ -760,8 +867,8 @@
         }
 
         .modal-header {
-            padding: 1.5rem;
-            background: var(--primary);
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             display: flex;
             justify-content: space-between;
@@ -770,13 +877,14 @@
 
         .modal-header h2 {
             font-size: 1.5rem;
+            font-weight: 700;
         }
 
         .modal-close {
-            background: transparent;
+            background: rgba(255, 255, 255, 0.1);
             border: none;
             color: white;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             cursor: pointer;
             width: 40px;
             height: 40px;
@@ -787,18 +895,19 @@
         }
 
         .modal-close:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .modal-body {
             flex: 1;
-            padding: 1.5rem;
+            padding: 2rem;
             overflow-y: auto;
             line-height: 1.8;
+            font-size: 1.1rem;
         }
 
         .modal-controls {
-            padding: 1rem 1.5rem;
+            padding: 1.5rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -818,17 +927,18 @@
         }
 
         .page-input {
-            width: 60px;
-            padding: 0.5rem;
-            border: 1px solid var(--border-light);
-            border-radius: 4px;
+            width: 70px;
+            padding: 0.8rem;
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-sm);
             text-align: center;
-            background: var(--bg-light);
+            background: var(--card-light);
             color: var(--text-light);
+            font-size: 1rem;
         }
 
         body.dark-mode .page-input {
-            background: var(--bg-dark);
+            background: var(--card-dark);
             border-color: var(--border-dark);
             color: var(--text-dark);
         }
@@ -837,298 +947,355 @@
             background: var(--primary);
             color: white;
             border: none;
-            width: 36px;
-            height: 36px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(138, 43, 226, 0.3);
         }
 
         .page-btn:hover {
             background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(138, 43, 226, 0.4);
         }
 
-        /* History Modal */
-        .history-modal .modal-content {
-            max-width: 600px;
-        }
-
-        .history-list {
-            max-height: 60vh;
-            overflow-y: auto;
-        }
-
-        .history-item {
-            padding: 1rem;
-            border-bottom: 1px solid var(--border-light);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-        }
-
-        body.dark-mode .history-item {
-            border-bottom-color: var(--border-dark);
-        }
-
-        .history-item:hover {
-            background: rgba(0, 0, 0, 0.03);
-        }
-
-        body.dark-mode .history-item:hover {
-            background: rgba(255, 255, 255, 0.03);
-        }
-
-        .history-item-info {
-            flex: 1;
-        }
-
-        .history-item-title {
-            font-weight: 600;
-            margin-bottom: 0.3rem;
-        }
-
-        .history-item-meta {
-            font-size: 0.85rem;
-            color: #777;
-            display: flex;
-            gap: 1rem;
-        }
-
-        body.dark-mode .history-item-meta {
-            color: #aaa;
-        }
-
-        .history-item-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .history-close-btn {
-            background: transparent;
-            border: none;
-            color: #999;
-            cursor: pointer;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .history-close-btn:hover {
-            background: rgba(0, 0, 0, 0.05);
-            color: var(--accent);
-        }
-
-        body.dark-mode .history-close-btn:hover {
-            background: rgba(255, 255, 255, 0.05);
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         /* Toast */
         .toast {
             position: fixed;
             bottom: 2rem;
-            right: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
             background: var(--primary);
             color: white;
             padding: 1rem 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border-radius: 50px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            z-index: 1001;
-            transform: translateY(100px);
+            gap: 0.8rem;
+            z-index: 2001;
             opacity: 0;
-            transition: transform 0.3s, opacity 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .toast.show {
-            transform: translateY(0);
+            transform: translateX(-50%) translateY(0);
             opacity: 1;
+        }
+
+        /* Stats */
+        .stats-container {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: var(--card-light);
+            border-radius: var(--radius);
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+            min-width: 180px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-light);
+        }
+
+        body.dark-mode .stat-card {
+            background: var(--card-dark);
+            box-shadow: var(--shadow-dark);
+            border-color: var(--border-dark);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .stat-info {
+            flex: 1;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.3rem;
+        }
+
+        body.dark-mode .stat-label {
+            color: #aaa;
         }
 
         /* Empty State */
         .empty-state {
+            grid-column: 1 / -1;
             text-align: center;
-            padding: 3rem 1rem;
+            padding: 4rem 2rem;
             color: #999;
         }
 
         .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.3;
         }
 
         .empty-state p {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state .action-btn {
+            display: inline-flex;
+            margin-top: 1rem;
+            padding: 0.8rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .empty-state .action-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
         }
 
         /* Responsive */
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+        }
+
         @media (max-width: 992px) {
-            .main-container {
+            .header-content {
                 flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
             }
-            
-            .sidebar {
-                width: 100%;
-                border-right: none;
-                border-bottom: 1px solid var(--border-light);
+
+            .search-container {
+                max-width: 100%;
             }
-            
-            body.dark-mode .sidebar {
-                border-bottom-color: var(--border-dark);
+
+            .header-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-tags-container {
+                justify-content: center;
+            }
+
+            .continue-card {
+                min-width: 200px;
             }
         }
 
         @media (max-width: 768px) {
-            .stories-container {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            .app-container {
+                padding: 0 15px;
             }
-            
-            .card-image {
-                height: 180px;
-            }
-            
-            .story-card {
-                height: 300px;
-            }
-            
-            header, .tabs {
-                padding: 1rem;
-            }
-            
-            .stats-bar {
-                flex-direction: column;
-                align-items: flex-start;
+
+            .main-content {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
                 gap: 1rem;
             }
-            
-            .continue-card, .history-card {
-                width: 180px;
+
+            .story-card {
+                height: 280px;
+            }
+
+            .story-card-image {
+                height: 140px;
+            }
+
+            .stats-container {
+                gap: 1rem;
+            }
+
+            .stat-card {
+                min-width: calc(50% - 0.5rem);
+            }
+
+            .fab-container {
+                bottom: 1.5rem;
+                right: 1.5rem;
             }
         }
 
-        @media (max-width: 480px) {
-            .stories-container {
-                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        @media (max-width: 576px) {
+            .main-content {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             }
-            
-            .story-card.list-view .card-image {
-                width: 100px;
-                height: 140px;
+
+            .story-card {
+                height: 260px;
             }
-            
+
+            .story-card-image {
+                height: 130px;
+            }
+
+            .continue-card {
+                min-width: 180px;
+                height: 130px;
+            }
+
             .modal-content {
                 width: 95%;
                 height: 95vh;
             }
-            
-            .continue-card, .history-card {
-                width: 160px;
-                height: 110px;
+
+            .stat-card {
+                min-width: 100%;
             }
         }
     </style>
 </head>
 
 <body class="dark-mode">
-    <header>
-        <div class="header-left">
-            <h1>Myth Me Halfway</h1>
-            <div class="subtitle">Story Library <span id="currentYear"></span></div>
-        </div>
-        <div class="header-right">
-            <button class="theme-toggle" id="themeToggle" title="Toggle theme">
-                <i class="fas fa-moon"></i>
+    <!-- Audio Dialog -->
+    <div class="audio-dialog" id="audioDialog">
+        <div class="audio-header">
+            <h3 class="audio-title">Background Sounds</h3>
+            <button class="audio-close" id="closeAudioDialog">
+                <i class="fas fa-times"></i>
             </button>
         </div>
-    </header>
-
-    <!-- Tabs Navigation -->
-    <div class="tabs">
-        <button class="tab active" data-tab="all">All Stories</button>
-        <button class="tab" data-tab="bookmarked">Bookmarked</button>
-        <button class="tab" data-tab="reading">Continue Reading</button>
+        <div class="audio-options" id="audioOptions">
+            <!-- Audio options will be inserted here -->
+        </div>
     </div>
 
-    <div class="main-container">
-        <!-- Sidebar with filters and sounds -->
-        <aside class="sidebar">
-            <div class="search-container">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" class="search-input" placeholder="Search title, author, tags...">
-            </div>
-
-            <div class="filter-section">
-                <h3>Story Types</h3>
-                <div class="filter-tags" id="typeFilter">
-                    <span class="tag active" data-value="all">All</span>
-                </div>
-            </div>
-
-            <div class="filter-section">
-                <h3>Popular Tags</h3>
-                <div class="filter-tags" id="tagFilter">
-                    <span class="tag active" data-value="all">All</span>
-                </div>
-            </div>
-
-            <div class="sounds-panel">
-                <h3>Background Sounds</h3>
-                <div id="soundsContainer"></div>
-            </div>
-        </aside>
-
-        <!-- Main content -->
-        <main class="content-area">
-            <!-- Continue Reading Section -->
-            <div class="continue-reading-section" id="continueReadingSection">
-                <div class="section-header">
-                    <h3 class="section-title">Continue Reading</h3>
-                </div>
-                <div class="continue-reading-list" id="continueReadingList">
-                    <!-- Continue reading cards will be inserted here -->
-                    <div class="history-card" id="viewHistoryBtn">
-                        <i class="fas fa-history"></i>
-                        <span>View History</span>
+    <!-- App Container -->
+    <div class="app-container">
+        <!-- App Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="brand">
+                    <div class="brand-icon">
+                        <i class="fas fa-book-sparkles"></i>
+                    </div>
+                    <div class="brand-text">
+                        <h1 class="brand-title">Myth Me Halfway</h1>
+                        <div class="brand-subtitle">Story Library <span id="currentYear"></span></div>
                     </div>
                 </div>
-            </div>
 
-            <div class="stats-bar">
-                <div class="stats">
-                    <div class="stat-item">
-                        <i class="fas fa-book-open"></i>
-                        <span id="totalStories">0 stories</span>
+                <div class="header-controls">
+                    <!-- Search Bar -->
+                    <div class="search-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="searchInput" class="search-input" placeholder="Search stories, authors, tags...">
                     </div>
-                    <div class="stat-item">
-                        <i class="fas fa-bookmark"></i>
-                        <span id="bookmarkedCount">0 bookmarked</span>
-                    </div>
-                    <div class="stat-item">
-                        <i class="fas fa-clock"></i>
-                        <span id="totalReadTime">0 min read</span>
+
+                    <!-- Filter Tags -->
+                    <div class="filter-tags-container" id="filterTags">
+                        <!-- Tags will be inserted here -->
                     </div>
                 </div>
-                <div class="view-controls">
-                    <button class="view-btn active" id="gridViewBtn" title="Grid view">
-                        <i class="fas fa-th-large"></i>
+
+                <div class="header-actions">
+                    <button class="action-btn theme-toggle" id="themeToggle" title="Toggle theme">
+                        <i class="fas fa-moon"></i>
                     </button>
-                    <button class="view-btn" id="listViewBtn" title="List view">
-                        <i class="fas fa-list"></i>
+                    <button class="action-btn" id="audioToggle" title="Background sounds">
+                        <i class="fas fa-music"></i>
                     </button>
                 </div>
             </div>
+        </header>
 
-            <div class="stories-container" id="storiesContainer">
-                <!-- Story cards will be inserted here -->
+        <!-- Continue Reading Section -->
+        <div class="continue-reading-section" id="continueReadingSection">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <i class="fas fa-play-circle"></i>
+                    Continue Reading
+                </h3>
             </div>
+            <div class="continue-reading-cards" id="continueReadingCards">
+                <!-- Continue reading cards will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="totalStories">0</div>
+                    <div class="stat-label">Total Stories</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-bookmark"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="bookmarkedCount">0</div>
+                    <div class="stat-label">Bookmarked</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="totalReadTime">0</div>
+                    <div class="stat-label">Minutes Read</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="likedCount">0</div>
+                    <div class="stat-label">Liked Stories</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content" id="storiesContainer">
+            <!-- Story cards will be inserted here -->
         </main>
     </div>
 
@@ -1155,7 +1322,7 @@
                         <i class="fas fa-chevron-right"></i>
                     </button>
                 </div>
-                <div>
+                <div class="page-controls">
                     <button class="action-btn" id="modalBookmarkBtn" title="Bookmark">
                         <i class="far fa-bookmark"></i>
                     </button>
@@ -1167,24 +1334,28 @@
         </div>
     </div>
 
-    <!-- History Modal -->
-    <div class="modal history-modal" id="historyModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Reading History</h2>
-                <button class="modal-close" id="closeHistoryModal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="history-list" id="historyList">
-                    <!-- History items will be inserted here -->
-                </div>
-            </div>
+    <!-- FAB Menu -->
+    <div class="fab-container">
+        <div class="fab-menu" id="fabMenu">
+            <button class="fab-item" id="fabBookmarks">
+                <i class="fas fa-bookmark"></i>
+                <span>Bookmarks</span>
+            </button>
+            <button class="fab-item" id="fabLikes">
+                <i class="fas fa-heart"></i>
+                <span>Liked Stories</span>
+            </button>
+            <button class="fab-item" id="fabHistory">
+                <i class="fas fa-history"></i>
+                <span>Reading History</span>
+            </button>
         </div>
+        <button class="fab-main" id="fabMain">
+            <i class="fas fa-plus"></i>
+        </button>
     </div>
 
-    <!-- Toast notification -->
+    <!-- Toast -->
     <div class="toast" id="toast">
         <i class="fas fa-check-circle"></i>
         <span id="toastMessage">Action completed</span>
@@ -1207,7 +1378,7 @@
             
             // Reading configuration
             const WORDS_PER_PAGE = 300;
-            const WORDS_PER_MINUTE = 200; // Average reading speed
+            const WORDS_PER_MINUTE = 200;
             
             // --- State Management ---
             let allStories = [];
@@ -1216,16 +1387,15 @@
             let allTags = new Set();
             let activeFilters = {
                 type: 'all',
-                tags: ['all']
+                tags: new Set()
             };
-            let currentView = 'grid'; // 'grid' or 'list'
-            let activeSound = null;
-            let audioContext = null;
-            let audioElements = {};
+            let searchQuery = '';
             let currentStoryData = null;
             let currentStoryPages = [];
             let currentPage = 1;
-            let currentTab = 'all';
+            let currentView = 'all'; // 'all', 'bookmarked', 'liked', 'history'
+            let activeSound = null;
+            let audioElements = {};
             
             // --- Local Storage Keys ---
             const STORAGE_KEYS = {
@@ -1241,19 +1411,18 @@
             // --- DOM Elements ---
             const currentYearEl = document.getElementById('currentYear');
             const themeToggle = document.getElementById('themeToggle');
-            const tabs = document.querySelectorAll('.tab');
             const searchInput = document.getElementById('searchInput');
-            const typeFilter = document.getElementById('typeFilter');
-            const tagFilter = document.getElementById('tagFilter');
-            const soundsContainer = document.getElementById('soundsContainer');
+            const filterTags = document.getElementById('filterTags');
+            const audioToggle = document.getElementById('audioToggle');
+            const audioDialog = document.getElementById('audioDialog');
+            const closeAudioDialog = document.getElementById('closeAudioDialog');
+            const audioOptions = document.getElementById('audioOptions');
             const continueReadingSection = document.getElementById('continueReadingSection');
-            const continueReadingList = document.getElementById('continueReadingList');
-            const viewHistoryBtn = document.getElementById('viewHistoryBtn');
+            const continueReadingCards = document.getElementById('continueReadingCards');
             const totalStoriesEl = document.getElementById('totalStories');
             const bookmarkedCountEl = document.getElementById('bookmarkedCount');
             const totalReadTimeEl = document.getElementById('totalReadTime');
-            const gridViewBtn = document.getElementById('gridViewBtn');
-            const listViewBtn = document.getElementById('listViewBtn');
+            const likedCountEl = document.getElementById('likedCount');
             const storiesContainer = document.getElementById('storiesContainer');
             const storyModal = document.getElementById('storyModal');
             const closeModal = document.getElementById('closeModal');
@@ -1265,32 +1434,21 @@
             const totalPagesEl = document.getElementById('totalPages');
             const modalBookmarkBtn = document.getElementById('modalBookmarkBtn');
             const modalLikeBtn = document.getElementById('modalLikeBtn');
-            const historyModal = document.getElementById('historyModal');
-            const closeHistoryModal = document.getElementById('closeHistoryModal');
-            const historyList = document.getElementById('historyList');
+            const fabMain = document.getElementById('fabMain');
+            const fabMenu = document.getElementById('fabMenu');
+            const fabBookmarks = document.getElementById('fabBookmarks');
+            const fabLikes = document.getElementById('fabLikes');
+            const fabHistory = document.getElementById('fabHistory');
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toastMessage');
             
             // --- Initialize ---
             function init() {
-                // Set current year
                 currentYearEl.textContent = new Date().getFullYear();
-                
-                // Initialize theme
                 initTheme();
-                
-                // Initialize sounds
-                initSounds();
-                
-                // Initialize event listeners
+                initAudio();
                 initEventListeners();
-                
-                // Load stories
                 loadStories();
-                
-                // Update UI
-                updateContinueReading();
-                updateStats();
             }
             
             // --- Theme Management ---
@@ -1299,52 +1457,52 @@
                 if (savedTheme === 'light') {
                     document.body.classList.remove('dark-mode');
                     themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                    themeToggle.classList.add('active');
                 } else {
                     document.body.classList.add('dark-mode');
                     themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
                 }
             }
             
-            // --- Sound Management ---
-            function initSounds() {
+            // --- Audio Management ---
+            function initAudio() {
                 SOUNDS.forEach(sound => {
-                    const soundEl = document.createElement('div');
-                    soundEl.className = 'sound-item';
-                    soundEl.dataset.soundId = sound.id;
+                    const audioOption = document.createElement('div');
+                    audioOption.className = 'audio-option';
+                    audioOption.dataset.soundId = sound.id;
                     
-                    const soundInfo = document.createElement('div');
-                    soundInfo.textContent = sound.name;
+                    const audioInfo = document.createElement('div');
+                    audioInfo.className = 'audio-info';
                     
-                    const soundControls = document.createElement('div');
-                    soundControls.className = 'sound-controls';
+                    const audioIcon = document.createElement('div');
+                    audioIcon.className = 'audio-icon';
+                    audioIcon.innerHTML = '<i class="fas fa-volume-up"></i>';
                     
-                    const playBtn = document.createElement('button');
-                    playBtn.className = 'action-btn';
-                    playBtn.innerHTML = '<i class="fas fa-play"></i>';
-                    playBtn.title = 'Play sound';
+                    const audioName = document.createElement('div');
+                    audioName.className = 'audio-name';
+                    audioName.textContent = sound.name;
+                    
+                    const audioControls = document.createElement('div');
+                    audioControls.className = 'audio-controls';
                     
                     const volumeSlider = document.createElement('input');
                     volumeSlider.type = 'range';
-                    volumeSlider.className = 'volume-slider';
+                    volumeSlider.className = 'audio-volume';
                     volumeSlider.min = '0';
                     volumeSlider.max = '100';
                     volumeSlider.value = '50';
                     
-                    soundControls.appendChild(playBtn);
-                    soundControls.appendChild(volumeSlider);
+                    audioInfo.appendChild(audioIcon);
+                    audioInfo.appendChild(audioName);
+                    audioControls.appendChild(volumeSlider);
                     
-                    soundEl.appendChild(soundInfo);
-                    soundEl.appendChild(soundControls);
+                    audioOption.appendChild(audioInfo);
+                    audioOption.appendChild(audioControls);
                     
-                    soundEl.addEventListener('click', (e) => {
-                        if (!e.target.closest('.sound-controls')) {
+                    audioOption.addEventListener('click', (e) => {
+                        if (!e.target.classList.contains('audio-volume')) {
                             toggleSound(sound.id);
                         }
-                    });
-                    
-                    playBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        toggleSound(sound.id);
                     });
                     
                     volumeSlider.addEventListener('input', (e) => {
@@ -1352,7 +1510,7 @@
                         updateVolume(sound.id, e.target.value / 100);
                     });
                     
-                    soundsContainer.appendChild(soundEl);
+                    audioOptions.appendChild(audioOption);
                     
                     // Create audio element
                     const audio = new Audio(sound.url);
@@ -1361,13 +1519,13 @@
                     audioElements[sound.id] = audio;
                 });
                 
-                // Load saved sound preference
                 const savedSound = localStorage.getItem(STORAGE_KEYS.SOUND);
                 const savedVolume = localStorage.getItem(STORAGE_KEYS.VOLUME) || 0.5;
                 
                 if (savedSound && audioElements[savedSound]) {
-                    setTimeout(() => toggleSound(savedSound), 500);
                     audioElements[savedSound].volume = parseFloat(savedVolume);
+                    const option = document.querySelector(`.audio-option[data-sound-id="${savedSound}"]`);
+                    if (option) option.classList.add('active');
                 }
             }
             
@@ -1384,7 +1542,6 @@
             }
             
             async function parseStoryContent(content) {
-                // Parse frontmatter and content
                 const lines = content.split('\n');
                 let inFrontmatter = false;
                 let frontmatter = {};
@@ -1406,7 +1563,6 @@
                             const key = match[1].trim();
                             let value = match[2].trim();
                             
-                            // Parse arrays (tags, etc.)
                             if (value.startsWith('[') && value.endsWith(']')) {
                                 value = value.slice(1, -1).split(',').map(v => v.trim().replace(/"/g, ''));
                             }
@@ -1418,7 +1574,6 @@
                     }
                 }
                 
-                // Calculate reading time (excluding metadata)
                 const wordCount = storyContent.split(/\s+/).length;
                 const readTime = Math.max(1, Math.ceil(wordCount / WORDS_PER_MINUTE));
                 
@@ -1434,9 +1589,8 @@
                 const files = await fetchStories();
                 const newStories = [];
                 
-                // For demo purposes, create sample stories if none exist
                 if (files.length === 0) {
-                    // Use the provided story as demo
+                    // Demo data with the provided story
                     const demoStory = `---
 title: "The Girl Who Borrowed the Wind"
 author: "Salt Merchant"
@@ -1503,36 +1657,57 @@ a reminder of Mumo, who borrowed the wind to save her people.`;
                         ...parsed
                     });
                     
-                    // Add more demo stories
-                    for (let i = 1; i < 12; i++) {
-                        const storyTypes = ['fiction', 'mythology', 'folklore', 'fantasy'];
-                        const storyTags = [
-                            ['magic', 'adventure', 'hero'],
-                            ['spirit', 'nature', 'wisdom'],
-                            ['legend', 'tradition', 'culture'],
-                            ['quest', 'journey', 'discovery']
-                        ];
-                        
-                        const type = storyTypes[i % storyTypes.length];
-                        const tags = storyTags[i % storyTags.length];
-                        
+                    // Additional demo stories
+                    const demoStories = [
+                        {
+                            title: "The Whispering Stones",
+                            author: "Ancient Storyteller",
+                            type: "mythology",
+                            tags: ["ancient", "magic", "stones", "wisdom"]
+                        },
+                        {
+                            title: "River of Dreams",
+                            author: "Dream Weaver",
+                            type: "fantasy",
+                            tags: ["dreams", "river", "journey", "discovery"]
+                        },
+                        {
+                            title: "The Last Firekeeper",
+                            author: "Flame Guardian",
+                            type: "folklore",
+                            tags: ["fire", "guardian", "tradition", "sacrifice"]
+                        },
+                        {
+                            title: "Moonlight's Promise",
+                            author: "Night Watcher",
+                            type: "fiction",
+                            tags: ["moon", "promise", "love", "destiny"]
+                        },
+                        {
+                            title: "Echoes of the Mountain",
+                            author: "Highlander",
+                            type: "mythology",
+                            tags: ["mountain", "echoes", "spirits", "adventure"]
+                        }
+                    ];
+                    
+                    demoStories.forEach((story, i) => {
                         newStories.push({
-                            id: `story-${i}`,
-                            filename: `story-${i}.md`,
-                            path: `${API_BASE}/stories/story-${i}.md`,
-                            title: `Mythical Tale ${i}`,
-                            author: `Storyteller ${i}`,
-                            cover: `https://source.unsplash.com/featured/?myth,${i}`,
-                            description: `An enchanting story about myths and legends from around the world. Part ${i} of our collection.`,
-                            type: type,
-                            tags: tags,
-                            content: `# Story ${i}\n\nThis is the content of story ${i}. It's an amazing tale that will captivate your imagination.`,
-                            wordCount: 500 + (i * 100),
-                            readTime: Math.ceil((500 + (i * 100)) / WORDS_PER_MINUTE)
+                            id: `story-${i+1}`,
+                            filename: `story-${i+1}.md`,
+                            path: `${API_BASE}/stories/story-${i+1}.md`,
+                            title: story.title,
+                            author: story.author,
+                            cover: `https://source.unsplash.com/featured/?${story.type},${i+1}`,
+                            description: `An enchanting ${story.type} story about ${story.tags[0]} and ${story.tags[1]}.`,
+                            type: story.type,
+                            tags: story.tags,
+                            content: `# ${story.title}\n\nThis is an amazing ${story.type} story about ${story.tags.join(', ')}.`,
+                            wordCount: 600 + (i * 100),
+                            readTime: Math.ceil((600 + (i * 100)) / WORDS_PER_MINUTE)
                         });
-                    }
+                    });
                 } else {
-                    // In a real app, fetch actual story content and parse it
                     for (const file of files) {
                         try {
                             const res = await fetch(API_BASE + "/stories/" + file);
@@ -1554,7 +1729,7 @@ a reminder of Mumo, who borrowed the wind to save her people.`;
                 
                 allStories = newStories;
                 
-                // Extract all types and tags for filters
+                // Extract all types and tags
                 allTypes.clear();
                 allTags.clear();
                 
@@ -1565,85 +1740,169 @@ a reminder of Mumo, who borrowed the wind to save her people.`;
                     }
                 });
                 
-                // Update filter options
-                updateFilterOptions();
+                // Initialize filters
+                initFilters();
                 
-                // Apply current tab and filters
-                applyTabFilter();
-                applyFilters();
+                // Apply current view
+                applyViewFilter();
                 
                 // Update UI
                 updateContinueReading();
                 updateStats();
-                
-                // Set up auto-refresh every 30 seconds
-                setInterval(async () => {
-                    const updatedFiles = await fetchStories();
-                    // Implementation for detecting new stories would go here
-                }, 30000);
             }
             
-            function updateFilterOptions() {
-                // Clear existing filters (keep "All")
-                const typeChildren = Array.from(typeFilter.children);
-                typeChildren.forEach(child => {
-                    if (child.dataset.value !== 'all') {
-                        typeFilter.removeChild(child);
-                    }
-                });
+            function initFilters() {
+                filterTags.innerHTML = '';
                 
-                const tagChildren = Array.from(tagFilter.children);
-                tagChildren.forEach(child => {
-                    if (child.dataset.value !== 'all') {
-                        tagFilter.removeChild(child);
-                    }
+                // Add "All" tag
+                const allTag = document.createElement('span');
+                allTag.className = 'filter-tag active';
+                allTag.textContent = 'All';
+                allTag.dataset.filter = 'all';
+                allTag.addEventListener('click', () => {
+                    filterTags.querySelectorAll('.filter-tag').forEach(tag => tag.classList.remove('active'));
+                    allTag.classList.add('active');
+                    activeFilters.tags.clear();
+                    applyFilters();
                 });
+                filterTags.appendChild(allTag);
                 
                 // Add type filters
                 Array.from(allTypes).sort().forEach(type => {
-                    const typeEl = document.createElement('span');
-                    typeEl.className = 'tag';
-                    typeEl.textContent = type;
-                    typeEl.dataset.value = type;
-                    typeEl.addEventListener('click', () => toggleTypeFilter(type));
-                    typeFilter.appendChild(typeEl);
+                    const tag = document.createElement('span');
+                    tag.className = 'filter-tag';
+                    tag.textContent = type;
+                    tag.dataset.filter = `type:${type}`;
+                    tag.addEventListener('click', () => {
+                        filterTags.querySelectorAll('.filter-tag').forEach(t => {
+                            if (t.dataset.filter === 'all') t.classList.remove('active');
+                        });
+                        tag.classList.toggle('active');
+                        
+                        if (tag.classList.contains('active')) {
+                            activeFilters.type = type;
+                        } else {
+                            activeFilters.type = 'all';
+                        }
+                        applyFilters();
+                    });
+                    filterTags.appendChild(tag);
                 });
                 
-                // Add tag filters
-                Array.from(allTags).sort().forEach(tag => {
-                    const tagEl = document.createElement('span');
-                    tagEl.className = 'tag';
-                    tagEl.textContent = tag;
-                    tagEl.dataset.value = tag;
-                    tagEl.addEventListener('click', () => toggleTagFilter(tag));
-                    tagFilter.appendChild(tagEl);
+                // Add popular tags
+                const popularTags = Array.from(allTags).slice(0, 5);
+                popularTags.forEach(tagText => {
+                    const tag = document.createElement('span');
+                    tag.className = 'filter-tag';
+                    tag.textContent = tagText;
+                    tag.dataset.filter = `tag:${tagText}`;
+                    tag.addEventListener('click', () => {
+                        filterTags.querySelectorAll('.filter-tag').forEach(t => {
+                            if (t.dataset.filter === 'all') t.classList.remove('active');
+                        });
+                        tag.classList.toggle('active');
+                        
+                        if (tag.classList.contains('active')) {
+                            activeFilters.tags.add(tagText);
+                        } else {
+                            activeFilters.tags.delete(tagText);
+                        }
+                        applyFilters();
+                    });
+                    filterTags.appendChild(tag);
+                });
+            }
+            
+            // --- Filter Functions ---
+            function applyViewFilter() {
+                const bookmarks = JSON.parse(localStorage.getItem(STORAGE_KEYS.BOOKMARKS) || '[]');
+                const likes = JSON.parse(localStorage.getItem(STORAGE_KEYS.LIKES) || '[]');
+                const readingProgress = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_PROGRESS) || '{}');
+                
+                switch (currentView) {
+                    case 'all':
+                        displayedStories = [...allStories];
+                        break;
+                    case 'bookmarked':
+                        displayedStories = allStories.filter(story => bookmarks.includes(story.id));
+                        break;
+                    case 'liked':
+                        displayedStories = allStories.filter(story => likes.includes(story.id));
+                        break;
+                    case 'history':
+                        const readingHistory = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_HISTORY) || '[]');
+                        displayedStories = readingHistory
+                            .map(id => allStories.find(story => story.id === id))
+                            .filter(story => story);
+                        break;
+                }
+                
+                applyFilters();
+            }
+            
+            function applyFilters() {
+                let filteredStories = displayedStories.filter(story => {
+                    // Search filter
+                    if (searchQuery) {
+                        const searchLower = searchQuery.toLowerCase();
+                        const inTitle = story.title?.toLowerCase().includes(searchLower) || false;
+                        const inAuthor = story.author?.toLowerCase().includes(searchLower) || false;
+                        const inDescription = story.description?.toLowerCase().includes(searchLower) || false;
+                        const inType = story.type?.toLowerCase().includes(searchLower) || false;
+                        const inTags = story.tags?.some(tag => tag.toLowerCase().includes(searchLower)) || false;
+                        
+                        if (!inTitle && !inAuthor && !inDescription && !inType && !inTags) {
+                            return false;
+                        }
+                    }
+                    
+                    // Type filter
+                    if (activeFilters.type !== 'all' && story.type !== activeFilters.type) {
+                        return false;
+                    }
+                    
+                    // Tag filter
+                    if (activeFilters.tags.size > 0) {
+                        if (!story.tags || !Array.isArray(story.tags)) return false;
+                        
+                        const hasTag = Array.from(activeFilters.tags).some(tag => 
+                            story.tags.includes(tag)
+                        );
+                        
+                        if (!hasTag) return false;
+                    }
+                    
+                    return true;
                 });
                 
-                // Reset active filters
-                activeFilters.type = 'all';
-                activeFilters.tags = ['all'];
+                // Sort by relevance or progress
+                if (currentView === 'history') {
+                    const readingHistory = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_HISTORY) || '[]');
+                    filteredStories.sort((a, b) => {
+                        const indexA = readingHistory.indexOf(a.id);
+                        const indexB = readingHistory.indexOf(b.id);
+                        return indexA - indexB;
+                    });
+                }
                 
-                // Update UI
-                document.querySelectorAll('#typeFilter .tag').forEach(el => {
-                    el.classList.toggle('active', el.dataset.value === 'all');
-                });
-                
-                document.querySelectorAll('#tagFilter .tag').forEach(el => {
-                    el.classList.toggle('active', el.dataset.value === 'all');
-                });
+                displayedStories = filteredStories;
+                renderStories();
             }
             
             // --- Story Rendering ---
             function renderStories() {
-                storiesContainer.innerHTML = "";
-                storiesContainer.className = `stories-container ${currentView}-view`;
+                storiesContainer.innerHTML = '';
                 
                 if (displayedStories.length === 0) {
                     const emptyState = document.createElement('div');
                     emptyState.className = 'empty-state';
                     emptyState.innerHTML = `
                         <i class="fas fa-book-open"></i>
-                        <p>No stories found. Try adjusting your filters.</p>
+                        <p>No stories found.</p>
+                        <p>Try adjusting your search or filters.</p>
+                        <button class="action-btn" onclick="resetFilters()">
+                            <i class="fas fa-redo"></i> Reset Filters
+                        </button>
                     `;
                     storiesContainer.appendChild(emptyState);
                     return;
@@ -1659,10 +1918,10 @@ a reminder of Mumo, who borrowed the wind to save her people.`;
             
             function createStoryCard(story) {
                 const card = document.createElement('div');
-                card.className = `story-card ${currentView}-view`;
+                card.className = 'story-card';
                 card.dataset.storyId = story.id;
                 
-                // Get user data from localStorage
+                // User data
                 const bookmarks = JSON.parse(localStorage.getItem(STORAGE_KEYS.BOOKMARKS) || '[]');
                 const readingProgress = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_PROGRESS) || '{}');
                 const likes = JSON.parse(localStorage.getItem(STORAGE_KEYS.LIKES) || '[]');
@@ -1670,82 +1929,83 @@ a reminder of Mumo, who borrowed the wind to save her people.`;
                 const isBookmarked = bookmarks.includes(story.id);
                 const isLiked = likes.includes(story.id);
                 const progress = readingProgress[story.id]?.progress || 0;
-                const hasProgress = progress > 0;
                 
-                // Card image with overlay
-                const cardImage = document.createElement('div');
-                cardImage.className = 'card-image';
-                cardImage.style.backgroundImage = `url('${story.cover || 'https://source.unsplash.com/featured/?story,book'}')`;
+                // Card image
+                const image = document.createElement('div');
+                image.className = 'story-card-image';
+                image.style.backgroundImage = `url('${story.cover || 'https://source.unsplash.com/featured/?story,book'}')`;
                 
-                const cardOverlay = document.createElement('div');
-                cardOverlay.className = 'card-overlay';
+                const overlay = document.createElement('div');
+                overlay.className = 'story-card-overlay';
                 
-                // Tags
                 if (story.tags && story.tags.length > 0) {
-                    const cardTags = document.createElement('div');
-                    cardTags.className = 'card-tags';
+                    const tags = document.createElement('div');
+                    tags.className = 'story-card-tags';
                     
-                    // Show max 3 tags
-                    story.tags.slice(0, 3).forEach(tag => {
+                    story.tags.slice(0, 2).forEach(tag => {
                         const tagEl = document.createElement('span');
-                        tagEl.className = 'card-tag';
+                        tagEl.className = 'story-card-tag';
                         tagEl.textContent = tag;
-                        cardTags.appendChild(tagEl);
+                        tags.appendChild(tagEl);
                     });
                     
-                    cardOverlay.appendChild(cardTags);
+                    overlay.appendChild(tags);
                 }
                 
-                // Title and author
-                const cardTitle = document.createElement('h3');
-                cardTitle.className = 'card-title';
-                cardTitle.textContent = story.title || story.id;
-                
-                const cardAuthor = document.createElement('div');
-                cardAuthor.className = 'card-author';
-                cardAuthor.textContent = `by ${story.author || 'Unknown'}`;
-                
-                cardOverlay.appendChild(cardTitle);
-                cardOverlay.appendChild(cardAuthor);
-                cardImage.appendChild(cardOverlay);
+                image.appendChild(overlay);
                 
                 // Card content
-                const cardContent = document.createElement('div');
-                cardContent.className = 'card-content';
+                const content = document.createElement('div');
+                content.className = 'story-card-content';
                 
-                // Meta info (type and read time)
-                const cardMeta = document.createElement('div');
-                cardMeta.className = 'card-meta';
-                cardMeta.innerHTML = `
-                    <span>${story.type || 'fiction'}</span>
-                    <span class="read-time">
+                const header = document.createElement('div');
+                header.className = 'story-card-header';
+                
+                const title = document.createElement('h3');
+                title.className = 'story-card-title';
+                title.textContent = story.title || story.id;
+                
+                const author = document.createElement('div');
+                author.className = 'story-card-author';
+                author.textContent = `by ${story.author || 'Unknown'}`;
+                
+                header.appendChild(title);
+                header.appendChild(author);
+                
+                const meta = document.createElement('div');
+                meta.className = 'story-card-meta';
+                meta.innerHTML = `
+                    <span class="story-card-type">${story.type || 'fiction'}</span>
+                    <span class="story-card-time">
                         <i class="far fa-clock"></i>
                         ${story.readTime || 1} min
                     </span>
                 `;
                 
-                const cardDescription = document.createElement('p');
-                cardDescription.className = 'card-description';
-                cardDescription.textContent = story.description || 'An enchanting story waiting to be read...';
+                const description = document.createElement('p');
+                description.className = 'story-card-description';
+                description.textContent = story.description || 'An enchanting story waiting to be read...';
                 
-                // Progress indicator
-                const progressIndicator = document.createElement('div');
-                progressIndicator.className = 'progress-indicator';
+                const footer = document.createElement('div');
+                footer.className = 'story-card-footer';
                 
-                const progressBar = document.createElement('div');
-                progressBar.className = 'progress-bar';
-                progressBar.style.width = `${progress}%`;
+                if (progress > 0) {
+                    const progressBar = document.createElement('div');
+                    progressBar.className = 'story-card-progress';
+                    
+                    const progressFill = document.createElement('div');
+                    progressFill.className = 'story-card-progress-bar';
+                    progressFill.style.width = `${progress}%`;
+                    
+                    progressBar.appendChild(progressFill);
+                    footer.appendChild(progressBar);
+                }
                 
-                progressIndicator.appendChild(progressBar);
-                
-                // Card actions
-                const cardActions = document.createElement('div');
-                cardActions.className = 'card-actions';
-                
-                const leftActions = document.createElement('div');
+                const actions = document.createElement('div');
+                actions.className = 'story-card-actions';
                 
                 const bookmarkBtn = document.createElement('button');
-                bookmarkBtn.className = `action-btn ${isBookmarked ? 'active' : ''}`;
+                bookmarkBtn.className = `story-card-btn ${isBookmarked ? 'active' : ''}`;
                 bookmarkBtn.innerHTML = isBookmarked ? '<i class="fas fa-bookmark"></i>' : '<i class="far fa-bookmark"></i>';
                 bookmarkBtn.title = isBookmarked ? 'Remove bookmark' : 'Bookmark story';
                 bookmarkBtn.addEventListener('click', (e) => {
@@ -1754,7 +2014,7 @@ a reminder of Mumo, who borrowed the wind to save her people.`;
                 });
                 
                 const likeBtn = document.createElement('button');
-                likeBtn.className = `action-btn ${isLiked ? 'active' : ''}`;
+                likeBtn.className = `story-card-btn ${isLiked ? 'active' : ''}`;
                 likeBtn.innerHTML = isLiked ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
                 likeBtn.title = isLiked ? 'Unlike story' : 'Like story';
                 likeBtn.addEventListener('click', (e) => {
@@ -1762,32 +2022,18 @@ a reminder of Mumo, who borrowed the wind to save her people.`;
                     toggleLike(story.id);
                 });
                 
-                leftActions.appendChild(bookmarkBtn);
-                leftActions.appendChild(likeBtn);
+                actions.appendChild(bookmarkBtn);
+                actions.appendChild(likeBtn);
+                footer.appendChild(actions);
                 
-                const readBtn = document.createElement('button');
-                readBtn.className = `read-btn ${hasProgress ? 'continue' : ''}`;
-                readBtn.textContent = hasProgress ? 'Continue Reading' : 'Read Now';
-                readBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    openStory(story);
-                });
+                content.appendChild(header);
+                content.appendChild(meta);
+                content.appendChild(description);
+                content.appendChild(footer);
                 
-                cardActions.appendChild(leftActions);
-                cardActions.appendChild(readBtn);
+                card.appendChild(image);
+                card.appendChild(content);
                 
-                // Assemble card
-                cardContent.appendChild(cardMeta);
-                cardContent.appendChild(cardDescription);
-                if (hasProgress) {
-                    cardContent.appendChild(progressIndicator);
-                }
-                cardContent.appendChild(cardActions);
-                
-                card.appendChild(cardImage);
-                card.appendChild(cardContent);
-                
-                // Open story on card click
                 card.addEventListener('click', () => openStory(story));
                 
                 return card;
@@ -1795,12 +2041,11 @@ a reminder of Mumo, who borrowed the wind to save her people.`;
             
             // --- Continue Reading Section ---
             function updateContinueReading() {
-                continueReadingList.innerHTML = '';
+                continueReadingCards.innerHTML = '';
                 
                 const readingHistory = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_HISTORY) || '[]');
                 const readingProgress = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_PROGRESS) || '{}');
                 
-                // Get last 3 reads with progress
                 const recentReads = readingHistory
                     .map(storyId => {
                         const story = allStories.find(s => s.id === storyId);
@@ -1808,78 +2053,77 @@ a reminder of Mumo, who borrowed the wind to save her people.`;
                         return story ? { ...story, progress } : null;
                     })
                     .filter(item => item !== null && item.progress > 0 && item.progress < 100)
-                    .slice(0, 3);
+                    .slice(0, 5);
                 
-                // Show/hide section
-                if (recentReads.length > 0) {
-                    continueReadingSection.classList.add('show');
+                if (recentReads.length === 0) {
+                    continueReadingSection.style.display = 'none';
+                    return;
+                }
+                
+                continueReadingSection.style.display = 'block';
+                
+                recentReads.forEach(story => {
+                    const card = document.createElement('div');
+                    card.className = 'continue-card';
+                    card.dataset.storyId = story.id;
                     
-                    // Add continue reading cards
-                    recentReads.forEach(story => {
-                        const card = createContinueCard(story);
-                        continueReadingList.appendChild(card);
+                    const bg = document.createElement('div');
+                    bg.className = 'continue-card-bg';
+                    bg.style.backgroundImage = `url('${story.cover}')`;
+                    
+                    const content = document.createElement('div');
+                    content.className = 'continue-card-content';
+                    
+                    const header = document.createElement('div');
+                    header.className = 'continue-card-header';
+                    
+                    const title = document.createElement('div');
+                    title.className = 'continue-card-title';
+                    title.textContent = story.title;
+                    
+                    const closeBtn = document.createElement('button');
+                    closeBtn.className = 'continue-card-close';
+                    closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                    closeBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        removeFromContinueReading(story.id);
                     });
                     
-                    // Add history button at the end
-                    continueReadingList.appendChild(viewHistoryBtn);
-                } else {
-                    continueReadingSection.classList.remove('show');
-                }
-            }
-            
-            function createContinueCard(story) {
-                const card = document.createElement('div');
-                card.className = 'continue-card';
-                card.dataset.storyId = story.id;
-                
-                const bg = document.createElement('div');
-                bg.className = 'continue-card-bg';
-                bg.style.backgroundImage = `url('${story.cover || 'https://source.unsplash.com/featured/?story,book'}')`;
-                
-                const content = document.createElement('div');
-                content.className = 'continue-card-content';
-                
-                const title = document.createElement('div');
-                title.className = 'continue-card-title';
-                title.textContent = story.title || story.id;
-                
-                const meta = document.createElement('div');
-                meta.className = 'continue-card-meta';
-                meta.textContent = `${Math.round(story.progress)}% read`;
-                
-                const actions = document.createElement('div');
-                actions.className = 'continue-card-actions';
-                
-                const progress = document.createElement('div');
-                progress.className = 'continue-card-progress';
-                
-                const progressBar = document.createElement('div');
-                progressBar.className = 'continue-card-progress-bar';
-                progressBar.style.width = `${story.progress}%`;
-                
-                const closeBtn = document.createElement('button');
-                closeBtn.className = 'continue-card-close';
-                closeBtn.innerHTML = '<i class="fas fa-times"></i>';
-                closeBtn.title = 'Remove from continue reading';
-                closeBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    removeFromContinueReading(story.id);
+                    header.appendChild(title);
+                    header.appendChild(closeBtn);
+                    
+                    const progressBar = document.createElement('div');
+                    progressBar.className = 'continue-card-progress';
+                    
+                    const progressFill = document.createElement('div');
+                    progressFill.className = 'continue-card-progress-bar';
+                    progressFill.style.width = `${story.progress}%`;
+                    
+                    progressBar.appendChild(progressFill);
+                    
+                    const meta = document.createElement('div');
+                    meta.className = 'continue-card-meta';
+                    meta.innerHTML = `
+                        <span>${Math.round(story.progress)}% read</span>
+                        <span>${story.readTime || 1} min</span>
+                    `;
+                    
+                    content.appendChild(header);
+                    content.appendChild(progressBar);
+                    content.appendChild(meta);
+                    
+                    card.appendChild(bg);
+                    card.appendChild(content);
+                    
+                    card.addEventListener('click', () => {
+                        openStory(story);
+                        const page = readingProgress[story.id]?.page || 1;
+                        currentPage = page;
+                        renderStoryPage();
+                    });
+                    
+                    continueReadingCards.appendChild(card);
                 });
-                
-                progress.appendChild(progressBar);
-                actions.appendChild(progress);
-                actions.appendChild(closeBtn);
-                
-                content.appendChild(title);
-                content.appendChild(meta);
-                content.appendChild(actions);
-                
-                card.appendChild(bg);
-                card.appendChild(content);
-                
-                card.addEventListener('click', () => openStory(story));
-                
-                return card;
             }
             
             function removeFromContinueReading(storyId) {
@@ -1888,163 +2132,8 @@ a reminder of Mumo, who borrowed the wind to save her people.`;
                 localStorage.setItem(STORAGE_KEYS.READING_HISTORY, JSON.stringify(newHistory));
                 
                 updateContinueReading();
-                if (currentTab === 'reading') {
-                    applyTabFilter();
-                }
+                if (currentView === 'history') applyViewFilter();
                 showToast('Removed from continue reading');
-            }
-            
-            function showHistoryModal() {
-                const readingHistory = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_HISTORY) || '[]');
-                const readingProgress = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_PROGRESS) || '{}');
-                
-                historyList.innerHTML = '';
-                
-                if (readingHistory.length === 0) {
-                    const emptyState = document.createElement('div');
-                    emptyState.className = 'empty-state';
-                    emptyState.innerHTML = `
-                        <i class="fas fa-history"></i>
-                        <p>No reading history yet.</p>
-                    `;
-                    historyList.appendChild(emptyState);
-                } else {
-                    // Show history in chronological order (most recent first)
-                    readingHistory.reverse().forEach(storyId => {
-                        const story = allStories.find(s => s.id === storyId);
-                        const progress = readingProgress[storyId]?.progress || 0;
-                        
-                        if (story) {
-                            const item = document.createElement('div');
-                            item.className = 'history-item';
-                            
-                            const info = document.createElement('div');
-                            info.className = 'history-item-info';
-                            
-                            const title = document.createElement('div');
-                            title.className = 'history-item-title';
-                            title.textContent = story.title || story.id;
-                            
-                            const meta = document.createElement('div');
-                            meta.className = 'history-item-meta';
-                            meta.innerHTML = `
-                                <span>${story.author || 'Unknown'}</span>
-                                <span>${Math.round(progress)}% read</span>
-                                <span>${story.readTime || 1} min</span>
-                            `;
-                            
-                            const actions = document.createElement('div');
-                            actions.className = 'history-item-actions';
-                            
-                            const closeBtn = document.createElement('button');
-                            closeBtn.className = 'history-close-btn';
-                            closeBtn.innerHTML = '<i class="fas fa-times"></i>';
-                            closeBtn.title = 'Remove from history';
-                            closeBtn.addEventListener('click', (e) => {
-                                e.stopPropagation();
-                                removeFromHistory(storyId);
-                                item.remove();
-                            });
-                            
-                            info.appendChild(title);
-                            info.appendChild(meta);
-                            actions.appendChild(closeBtn);
-                            
-                            item.appendChild(info);
-                            item.appendChild(actions);
-                            
-                            item.addEventListener('click', () => {
-                                openStory(story);
-                                historyModal.classList.remove('active');
-                            });
-                            
-                            historyList.appendChild(item);
-                        }
-                    });
-                }
-                
-                historyModal.classList.add('active');
-            }
-            
-            function removeFromHistory(storyId) {
-                const readingHistory = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_HISTORY) || '[]');
-                const newHistory = readingHistory.filter(id => id !== storyId);
-                localStorage.setItem(STORAGE_KEYS.READING_HISTORY, JSON.stringify(newHistory));
-                
-                updateContinueReading();
-                if (currentTab === 'reading') {
-                    applyTabFilter();
-                }
-                showToast('Removed from history');
-            }
-            
-            // --- Story Modal ---
-            async function openStory(story) {
-                currentStoryData = story;
-                modalTitle.textContent = story.title || story.id;
-                modalStoryContent.innerHTML = '<div class="loading">Loading story...</div>';
-                storyModal.classList.add('active');
-                
-                try {
-                    // In a real app, fetch the actual story content
-                    // const res = await fetch(story.path);
-                    // const text = await res.text();
-                    
-                    // Use story content
-                    const storyText = story.content || `# ${story.title || story.id}\n\nStory content not available.`;
-                    
-                    // Paginate the story
-                    currentStoryPages = paginateStory(storyText);
-                    currentPage = getSavedPage(story.id) || 1;
-                    
-                    renderStoryPage();
-                    updateModalButtons(story.id);
-                    
-                    // Save to reading history
-                    addToReadingHistory(story.id);
-                    
-                    // Save reading progress
-                    saveReadingProgress(story.id, currentPage, currentStoryPages.length);
-                    
-                } catch (err) {
-                    console.error("Error loading story:", err);
-                    modalStoryContent.innerHTML = '<div class="error">Error loading story. Please try again.</div>';
-                }
-            }
-            
-            function paginateStory(text) {
-                const words = text.split(/\s+/);
-                const pages = [];
-                
-                for (let i = 0; i < words.length; i += WORDS_PER_PAGE) {
-                    const pageWords = words.slice(i, i + WORDS_PER_PAGE);
-                    pages.push(pageWords.join(' '));
-                }
-                
-                return pages.length > 0 ? pages : [text];
-            }
-            
-            function renderStoryPage() {
-                if (!currentStoryPages.length) return;
-                
-                const pageIndex = Math.min(Math.max(0, currentPage - 1), currentStoryPages.length - 1);
-                const pageContent = currentStoryPages[pageIndex];
-                
-                // Convert markdown-like formatting to HTML
-                let htmlContent = pageContent
-                    .replace(/# (.*?)(\n|$)/g, '<h1>$1</h1>')
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                    .replace(/_(.*?)_/g, '<em>$1</em>')
-                    .replace(/> (.*?)(\n|$)/g, '<blockquote>$1</blockquote>')
-                    .replace(/\n/g, '<br>');
-                
-                modalStoryContent.innerHTML = htmlContent;
-                pageInput.value = currentPage;
-                totalPagesEl.textContent = `/ ${currentStoryPages.length}`;
-                
-                // Update buttons
-                prevPageBtn.disabled = currentPage <= 1;
-                nextPageBtn.disabled = currentPage >= currentStoryPages.length;
             }
             
             // --- User Actions ---
@@ -2062,13 +2151,12 @@ a reminder of Mumo, who borrowed the wind to save her people.`;
                 
                 localStorage.setItem(STORAGE_KEYS.BOOKMARKS, JSON.stringify(bookmarks));
                 
-                // Update UI
                 if (currentStoryData && currentStoryData.id === storyId) {
                     updateModalButtons(storyId);
                 }
                 
-                if (currentTab === 'bookmarked') {
-                    applyTabFilter();
+                if (currentView === 'bookmarked') {
+                    applyViewFilter();
                 } else {
                     renderStories();
                 }
@@ -2094,22 +2182,25 @@ a reminder of Mumo, who borrowed the wind to save her people.`;
                     updateModalButtons(storyId);
                 }
                 
-                renderStories();
+                if (currentView === 'liked') {
+                    applyViewFilter();
+                } else {
+                    renderStories();
+                }
+                
+                updateStats();
             }
             
             function addToReadingHistory(storyId) {
                 const readingHistory = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_HISTORY) || '[]');
                 
-                // Remove if already exists (to move to front)
                 const index = readingHistory.indexOf(storyId);
                 if (index !== -1) {
                     readingHistory.splice(index, 1);
                 }
                 
-                // Add to beginning
                 readingHistory.unshift(storyId);
                 
-                // Keep only last 50 entries
                 if (readingHistory.length > 50) {
                     readingHistory.splice(50);
                 }
@@ -2132,191 +2223,69 @@ a reminder of Mumo, who borrowed the wind to save her people.`;
                 
                 localStorage.setItem(STORAGE_KEYS.READING_PROGRESS, JSON.stringify(readingProgress));
                 
-                if (storyId === currentStoryData?.id) {
-                    // Save exact page for this story
-                    const storyReading = JSON.parse(localStorage.getItem(`${STORAGE_KEYS.READING_PROGRESS}_${storyId}`) || '{}');
-                    storyReading.page = page;
-                    localStorage.setItem(`${STORAGE_KEYS.READING_PROGRESS}_${storyId}`, JSON.stringify(storyReading));
-                }
-                
                 updateContinueReading();
                 updateStats();
+            }
+            
+            // --- Story Modal ---
+            async function openStory(story) {
+                currentStoryData = story;
+                modalTitle.textContent = story.title || story.id;
+                modalStoryContent.innerHTML = '<div class="loading">Loading story...</div>';
+                storyModal.classList.add('active');
                 
-                // Update the current story card if it exists
-                const storyCard = document.querySelector(`.story-card[data-story-id="${storyId}"]`);
-                if (storyCard) {
-                    const progressBar = storyCard.querySelector('.progress-bar');
-                    if (progressBar) {
-                        progressBar.style.width = `${progress}%`;
-                    }
+                try {
+                    const storyText = story.content || `# ${story.title}\n\nStory content not available.`;
+                    
+                    currentStoryPages = paginateStory(storyText);
+                    
+                    const readingProgress = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_PROGRESS) || '{}');
+                    currentPage = readingProgress[story.id]?.page || 1;
+                    
+                    renderStoryPage();
+                    updateModalButtons(story.id);
+                    
+                    addToReadingHistory(story.id);
+                    saveReadingProgress(story.id, currentPage, currentStoryPages.length);
+                    
+                } catch (err) {
+                    console.error("Error loading story:", err);
+                    modalStoryContent.innerHTML = '<div class="error">Error loading story. Please try again.</div>';
                 }
             }
             
-            function getSavedPage(storyId) {
-                const readingProgress = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_PROGRESS) || '{}');
-                return readingProgress[storyId]?.page || 1;
-            }
-            
-            // --- Filter Functions ---
-            function toggleTypeFilter(type) {
-                const typeEl = document.querySelector(`#typeFilter .tag[data-value="${type}"]`);
+            function paginateStory(text) {
+                const words = text.split(/\s+/);
+                const pages = [];
                 
-                if (activeFilters.type === type) {
-                    activeFilters.type = 'all';
-                    typeEl.classList.remove('active');
-                } else {
-                    activeFilters.type = type;
-                    document.querySelectorAll('#typeFilter .tag').forEach(el => el.classList.remove('active'));
-                    typeEl.classList.add('active');
+                for (let i = 0; i < words.length; i += WORDS_PER_PAGE) {
+                    const pageWords = words.slice(i, i + WORDS_PER_PAGE);
+                    pages.push(pageWords.join(' '));
                 }
                 
-                applyFilters();
+                return pages.length > 0 ? pages : [text];
             }
             
-            function toggleTagFilter(tag) {
-                const tagEl = document.querySelector(`#tagFilter .tag[data-value="${tag}"]`);
+            function renderStoryPage() {
+                if (!currentStoryPages.length) return;
                 
-                if (tag === 'all') {
-                    // Toggle "All" tag
-                    const isActive = tagEl.classList.contains('active');
-                    if (isActive) {
-                        // Can't deactivate "All" if no other tags are selected
-                        if (activeFilters.tags.length === 1 && activeFilters.tags[0] === 'all') {
-                            return;
-                        }
-                        tagEl.classList.remove('active');
-                        activeFilters.tags = activeFilters.tags.filter(t => t !== 'all');
-                    } else {
-                        tagEl.classList.add('active');
-                        // Add "All" and remove other tags
-                        activeFilters.tags = ['all'];
-                        document.querySelectorAll('#tagFilter .tag').forEach(el => {
-                            if (el.dataset.value !== 'all') {
-                                el.classList.remove('active');
-                            }
-                        });
-                    }
-                } else {
-                    const index = activeFilters.tags.indexOf(tag);
-                    
-                    if (index === -1) {
-                        // Add tag
-                        activeFilters.tags.push(tag);
-                        tagEl.classList.add('active');
-                        
-                        // Remove "All" if it's selected
-                        const allIndex = activeFilters.tags.indexOf('all');
-                        if (allIndex !== -1) {
-                            activeFilters.tags.splice(allIndex, 1);
-                            document.querySelector('#tagFilter .tag[data-value="all"]').classList.remove('active');
-                        }
-                    } else {
-                        // Remove tag
-                        activeFilters.tags.splice(index, 1);
-                        tagEl.classList.remove('active');
-                        
-                        // If no tags selected, select "All"
-                        if (activeFilters.tags.length === 0) {
-                            activeFilters.tags = ['all'];
-                            document.querySelector('#tagFilter .tag[data-value="all"]').classList.add('active');
-                        }
-                    }
-                }
+                const pageIndex = Math.min(Math.max(0, currentPage - 1), currentStoryPages.length - 1);
+                let pageContent = currentStoryPages[pageIndex];
                 
-                applyFilters();
-            }
-            
-            function applyTabFilter() {
-                const bookmarks = JSON.parse(localStorage.getItem(STORAGE_KEYS.BOOKMARKS) || '[]');
-                const readingHistory = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_HISTORY) || '[]');
-                const readingProgress = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_PROGRESS) || '{}');
+                // Basic markdown parsing
+                pageContent = pageContent
+                    .replace(/# (.*?)(\n|$)/g, '<h1>$1</h1>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/_(.*?)_/g, '<em>$1</em>')
+                    .replace(/> (.*?)(\n|$)/g, '<blockquote>$1</blockquote>')
+                    .replace(/\n/g, '<br>');
                 
-                switch (currentTab) {
-                    case 'all':
-                        displayedStories = [...allStories];
-                        break;
-                    case 'bookmarked':
-                        displayedStories = allStories.filter(story => bookmarks.includes(story.id));
-                        break;
-                    case 'reading':
-                        // Get stories with progress > 0 and < 100
-                        displayedStories = allStories.filter(story => {
-                            const progress = readingProgress[story.id]?.progress || 0;
-                            return progress > 0 && progress < 100;
-                        });
-                        // Sort by last read date
-                        displayedStories.sort((a, b) => {
-                            const timeA = readingProgress[a.id]?.lastRead || 0;
-                            const timeB = readingProgress[b.id]?.lastRead || 0;
-                            return timeB - timeA;
-                        });
-                        break;
-                }
+                modalStoryContent.innerHTML = pageContent;
+                pageInput.value = currentPage;
+                totalPagesEl.textContent = `/ ${currentStoryPages.length}`;
                 
-                applyFilters();
-            }
-            
-            function applyFilters() {
-                const searchQuery = searchInput.value.toLowerCase();
-                
-                let filteredStories = displayedStories.filter(story => {
-                    // Search filter (title, author, tags, type, description)
-                    if (searchQuery) {
-                        const searchInTitle = story.title && story.title.toLowerCase().includes(searchQuery);
-                        const searchInAuthor = story.author && story.author.toLowerCase().includes(searchQuery);
-                        const searchInDescription = story.description && story.description.toLowerCase().includes(searchQuery);
-                        const searchInType = story.type && story.type.toLowerCase().includes(searchQuery);
-                        const searchInTags = story.tags && story.tags.some(tag => 
-                            tag.toLowerCase().includes(searchQuery)
-                        );
-                        
-                        if (!searchInTitle && !searchInAuthor && !searchInDescription && 
-                            !searchInType && !searchInTags) {
-                            return false;
-                        }
-                    }
-                    
-                    // Type filter
-                    if (activeFilters.type !== 'all' && story.type !== activeFilters.type) {
-                        return false;
-                    }
-                    
-                    // Tag filter (if "all" is not selected)
-                    if (!activeFilters.tags.includes('all') && activeFilters.tags.length > 0) {
-                        if (!story.tags || !Array.isArray(story.tags)) {
-                            return false;
-                        }
-                        
-                        // Check if story has at least one of the selected tags
-                        const hasMatchingTag = activeFilters.tags.some(tag => 
-                            story.tags.includes(tag)
-                        );
-                        
-                        if (!hasMatchingTag) {
-                            return false;
-                        }
-                    }
-                    
-                    return true;
-                });
-                
-                displayedStories = filteredStories;
-                renderStories();
-            }
-            
-            // --- UI Update Functions ---
-            function updateStats() {
-                totalStoriesEl.textContent = `${displayedStories.length} ${displayedStories.length === 1 ? 'story' : 'stories'}`;
-                
-                const bookmarks = JSON.parse(localStorage.getItem(STORAGE_KEYS.BOOKMARKS) || '[]');
-                bookmarkedCountEl.textContent = `${bookmarks.length} bookmarked`;
-                
-                // Calculate total read time for displayed stories
-                const totalReadTime = displayedStories.reduce((total, story) => {
-                    return total + (story.readTime || 0);
-                }, 0);
-                
-                totalReadTimeEl.textContent = `${totalReadTime} min read`;
+                prevPageBtn.disabled = currentPage <= 1;
+                nextPageBtn.disabled = currentPage >= currentStoryPages.length;
             }
             
             function updateModalButtons(storyId) {
@@ -2335,41 +2304,31 @@ a reminder of Mumo, who borrowed the wind to save her people.`;
                 modalLikeBtn.title = isLiked ? 'Unlike story' : 'Like story';
             }
             
-            // --- Sound Controls ---
+            // --- Audio Controls ---
             function toggleSound(soundId) {
+                const options = document.querySelectorAll('.audio-option');
+                
                 if (activeSound === soundId) {
-                    // Stop current sound
                     audioElements[soundId].pause();
                     activeSound = null;
                     localStorage.removeItem(STORAGE_KEYS.SOUND);
                     
-                    // Update UI
-                    document.querySelectorAll('.sound-item').forEach(el => {
-                        el.classList.remove('active');
-                        el.querySelector('.action-btn').innerHTML = '<i class="fas fa-play"></i>';
-                    });
+                    options.forEach(option => option.classList.remove('active'));
                 } else {
-                    // Stop any playing sound
                     if (activeSound && audioElements[activeSound]) {
                         audioElements[activeSound].pause();
                     }
                     
-                    // Play new sound
                     audioElements[soundId].play();
                     activeSound = soundId;
                     localStorage.setItem(STORAGE_KEYS.SOUND, soundId);
                     
-                    // Update UI
-                    document.querySelectorAll('.sound-item').forEach(el => {
-                        el.classList.remove('active');
-                        el.querySelector('.action-btn').innerHTML = '<i class="fas fa-play"></i>';
+                    options.forEach(option => {
+                        option.classList.remove('active');
+                        if (option.dataset.soundId === soundId) {
+                            option.classList.add('active');
+                        }
                     });
-                    
-                    const activeEl = document.querySelector(`[data-sound-id="${soundId}"]`);
-                    if (activeEl) {
-                        activeEl.classList.add('active');
-                        activeEl.querySelector('.action-btn').innerHTML = '<i class="fas fa-pause"></i>';
-                    }
                 }
             }
             
@@ -2382,6 +2341,25 @@ a reminder of Mumo, who borrowed the wind to save her people.`;
                 }
             }
             
+            // --- UI Update Functions ---
+            function updateStats() {
+                totalStoriesEl.textContent = displayedStories.length;
+                
+                const bookmarks = JSON.parse(localStorage.getItem(STORAGE_KEYS.BOOKMARKS) || '[]');
+                bookmarkedCountEl.textContent = bookmarks.length;
+                
+                const likes = JSON.parse(localStorage.getItem(STORAGE_KEYS.LIKES) || '[]');
+                likedCountEl.textContent = likes.length;
+                
+                const readingProgress = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_PROGRESS) || '{}');
+                const totalReadTime = Object.keys(readingProgress).reduce((total, storyId) => {
+                    const story = allStories.find(s => s.id === storyId);
+                    return total + (story?.readTime || 0);
+                }, 0);
+                
+                totalReadTimeEl.textContent = totalReadTime;
+            }
+            
             function showToast(message) {
                 toastMessage.textContent = message;
                 toast.classList.add('show');
@@ -2389,6 +2367,25 @@ a reminder of Mumo, who borrowed the wind to save her people.`;
                 setTimeout(() => {
                     toast.classList.remove('show');
                 }, 3000);
+            }
+            
+            function resetFilters() {
+                filterTags.querySelectorAll('.filter-tag').forEach(tag => {
+                    tag.classList.remove('active');
+                    if (tag.dataset.filter === 'all') {
+                        tag.classList.add('active');
+                    }
+                });
+                
+                activeFilters = {
+                    type: 'all',
+                    tags: new Set()
+                };
+                
+                searchInput.value = '';
+                searchQuery = '';
+                
+                applyViewFilter();
             }
             
             // --- Event Listeners ---
@@ -2400,43 +2397,35 @@ a reminder of Mumo, who borrowed the wind to save her people.`;
                     if (isDark) {
                         document.body.classList.remove('dark-mode');
                         themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                        themeToggle.classList.add('active');
                         localStorage.setItem(STORAGE_KEYS.THEME, 'light');
                     } else {
                         document.body.classList.add('dark-mode');
                         themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                        themeToggle.classList.remove('active');
                         localStorage.setItem(STORAGE_KEYS.THEME, 'dark');
                     }
                 });
                 
-                // Tabs
-                tabs.forEach(tab => {
-                    tab.addEventListener('click', () => {
-                        const tabName = tab.dataset.tab;
-                        
-                        tabs.forEach(t => t.classList.remove('active'));
-                        tab.classList.add('active');
-                        
-                        currentTab = tabName;
-                        applyTabFilter();
-                    });
-                });
-                
                 // Search
-                searchInput.addEventListener('input', applyFilters);
-                
-                // View controls
-                gridViewBtn.addEventListener('click', () => {
-                    currentView = 'grid';
-                    gridViewBtn.classList.add('active');
-                    listViewBtn.classList.remove('active');
-                    renderStories();
+                searchInput.addEventListener('input', (e) => {
+                    searchQuery = e.target.value.trim();
+                    applyFilters();
                 });
                 
-                listViewBtn.addEventListener('click', () => {
-                    currentView = 'list';
-                    listViewBtn.classList.add('active');
-                    gridViewBtn.classList.remove('active');
-                    renderStories();
+                // Audio dialog
+                audioToggle.addEventListener('click', () => {
+                    audioDialog.classList.toggle('active');
+                });
+                
+                closeAudioDialog.addEventListener('click', () => {
+                    audioDialog.classList.remove('active');
+                });
+                
+                audioDialog.addEventListener('click', (e) => {
+                    if (e.target === audioDialog) {
+                        audioDialog.classList.remove('active');
+                    }
                 });
                 
                 // Modal controls
@@ -2485,11 +2474,30 @@ a reminder of Mumo, who borrowed the wind to save her people.`;
                     }
                 });
                 
-                // History modal
-                viewHistoryBtn.addEventListener('click', showHistoryModal);
+                // FAB menu
+                fabMain.addEventListener('click', () => {
+                    fabMenu.classList.toggle('active');
+                });
                 
-                closeHistoryModal.addEventListener('click', () => {
-                    historyModal.classList.remove('active');
+                fabBookmarks.addEventListener('click', () => {
+                    currentView = 'bookmarked';
+                    fabMenu.classList.remove('active');
+                    applyViewFilter();
+                    showToast('Showing bookmarked stories');
+                });
+                
+                fabLikes.addEventListener('click', () => {
+                    currentView = 'liked';
+                    fabMenu.classList.remove('active');
+                    applyViewFilter();
+                    showToast('Showing liked stories');
+                });
+                
+                fabHistory.addEventListener('click', () => {
+                    currentView = 'history';
+                    fabMenu.classList.remove('active');
+                    applyViewFilter();
+                    showToast('Showing reading history');
                 });
                 
                 // Close modals on background click
@@ -2501,27 +2509,20 @@ a reminder of Mumo, who borrowed the wind to save her people.`;
                     }
                 });
                 
-                historyModal.addEventListener('click', (e) => {
-                    if (e.target === historyModal) {
-                        historyModal.classList.remove('active');
-                    }
-                });
-                
                 // Keyboard shortcuts
                 document.addEventListener('keydown', (e) => {
-                    // Close modal with Escape
                     if (e.key === 'Escape') {
                         if (storyModal.classList.contains('active')) {
                             storyModal.classList.remove('active');
                             currentStoryData = null;
                             currentStoryPages = [];
                         }
-                        if (historyModal.classList.contains('active')) {
-                            historyModal.classList.remove('active');
+                        if (audioDialog.classList.contains('active')) {
+                            audioDialog.classList.remove('active');
                         }
+                        fabMenu.classList.remove('active');
                     }
                     
-                    // Navigate pages with arrow keys
                     if (storyModal.classList.contains('active')) {
                         if (e.key === 'ArrowLeft') {
                             e.preventDefault();
@@ -2532,6 +2533,9 @@ a reminder of Mumo, who borrowed the wind to save her people.`;
                         }
                     }
                 });
+                
+                // Reset filters button (for empty state)
+                window.resetFilters = resetFilters;
             }
             
             // Start the application
