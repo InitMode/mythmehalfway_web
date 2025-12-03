@@ -35,20 +35,10 @@
 
         // --- Configuration ---
         const GITHUB_API_CONFIG = {
-            // Replace these with your actual GitHub repository details
-            username: 'InitMode',
-            repo: 'mythmehalfway',
-            branch: 'main',
-            storiesPath: 'stories',
-            
             // API endpoints (using GitHub Pages API)
             apiBaseUrl: '', // Leave empty for same-origin requests (GitHub Pages)
             statusEndpoint: '/api/status.json',
-            storiesEndpoint: '/api/stories/index.json',
-            
-            // GitHub API configuration (for direct fallback if needed)
-            githubApiBase: 'https://api.github.com/repos',
-            rawContentBase: 'https://raw.githubusercontent.com'
+            storiesIndexEndpoint: '/stories/index.json', // Changed from /api/stories/index.json
         };
 
         // --- Sounds ---
@@ -100,7 +90,7 @@
                 if (!statusResponse.ok) throw new Error('API not available');
                 
                 // Fetch stories index
-                const storiesResponse = await fetch(`${GITHUB_API_CONFIG.apiBaseUrl}${GITHUB_API_CONFIG.storiesEndpoint}`);
+                const storiesResponse = await fetch(`${GITHUB_API_CONFIG.apiBaseUrl}${GITHUB_API_CONFIG.storiesIndexEndpoint}`);
                 if (!storiesResponse.ok) throw new Error('Failed to fetch stories index');
                 
                 const storiesIndex = await storiesResponse.json();
@@ -108,7 +98,7 @@
                 // Load each story
                 const storiesPromises = storiesIndex.map(async (storyFile) => {
                     try {
-                        const storyResponse = await fetch(`${GITHUB_API_CONFIG.apiBaseUrl}/api/stories/${storyFile}`);
+                        const storyResponse = await fetch(`${GITHUB_API_CONFIG.apiBaseUrl}/stories/${storyFile}`);
                         if (!storyResponse.ok) throw new Error(`Failed to fetch ${storyFile}`);
                         
                         const markdown = await storyResponse.text();
