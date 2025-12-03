@@ -32,47 +32,53 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      # 1. Prepare Custom API Data and Directory Structure
-      # Everything is created in the repository root under 'public', 
-      # which Jekyll will copy to the final '_site' artifact.
-      - name: Prepare Custom API Data
+    
+      # Create directories for our files
+      - name: Create Directories
         run: |
-          mkdir -p public/api/stories # This directory will become _site/api/stories
-          echo '{"status": "API running"}' > public/api/status.json # This file will become _site/api/status.json
-
-      # 2. Fetch Stories and Generate Index
-      - name: Fetch Stories From Private Repo & Generate Index
+          mkdir -p _site
+          mkdir -p _site/api
+          mkdir -p _site/api/stories
+      
+      # Copy index.html to _site
+      - name: Copy HTML File
         run: |
-          # Use curl and jq to download files into the prepared 'public/' folder
-          curl -H "Authorization: Bearer ${{ secrets.STORY_TOKEN }}" \
-               -H "Accept: application/vnd.github.raw" \
-               https://api.github.com/repos/InitMode/mythmehalfway/contents/stories \
-          | jq -r '.[] | .download_url' | while read url; do
-               fname=$(basename "$url")
-               curl -L "$url" -o "public/api/stories/$fname"
-            done
+          cp index.html _site/
+      
+      # Create API status file
+      - name: Create API Status
+        run: |
+          echo '{"status": "API running", "timestamp": "'$(date)'"}' > _site/api/status.json
+      
+      # Fetch stories from private repo
+      - name: Fetch Stories From Private Repo
+        run: |
+          echo "Fetching stories from private repository..."
           
-          # Generate index.json inside the correct 'public/' path
-          cd public/api/stories
-          ls *.md | jq -R -s 'split("\n") | map(select(length > 0))' > index.json
+          # Try to fetch story list
+          for i in {1..10}; do
+            filename=$(printf "story%04d.md" $i)
+            echo "Downloading $filename..."
+            
+            curl -H "Authorization: Bearer ${{ secrets.STORY_TOKEN }}" \
+                 -H "Accept: application/vnd.github.raw" \
+                 -L "https://api.github.com/repos/InitMode/mythmehalfway/contents/stories/$filename" \
+                 -o "_site/api/stories/$filename" || echo "Failed to download $filename"
+          done
           
-          # Return to the root
+          # Create index.json with actual files that exist
+          cd _site/api/stories
+          ls *.md 2>/dev/null | jq -R -s 'split("\n") | map(select(length > 0))' > index.json || echo '[]' > index.json
           cd ../../..
+          
+          echo "Files downloaded:"
+          ls -la _site/api/stories/
       
-      # 3. Build with Jekyll
-      # This step reads the 'public/' directory and copies its contents 
-      # into the 'destination: ./_site' directory.
-      - name: Build with Jekyll
-        uses: actions/jekyll-build-pages@v1
-        with:
-          source: ./
-          destination: ./_site
-      
+      # Upload to GitHub Pages
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./_site 
-          
+          path: ./_site
 
   # Deployment job
   deploy:
