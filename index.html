@@ -6,6 +6,7 @@
     <title>Story Library</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* [Keep all your existing CSS styles exactly as they are] */
         :root {
             --primary-color: #4f46e5;
             --secondary-color: #f8fafc;
@@ -250,7 +251,7 @@
     <div class="container">
         <!-- Header -->
         <div class="header text-center">
-            <h1 class="mb-3">📚 Story Library</h1>
+            <h1 class="mb-3">📚 MythMeHalfway Stories</h1>
             <p class="mb-0">Discover amazing stories from our collection</p>
         </div>
 
@@ -303,19 +304,31 @@
 
         <!-- Footer -->
         <div class="footer">
-            <p>© 2024 Story Library | Total Stories: <span id="storyCount">0</span></p>
-            <p><small id="apiStatus">API Status: Checking...</small></p>
+            <p>© 2024 MythMeHalfway | Total Stories: <span id="storyCount">0</span></p>
+            <p><small id="apiStatus">Loading stories...</small></p>
         </div>
     </div>
 
     <script>
-        // Configuration
+        // Configuration - Using current path as base
         const CONFIG = {
-            apiBaseUrl: window.location.origin,
-            statusEndpoint: '/api/status.json',
-            storiesIndexEndpoint: '/api/stories/index.json',
-            storiesPath: '/api/stories/'
+            // Use relative paths from current location
+            basePath: window.location.pathname.includes('/mythmehalfway_web/') 
+                ? '/mythmehalfway_web/' 
+                : '/',
+            get statusEndpoint() {
+                return this.basePath + 'api/status.json';
+            },
+            get storiesIndexEndpoint() {
+                return this.basePath + 'api/stories/index.json';
+            },
+            get storiesPath() {
+                return this.basePath + 'api/stories/';
+            }
         };
+
+        console.log('Base path:', CONFIG.basePath);
+        console.log('Status endpoint:', CONFIG.statusEndpoint);
 
         // State
         let allStories = [];
@@ -479,29 +492,43 @@ The answers are waiting in the echoes of history, if we're willing to listen.`,
         // Check if API is available
         async function checkAPIStatus() {
             try {
-                const response = await fetch(CONFIG.statusEndpoint);
+                console.log('Checking API at:', CONFIG.statusEndpoint);
+                const response = await fetch(CONFIG.statusEndpoint, {
+                    cache: 'no-cache'
+                });
+                
                 if (response.ok) {
                     const data = await response.json();
                     apiStatusElement.textContent = `API Status: ${data.status}`;
                     return true;
+                } else {
+                    console.log('API responded but not OK:', response.status);
+                    apiStatusElement.textContent = `API Status: Error (${response.status})`;
+                    return false;
                 }
             } catch (error) {
-                console.log('API status check failed:', error);
+                console.log('API check failed:', error);
+                apiStatusElement.textContent = 'API Status: Not available (using demo stories)';
+                return false;
             }
-            apiStatusElement.textContent = 'API Status: Not available (using demo stories)';
-            return false;
         }
 
         // Get list of story files from API
         async function getStoryFiles() {
             try {
-                const response = await fetch(CONFIG.storiesIndexEndpoint);
+                console.log('Fetching story index from:', CONFIG.storiesIndexEndpoint);
+                const response = await fetch(CONFIG.storiesIndexEndpoint, {
+                    cache: 'no-cache'
+                });
+                
                 if (!response.ok) {
+                    console.log('Story index fetch failed:', response.status);
                     throw new Error('Failed to fetch story index');
                 }
+                
                 const files = await response.json();
                 console.log('Found story files:', files);
-                return files;
+                return Array.isArray(files) ? files : [];
             } catch (error) {
                 console.error('Error fetching story index:', error);
                 return [];
@@ -511,8 +538,12 @@ The answers are waiting in the echoes of history, if we're willing to listen.`,
         // Fetch a single story from the API
         async function fetchStory(filename) {
             try {
-                const storyUrl = `${CONFIG.storiesPath}${filename}`;
-                const response = await fetch(storyUrl);
+                const storyUrl = CONFIG.storiesPath + filename;
+                console.log('Fetching story:', storyUrl);
+                
+                const response = await fetch(storyUrl, {
+                    cache: 'no-cache'
+                });
                 
                 if (!response.ok) {
                     console.warn(`Failed to fetch ${filename}: ${response.status}`);
@@ -527,7 +558,7 @@ The answers are waiting in the echoes of history, if we're willing to listen.`,
                     filename: filename,
                     title: frontmatter.title || filename.replace('.md', '').replace('story', 'Story '),
                     author: frontmatter.author || 'Unknown Author',
-                    category: frontmatter.type?.toLowerCase() || 'fiction',
+                    category: (frontmatter.type || 'fiction').toLowerCase(),
                     cover: frontmatter.cover || `https://source.unsplash.com/featured/?story,${frontmatter.tags?.[0] || 'book'}`,
                     description: frontmatter.description || 'A captivating story waiting to be read...',
                     content: content,
@@ -550,6 +581,7 @@ The answers are waiting in the echoes of history, if we're willing to listen.`,
             storiesGrid.style.display = 'none';
             demoStoriesGrid.style.display = 'none';
             noStoriesElement.style.display = 'none';
+            apiStatusElement.textContent = 'Loading...';
             
             try {
                 // Check if API is running
@@ -568,6 +600,7 @@ The answers are waiting in the echoes of history, if we're willing to listen.`,
                             allStories = stories;
                             filteredStories = [...stories];
                             updateStoryDisplay();
+                            apiStatusElement.textContent = `Loaded ${stories.length} stories from API`;
                             return;
                         }
                     }
@@ -594,7 +627,7 @@ The answers are waiting in the echoes of history, if we're willing to listen.`,
             demoStoriesGrid.style.display = 'flex';
             storyCountElement.textContent = filteredStories.length;
             
-            apiStatusElement.textContent = 'API Status: Using demo stories';
+            apiStatusElement.textContent = 'Using demo stories (API not available)';
         }
 
         // Create story card HTML
@@ -660,7 +693,9 @@ The answers are waiting in the echoes of history, if we're willing to listen.`,
             storyCountElement.textContent = '0';
             
             // Re-attach event listener to retry button
-            document.getElementById('retryBtn').addEventListener('click', fetchAllStories);
+            setTimeout(() => {
+                document.getElementById('retryBtn').addEventListener('click', fetchAllStories);
+            }, 100);
         }
 
         // Filter stories based on search and category
@@ -700,7 +735,7 @@ The answers are waiting in the echoes of history, if we're willing to listen.`,
                 // Create a modal to display the story
                 const modalHTML = `
                     <div class="modal fade" id="storyModal" tabindex="-1">
-                        <div class="modal-dialog modal-lg">
+                        <div class="modal-dialog modal-lg modal-dialog-scrollable">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title">${story.title}</h5>
@@ -714,7 +749,7 @@ The answers are waiting in the echoes of history, if we're willing to listen.`,
                                     </div>
                                     <div class="d-flex justify-content-between mb-3">
                                         <span class="text-muted">By ${story.author}</span>
-                                        <span class="text-muted">${story.readTime} min read • ${story.category}</span>
+                                        <span class="text-muted">${story.readTime} min read • <span class="text-capitalize">${story.category}</span></span>
                                     </div>
                                     <hr>
                                     <div class="story-content" style="line-height: 1.8; font-size: 1.1rem; white-space: pre-line;">
