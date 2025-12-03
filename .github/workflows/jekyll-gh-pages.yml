@@ -31,6 +31,31 @@ jobs:
       
       - name: Setup Pages
         uses: actions/configure-pages@v5
+
+      - name: Prepare Custom API Data
+        run: |
+          # Create the desired path relative to the repository root
+          mkdir -p public/api/stories 
+          echo '{"status": "API running"}' > public/api/status.json
+
+      # 2. Fetch Stories (using the correct, non-protected path)
+      - name: Fetch Stories From Private Repo
+        run: |
+          curl -H "Authorization: Bearer ${{ secrets.STORY_TOKEN }}" \
+               -H "Accept: application/vnd.github.raw" \
+               https://api.github.com/repos/InitMode/mythmehalfway/contents/stories \
+          | jq -r '.[] | .download_url' | while read url; do
+               fname=$(basename "$url")
+               # Save to the prepared folder
+               curl -L "$url" -o "public/api/stories/$fname"
+            done
+          
+          # Generate index.json 
+          cd public/api/stories
+          ls *.md | jq -R -s 'split("\n") | map(select(length > 0))' > index.json
+          
+          # Go back to the root
+          cd ../../..
       
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
@@ -52,7 +77,7 @@ jobs:
           # First, get the list of story files
           curl -H "Authorization: Bearer ${{ secrets.STORY_TOKEN }}" \
                -H "Accept: application/vnd.github.v3+json" \
-               https://api.github.com/repos/Initm/mythm/contents/stories \
+               https://api.github.com/repos/InitMode/mythmehalfway/contents/stories \
           | jq -r '.[] | select(.name | endswith(".md")) | .name' > story_list.txt
           
           # Create an index.json file with the list of stories
