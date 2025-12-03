@@ -4,461 +4,1350 @@
     <meta charset="UTF-8">
     <title>Myth Me Halfway – Story Library</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <style>
         :root {
-            /* Palette */
             --primary: #8a2be2;
-            --primary-glow: rgba(138, 43, 226, 0.4);
-            --bg-body: #0f0f1a;
-            --bg-card: #1a1a2e;
-            --bg-glass: rgba(26, 26, 46, 0.85);
-            --text-main: #e0e0e0;
-            --text-muted: #a0a0b0;
-            --accent: #ff6b8b;
-            --border: #2d2d44;
-            
-            /* Spacing & Radius */
+            --primary-dark: #5d0e9e;
+            --primary-light: #9d4edd;
+            --secondary: #ff6b8b;
+            --accent: #4cc9f0;
+            --bg-light: #f8f5ff;
+            --bg-dark: #0f0f1a;
+            --card-light: #ffffff;
+            --card-dark: #1a1a2e;
+            --text-light: #2d2d3a;
+            --text-dark: #e8e8f0;
+            --border-light: #e5e1ff;
+            --border-dark: #2d2d44;
+            --success: #4CAF50;
+            --warning: #ff9800;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            --shadow-dark: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --radius: 12px;
             --radius-sm: 8px;
             --radius-lg: 16px;
-            --radius-xl: 24px;
-            --header-height: 70px;
         }
 
-        body.light-mode {
-            --bg-body: #f4f4f8;
-            --bg-card: #ffffff;
-            --bg-glass: rgba(255, 255, 255, 0.9);
-            --text-main: #222222;
-            --text-muted: #666666;
-            --border: #e0e0e0;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; transition: all 0.25s ease; outline: none; }
-        
         body {
-            font-family: 'Lato', sans-serif;
-            background: var(--bg-body);
-            color: var(--text-main);
+            font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            background: var(--bg-light);
+            color: var(--text-light);
             min-height: 100vh;
-            padding-top: var(--header-height);
-            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* --- Scrollbar Styling --- */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+        body.dark-mode {
+            background: var(--bg-dark);
+            color: var(--text-dark);
+        }
 
-        /* --- App Bar / Header --- */
-        header {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            height: var(--header-height);
-            background: var(--bg-glass);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 1.5rem;
+        /* App Container */
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* App Header */
+        .app-header {
+            position: sticky;
+            top: 0;
             z-index: 100;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1.2rem 0;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 var(--radius) var(--radius);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
         }
 
         .brand {
-            font-family: 'Cinzel', serif;
-            font-size: 1.4rem;
-            font-weight: 700;
-            background: linear-gradient(45deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            white-space: nowrap;
-            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
+        .brand-icon {
+            font-size: 2rem;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            line-height: 1;
+        }
+
+        .brand-subtitle {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin-top: 0.2rem;
+        }
+
+        /* Header Controls */
         .header-controls {
             display: flex;
             align-items: center;
-            gap: 0.8rem;
-            flex: 1;
-            justify-content: flex-end;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
 
-        /* Search & Filter Compact Group */
-        .search-group {
-            display: flex;
-            align-items: center;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 50px;
-            padding: 0 1rem;
-            width: 100%;
-            max-width: 450px;
-            height: 40px;
+        /* Search Bar */
+        .search-container {
+            position: relative;
+            flex: 1;
+            min-width: 280px;
+            max-width: 400px;
         }
 
         .search-input {
-            background: transparent;
-            border: none;
-            color: var(--text-main);
-            flex: 1;
-            margin-left: 0.5rem;
-            font-size: 0.9rem;
+            width: 100%;
+            padding: 0.9rem 1.2rem 0.9rem 3rem;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            color: white;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
         }
 
-        .filter-trigger {
-            color: var(--text-muted);
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .search-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Filter Tags */
+        .filter-tags-container {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-tag {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            color: white;
+            font-size: 0.85rem;
             cursor: pointer;
-            padding: 5px;
-            font-size: 0.9rem;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .filter-tag:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .filter-tag.active {
+            background: white;
+            color: var(--primary);
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Header Actions */
+        .header-actions {
             display: flex;
             align-items: center;
-            gap: 5px;
-            border-left: 1px solid var(--border);
-            padding-left: 10px;
-            margin-left: 5px;
+            gap: 0.8rem;
         }
-        
-        .filter-trigger:hover { color: var(--primary); }
 
-        /* Icon Buttons in Header */
-        .icon-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-main);
-            width: 40px;
-            height: 40px;
+        .action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.1rem;
+            transition: all 0.3s ease;
         }
 
-        .icon-btn:hover {
-            background: rgba(138, 43, 226, 0.1);
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .theme-toggle.active {
+            background: white;
             color: var(--primary);
         }
 
-        /* Filter Dropdown Panel */
-        .filter-panel {
-            position: fixed;
-            top: var(--header-height);
-            left: 0; right: 0;
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 1.5rem;
-            transform: translateY(-150%);
-            z-index: 90;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        /* Continue Reading Section */
+        .continue-reading-section {
+            background: var(--card-light);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-light);
         }
 
-        .filter-panel.active { transform: translateY(0); }
-
-        .tag-cloud { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
-        .tag {
-            padding: 4px 12px;
-            border-radius: 20px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--border);
-            font-size: 0.8rem;
-            cursor: pointer;
+        body.dark-mode .continue-reading-section {
+            background: var(--card-dark);
+            box-shadow: var(--shadow-dark);
+            border-color: var(--border-dark);
         }
-        .tag.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        /* --- Main Content --- */
-        .main-container { padding: 1.5rem; max-width: 1400px; margin: 0 auto; }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+        }
 
-        /* Continue Reading (Top Row) */
         .section-title {
-            font-family: 'Merriweather', serif;
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
-            color: var(--text-muted);
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 0.8rem;
         }
-        .section-title::after { content: ''; height: 1px; background: var(--border); flex: 1; }
 
-        .continue-row {
+        .section-title i {
+            font-size: 1.2rem;
+        }
+
+        /* Continue Reading Cards */
+        .continue-reading-cards {
             display: flex;
             gap: 1rem;
             overflow-x: auto;
-            padding-bottom: 1rem;
-            margin-bottom: 2rem;
-            scroll-behavior: smooth;
+            padding: 0.5rem 0.5rem 1rem;
+            scrollbar-width: thin;
+        }
+
+        .continue-reading-cards::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .continue-reading-cards::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+
+        body.dark-mode .continue-reading-cards::-webkit-scrollbar-thumb {
+            background: #555;
         }
 
         .continue-card {
-            min-width: 240px;
+            min-width: 220px;
+            max-width: 220px;
             height: 140px;
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            position: relative;
+            background: var(--bg-light);
+            border-radius: var(--radius-sm);
             overflow: hidden;
-            border: 1px solid var(--border);
+            position: relative;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-light);
         }
 
-        .continue-bg {
-            position: absolute; inset: 0;
-            background-size: cover; background-position: center;
-            opacity: 0.4; transition: transform 0.3s;
+        body.dark-mode .continue-card {
+            background: var(--bg-dark);
+            border-color: var(--border-dark);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
-        .continue-card:hover .continue-bg { transform: scale(1.05); opacity: 0.3; }
 
-        .continue-content {
-            position: relative; z-index: 2;
-            padding: 1rem; height: 100%;
-            display: flex; flex-direction: column;
+        .continue-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .continue-card-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.5);
+        }
+
+        .continue-card-content {
+            position: relative;
+            z-index: 2;
+            padding: 1rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
             justify-content: space-between;
+            color: white;
         }
 
-        .story-title-sm { font-weight: 700; font-size: 1rem; line-height: 1.3; font-family: 'Merriweather', serif; }
-        .last-read { font-size: 0.75rem; color: var(--accent); font-weight: 700; }
-        
-        .progress-bar-sm {
-            height: 3px; background: rgba(255,255,255,0.2);
-            border-radius: 2px; margin-top: 5px;
-        }
-        .progress-fill { height: 100%; background: var(--accent); width: 0%; }
-
-        /* Story Grid */
-        .story-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 1.5rem;
+        .continue-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
         }
 
-        .book-card {
-            background: transparent;
-            border-radius: var(--radius-sm);
+        .continue-card-title {
+            font-weight: 600;
+            font-size: 1rem;
+            line-height: 1.3;
+            margin-bottom: 0.5rem;
+            flex: 1;
+        }
+
+        .continue-card-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
             cursor: pointer;
-            perspective: 1000px;
+            flex-shrink: 0;
+            margin-left: 0.5rem;
         }
 
-        .book-cover {
-            width: 100%; aspect-ratio: 2/3;
-            background: var(--bg-card);
-            border-radius: var(--radius-sm);
+        .continue-card-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .continue-card-progress {
+            background: rgba(255, 255, 255, 0.2);
+            height: 4px;
+            border-radius: 2px;
             overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .continue-card-progress-bar {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+        }
+
+        .continue-card-meta {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1.5rem;
+            padding-bottom: 3rem;
+        }
+
+        /* Story Card */
+        .story-card {
+            background: var(--card-light);
+            border-radius: var(--radius);
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-light);
             position: relative;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 300px;
         }
 
-        .book-card:hover .book-cover {
+        body.dark-mode .story-card {
+            background: var(--card-dark);
+            box-shadow: var(--shadow-dark);
+            border-color: var(--border-dark);
+        }
+
+        .story-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 12px 25px rgba(138, 43, 226, 0.25);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
 
-        .book-cover img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .book-info { padding-top: 0.8rem; }
-        .book-title { font-family: 'Merriweather', serif; font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; line-height: 1.4; }
-        .book-meta { font-size: 0.8rem; color: var(--text-muted); display: flex; justify-content: space-between; }
-        .rating { color: #ffd700; font-size: 0.75rem; }
+        .story-card-image {
+            height: 160px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
 
-        /* --- Floating Action Button (FAB) --- */
+        .story-card-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.8) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .story-card:hover .story-card-overlay {
+            opacity: 1;
+        }
+
+        .story-card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .story-card-tag {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(4px);
+            padding: 0.2rem 0.6rem;
+            border-radius: 10px;
+            font-size: 0.65rem;
+            color: white;
+            white-space: nowrap;
+        }
+
+        .story-card-content {
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .story-card-header {
+            margin-bottom: 0.5rem;
+        }
+
+        .story-card-title {
+            font-weight: 700;
+            font-size: 1rem;
+            line-height: 1.3;
+            margin-bottom: 0.3rem;
+            color: var(--text-light);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        body.dark-mode .story-card-title {
+            color: var(--text-dark);
+        }
+
+        .story-card-author {
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .story-card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        body.dark-mode .story-card-meta {
+            color: #aaa;
+        }
+
+        .story-card-type {
+            background: var(--primary-light);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .story-card-time {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: var(--warning);
+        }
+
+        .story-card-description {
+            font-size: 0.8rem;
+            color: #777;
+            line-height: 1.4;
+            flex: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        body.dark-mode .story-card-description {
+            color: #bbb;
+        }
+
+        .story-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.8rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid var(--border-light);
+        }
+
+        body.dark-mode .story-card-footer {
+            border-top-color: var(--border-dark);
+        }
+
+        .story-card-progress {
+            flex: 1;
+            height: 4px;
+            background: #eee;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-right: 0.8rem;
+        }
+
+        body.dark-mode .story-card-progress {
+            background: #333;
+        }
+
+        .story-card-progress-bar {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+        }
+
+        .story-card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .story-card-btn {
+            background: transparent;
+            border: none;
+            color: #999;
+            font-size: 0.9rem;
+            cursor: pointer;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .story-card-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--primary);
+        }
+
+        body.dark-mode .story-card-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .story-card-btn.active {
+            color: var(--secondary);
+        }
+
+        /* FAB Menu */
         .fab-container {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 500;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
         }
 
         .fab-main {
-            width: 60px; height: 60px;
-            background: linear-gradient(135deg, var(--primary), #5d0e9e);
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
             border-radius: 50%;
             color: white;
-            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 1.5rem;
-            box-shadow: 0 8px 20px rgba(138, 43, 226, 0.4);
-            cursor: pointer;
-            border: none;
-            transition: transform 0.3s;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .fab-main:hover { transform: scale(1.1) rotate(90deg); }
+        .fab-main:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
 
-        .fab-options {
+        .fab-menu {
             position: absolute;
-            bottom: 70px; right: 0;
-            display: flex; flex-direction: column; align-items: flex-end;
-            gap: 15px;
-            pointer-events: none;
-            opacity: 0; transform: translateY(20px);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .fab-container.active .fab-options { opacity: 1; transform: translateY(0); pointer-events: auto; }
-
-        .fab-mini {
-            width: 50px; height: 50px;
-            border-radius: 50%;
-            border: none;
-            color: white;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.1rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            cursor: pointer;
-            position: relative;
-        }
-
-        .fab-mini::before {
-            content: attr(data-tooltip);
-            position: absolute; right: 60px;
-            background: var(--bg-card); color: var(--text-main);
-            padding: 4px 8px; border-radius: 4px;
-            font-size: 0.75rem; white-space: nowrap;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            opacity: 0; transition: opacity 0.2s;
-        }
-        .fab-mini:hover::before { opacity: 1; }
-
-        .fab-history { background: #4CAF50; }
-        .fab-liked { background: #ff4757; }
-        .fab-bookmarked { background: #ffa502; }
-
-        /* --- Modals (Shared Styles) --- */
-        .modal-overlay {
-            position: fixed; inset: 0;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(5px);
-            display: flex; align-items: center; justify-content: center;
-            z-index: 1000;
-            opacity: 0; pointer-events: none;
-            transition: opacity 0.3s;
-        }
-        .modal-overlay.active { opacity: 1; pointer-events: auto; }
-
-        .modal-card {
-            background: var(--bg-card);
-            width: 90%; max-width: 500px;
+            bottom: 70px;
+            right: 0;
+            background: var(--card-light);
             border-radius: var(--radius-lg);
-            border: 1px solid var(--border);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            transform: scale(0.9); transition: transform 0.3s;
-            display: flex; flex-direction: column;
-            max-height: 80vh;
+            padding: 1rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            gap: 0.8rem;
+            min-width: 180px;
+            border: 1px solid var(--border-light);
         }
-        .modal-overlay.active .modal-card { transform: scale(1); }
+
+        body.dark-mode .fab-menu {
+            background: var(--card-dark);
+            border-color: var(--border-dark);
+        }
+
+        .fab-menu.active {
+            display: flex;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fab-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem 1rem;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-light);
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        body.dark-mode .fab-item {
+            color: var(--text-dark);
+        }
+
+        .fab-item:hover {
+            background: rgba(138, 43, 226, 0.1);
+            color: var(--primary);
+            transform: translateX(-5px);
+        }
+
+        .fab-item i {
+            width: 20px;
+            font-size: 1.1rem;
+        }
+
+        /* Audio Dialog */
+        .audio-dialog {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--card-light);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            gap: 1.5rem;
+            min-width: 320px;
+            max-width: 90vw;
+            border: 1px solid var(--border-light);
+        }
+
+        body.dark-mode .audio-dialog {
+            background: var(--card-dark);
+            border-color: var(--border-dark);
+        }
+
+        .audio-dialog.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -40%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        .audio-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .audio-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .audio-close {
+            background: transparent;
+            border: none;
+            color: #999;
+            font-size: 1.2rem;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .audio-close:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        body.dark-mode .audio-close:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .audio-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .audio-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: var(--bg-light);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        body.dark-mode .audio-option {
+            background: var(--bg-dark);
+        }
+
+        .audio-option:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .audio-option.active {
+            border-color: var(--primary);
+            background: rgba(138, 43, 226, 0.1);
+        }
+
+        .audio-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .audio-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(138, 43, 226, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .audio-name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .audio-volume {
+            width: 100px;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 1rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-light);
+            width: 90%;
+            max-width: 800px;
+            height: 90vh;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        body.dark-mode .modal-content {
+            background: var(--card-dark);
+        }
 
         .modal-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .modal-body { padding: 1.5rem; overflow-y: auto; }
 
-        /* Audio Modal Specifics */
-        .sound-slider {
-            display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 1rem;
-            padding: 10px; background: rgba(255,255,255,0.03);
-            border-radius: var(--radius-sm);
+        .modal-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
         }
-        input[type=range] { flex: 1; margin: 0 15px; accent-color: var(--primary); }
 
-        /* List Styling for History/Bookmarks */
-        .list-item {
-            display: flex; align-items: center; gap: 1rem;
-            padding: 1rem; border-bottom: 1px solid var(--border);
+        .modal-close {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            font-size: 1.2rem;
             cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .list-item:hover { background: rgba(255,255,255,0.03); }
-        .list-thumb { width: 50px; height: 50px; border-radius: 6px; background: #333; object-fit: cover; }
-        .list-details h4 { font-size: 0.95rem; margin-bottom: 3px; }
-        .list-details p { font-size: 0.8rem; color: var(--text-muted); }
 
-        /* Mobile Responsive */
-        @media (max-width: 600px) {
-            .brand { font-size: 1.2rem; }
-            .search-group { width: auto; background: transparent; border: none; padding: 0; }
-            .search-input { display: none; } /* Hide input on small mobile, just use icon if needed or toggle */
-            .search-input.mobile-visible { display: block; position: absolute; top: 70px; left: 0; right: 0; background: var(--bg-card); padding: 1rem; border-bottom: 1px solid var(--border); }
-            .section-title { padding-left: 0.5rem; }
-            .fab-container { bottom: 20px; right: 20px; }
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        .modal-controls {
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-light);
+            border-top: 1px solid var(--border-light);
+        }
+
+        body.dark-mode .modal-controls {
+            background: var(--bg-dark);
+            border-top-color: var(--border-dark);
+        }
+
+        .page-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .page-input {
+            width: 70px;
+            padding: 0.8rem;
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            text-align: center;
+            background: var(--card-light);
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        body.dark-mode .page-input {
+            background: var(--card-dark);
+            border-color: var(--border-dark);
+            color: var(--text-dark);
+        }
+
+        .page-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(138, 43, 226, 0.3);
+        }
+
+        .page-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(138, 43, 226, 0.4);
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--primary);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            z-index: 2001;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Stats */
+        .stats-container {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: var(--card-light);
+            border-radius: var(--radius);
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+            min-width: 180px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-light);
+        }
+
+        body.dark-mode .stat-card {
+            background: var(--card-dark);
+            box-shadow: var(--shadow-dark);
+            border-color: var(--border-dark);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .stat-info {
+            flex: 1;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.3rem;
+        }
+
+        body.dark-mode .stat-label {
+            color: #aaa;
+        }
+
+        /* Empty State */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #999;
+        }
+
+        .empty-state i {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.3;
+        }
+
+        .empty-state p {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state .action-btn {
+            display: inline-flex;
+            margin-top: 1rem;
+            padding: 0.8rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .empty-state .action-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+        }
+
+        @media (max-width: 992px) {
+            .header-content {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+
+            .search-container {
+                max-width: 100%;
+            }
+
+            .header-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-tags-container {
+                justify-content: center;
+            }
+
+            .continue-card {
+                min-width: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 0 15px;
+            }
+
+            .main-content {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+
+            .story-card {
+                height: 280px;
+            }
+
+            .story-card-image {
+                height: 140px;
+            }
+
+            .stats-container {
+                gap: 1rem;
+            }
+
+            .stat-card {
+                min-width: calc(50% - 0.5rem);
+            }
+
+            .fab-container {
+                bottom: 1.5rem;
+                right: 1.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-content {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+
+            .story-card {
+                height: 260px;
+            }
+
+            .story-card-image {
+                height: 130px;
+            }
+
+            .continue-card {
+                min-width: 180px;
+                height: 130px;
+            }
+
+            .modal-content {
+                width: 95%;
+                height: 95vh;
+            }
+
+            .stat-card {
+                min-width: 100%;
+            }
         }
     </style>
 </head>
-<body class="dark-mode">
 
-    <header>
-        <div class="brand">Myth Me Halfway</div>
-        
-        <div class="header-controls">
-            <div class="search-group">
-                <i class="fas fa-search" style="color: var(--text-muted);"></i>
-                <input type="text" class="search-input" placeholder="Search stories...">
-                <div class="filter-trigger" id="filterToggle">
-                    <i class="fas fa-sliders-h"></i> Filters
+<body class="dark-mode">
+    <!-- Audio Dialog -->
+    <div class="audio-dialog" id="audioDialog">
+        <div class="audio-header">
+            <h3 class="audio-title">Background Sounds</h3>
+            <button class="audio-close" id="closeAudioDialog">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="audio-options" id="audioOptions">
+            <!-- Audio options will be inserted here -->
+        </div>
+    </div>
+
+    <!-- App Container -->
+    <div class="app-container">
+        <!-- App Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="brand">
+                    <div class="brand-icon">
+                        <i class="fas fa-book-sparkles"></i>
+                    </div>
+                    <div class="brand-text">
+                        <h1 class="brand-title">Myth Me Halfway</h1>
+                        <div class="brand-subtitle">Story Library <span id="currentYear"></span></div>
+                    </div>
+                </div>
+
+                <div class="header-controls">
+                    <!-- Search Bar -->
+                    <div class="search-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="searchInput" class="search-input" placeholder="Search stories, authors, tags...">
+                    </div>
+
+                    <!-- Filter Tags -->
+                    <div class="filter-tags-container" id="filterTags">
+                        <!-- Tags will be inserted here -->
+                    </div>
+                </div>
+
+                <div class="header-actions">
+                    <button class="action-btn theme-toggle" id="themeToggle" title="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button class="action-btn" id="audioToggle" title="Background sounds">
+                        <i class="fas fa-music"></i>
+                    </button>
                 </div>
             </div>
+        </header>
 
-            <button class="icon-btn" id="audioBtn" title="Soundscapes">
-                <i class="fas fa-headphones-alt"></i>
-            </button>
-
-            <button class="icon-btn" id="themeBtn" title="Toggle Theme">
-                <i class="fas fa-moon"></i>
-            </button>
-        </div>
-    </header>
-
-    <div class="filter-panel" id="filterPanel">
-        <div style="margin-bottom: 1rem;">
-            <small style="color: var(--primary); font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Categories</small>
-            <div class="tag-cloud" id="categoryTags">
-                <span class="tag active">All</span>
-                <span class="tag">Fantasy</span>
-                <span class="tag">Sci-Fi</span>
-                <span class="tag">Romance</span>
-                <span class="tag">Horror</span>
+        <!-- Continue Reading Section -->
+        <div class="continue-reading-section" id="continueReadingSection">
+            <div class="section-header">
+                <h3 class="section-title">
+                    <i class="fas fa-play-circle"></i>
+                    Continue Reading
+                </h3>
+            </div>
+            <div class="continue-reading-cards" id="continueReadingCards">
+                <!-- Continue reading cards will be inserted here -->
             </div>
         </div>
-        <div>
-            <small style="color: var(--primary); font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Tags</small>
-            <div class="tag-cloud" id="metaTags">
-                <span class="tag">Magic</span>
-                <span class="tag">Dragons</span>
-                <span class="tag">Space</span>
-                <span class="tag">Mystery</span>
+
+        <!-- Stats -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="totalStories">0</div>
+                    <div class="stat-label">Total Stories</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-bookmark"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="bookmarkedCount">0</div>
+                    <div class="stat-label">Bookmarked</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="totalReadTime">0</div>
+                    <div class="stat-label">Minutes Read</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div class="stat-info">
+                    <div class="stat-value" id="likedCount">0</div>
+                    <div class="stat-label">Liked Stories</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content" id="storiesContainer">
+            <!-- Story cards will be inserted here -->
+        </main>
+    </div>
+
+    <!-- Story Modal -->
+    <div class="modal" id="storyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Story Title</h2>
+                <button class="modal-close" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalStoryContent">
+                <!-- Story content will be inserted here -->
+            </div>
+            <div class="modal-controls">
+                <div class="page-controls">
+                    <button class="page-btn" id="prevPageBtn">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <input type="number" id="pageInput" class="page-input" min="1" value="1">
+                    <span id="totalPages">/ 1</span>
+                    <button class="page-btn" id="nextPageBtn">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="page-controls">
+                    <button class="action-btn" id="modalBookmarkBtn" title="Bookmark">
+                        <i class="far fa-bookmark"></i>
+                    </button>
+                    <button class="action-btn" id="modalLikeBtn" title="Like">
+                        <i class="far fa-heart"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="main-container">
-        
-        <h3 class="section-title"><i class="fas fa-book-reader"></i> Continue Reading</h3>
-        <div class="continue-row" id="continueContainer">
-            </div>
-
-        <h3 class="section-title"><i class="fas fa-layer-group"></i> Library</h3>
-        <div class="story-grid" id="libraryContainer">
-            </div>
-
-    </div>
-
-    <div class="fab-container" id="fabContainer">
-        <div class="fab-options">
-            <button class="fab-mini fab-history" data-tooltip="History" onclick="openModal('historyModal')">
-                <i class="fas fa-history"></i>
-            </button>
-            <button class="fab-mini fab-liked" data-tooltip="Liked" onclick="openModal('likedModal')">
-                <i class="fas fa-heart"></i>
-            </button>
-            <button class="fab-mini fab-bookmarked" data-tooltip="Bookmarks" onclick="openModal('bookmarkModal')">
+    <!-- FAB Menu -->
+    <div class="fab-container">
+        <div class="fab-menu" id="fabMenu">
+            <button class="fab-item" id="fabBookmarks">
                 <i class="fas fa-bookmark"></i>
+                <span>Bookmarks</span>
+            </button>
+            <button class="fab-item" id="fabLikes">
+                <i class="fas fa-heart"></i>
+                <span>Liked Stories</span>
+            </button>
+            <button class="fab-item" id="fabHistory">
+                <i class="fas fa-history"></i>
+                <span>Reading History</span>
             </button>
         </div>
         <button class="fab-main" id="fabMain">
@@ -466,230 +1355,1191 @@
         </button>
     </div>
 
-    <div class="modal-overlay" id="audioModal">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h3>Ambience</h3>
-                <button class="icon-btn" onclick="closeModal('audioModal')"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <div class="sound-slider">
-                    <i class="fas fa-cloud-rain"></i>
-                    <input type="range" min="0" max="100" value="0">
-                    <span>Rain</span>
-                </div>
-                <div class="sound-slider">
-                    <i class="fas fa-fire"></i>
-                    <input type="range" min="0" max="100" value="0">
-                    <span>Fire</span>
-                </div>
-                <div class="sound-slider">
-                    <i class="fas fa-wind"></i>
-                    <input type="range" min="0" max="100" value="0">
-                    <span>Wind</span>
-                </div>
-                <div class="sound-slider">
-                    <i class="fas fa-coffee"></i>
-                    <input type="range" min="0" max="100" value="0">
-                    <span>Cafe</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="listModal">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h3 id="listModalTitle">List</h3>
-                <button class="icon-btn" onclick="closeModal('listModal')"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body" id="listModalContent">
-                </div>
-        </div>
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Action completed</span>
     </div>
 
     <script>
-        // --- Mock Data to Simulate Retrieval API ---
-        const stories = [
-            { id: 1, title: "The Last Starship", author: "A. Clarke", genre: "Sci-Fi", progress: 75, cover: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=300&q=80" },
-            { id: 2, title: "Whispers in the Dark", author: "H.P. Lovecraft", genre: "Horror", progress: 30, cover: "https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&w=300&q=80" },
-            { id: 3, title: "The Golden Compass", author: "P. Pullman", genre: "Fantasy", progress: 0, cover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=300&q=80" },
-            { id: 4, title: "Cyberpunk Dreams", author: "W. Gibson", genre: "Sci-Fi", progress: 10, cover: "https://images.unsplash.com/photo-1535905557558-afc4877a26fc?auto=format&fit=crop&w=300&q=80" },
-            { id: 5, title: "Pride and Prejudice", author: "J. Austen", genre: "Romance", progress: 0, cover: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=300&q=80" },
-            { id: 6, title: "Dune", author: "F. Herbert", genre: "Sci-Fi", progress: 0, cover: "https://images.unsplash.com/photo-1541963463532-d68292c34b19?auto=format&fit=crop&w=300&q=80" },
-        ];
-
-        // --- Logic ---
-
-        // 1. Initialize View
-        document.addEventListener('DOMContentLoaded', () => {
-            renderContinueReading();
-            renderLibrary();
-            setupEventListeners();
-        });
-
-        // 2. Render Functions
-        function renderContinueReading() {
-            const container = document.getElementById('continueContainer');
-            // Filter stories with progress > 0
-            const activeStories = stories.filter(s => s.progress > 0);
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Constants and Configuration ---
+            const BASE_PATH = window.location.pathname.replace(/\/$/, "");
+            const API_BASE = BASE_PATH + "/api";
+            const STORIES_INDEX = API_BASE + "/stories/index.json";
             
-            if(activeStories.length === 0) {
-                container.innerHTML = '<p style="color:var(--text-muted); padding:1rem;">No active stories.</p>';
-                return;
+            // Sounds configuration
+            const SOUNDS = [
+                { id: 'rain', name: 'Heavy Rain', url: 'https://actions.google.com/sounds/v1/weather/rain_heavy_loud.ogg' },
+                { id: 'fire', name: 'Campfire', url: 'https://actions.google.com/sounds/v1/ambiences/fire.ogg' },
+                { id: 'coffee', name: 'Coffee Shop', url: 'https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg' },
+                { id: 'forest', name: 'Forest', url: 'https://actions.google.com/sounds/v1/nature/forest_wind.ogg' }
+            ];
+            
+            // Reading configuration
+            const WORDS_PER_PAGE = 300;
+            const WORDS_PER_MINUTE = 200;
+            
+            // --- State Management ---
+            let allStories = [];
+            let displayedStories = [];
+            let allTypes = new Set();
+            let allTags = new Set();
+            let activeFilters = {
+                type: 'all',
+                tags: new Set()
+            };
+            let searchQuery = '';
+            let currentStoryData = null;
+            let currentStoryPages = [];
+            let currentPage = 1;
+            let currentView = 'all'; // 'all', 'bookmarked', 'liked', 'history'
+            let activeSound = null;
+            let audioElements = {};
+            
+            // --- Local Storage Keys ---
+            const STORAGE_KEYS = {
+                THEME: 'mythmehalfway_theme',
+                BOOKMARKS: 'mythmehalfway_bookmarks',
+                READING_PROGRESS: 'mythmehalfway_reading_progress',
+                READING_HISTORY: 'mythmehalfway_reading_history',
+                LIKES: 'mythmehalfway_likes',
+                SOUND: 'mythmehalfway_sound',
+                VOLUME: 'mythmehalfway_volume'
+            };
+            
+            // --- DOM Elements ---
+            const currentYearEl = document.getElementById('currentYear');
+            const themeToggle = document.getElementById('themeToggle');
+            const searchInput = document.getElementById('searchInput');
+            const filterTags = document.getElementById('filterTags');
+            const audioToggle = document.getElementById('audioToggle');
+            const audioDialog = document.getElementById('audioDialog');
+            const closeAudioDialog = document.getElementById('closeAudioDialog');
+            const audioOptions = document.getElementById('audioOptions');
+            const continueReadingSection = document.getElementById('continueReadingSection');
+            const continueReadingCards = document.getElementById('continueReadingCards');
+            const totalStoriesEl = document.getElementById('totalStories');
+            const bookmarkedCountEl = document.getElementById('bookmarkedCount');
+            const totalReadTimeEl = document.getElementById('totalReadTime');
+            const likedCountEl = document.getElementById('likedCount');
+            const storiesContainer = document.getElementById('storiesContainer');
+            const storyModal = document.getElementById('storyModal');
+            const closeModal = document.getElementById('closeModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalStoryContent = document.getElementById('modalStoryContent');
+            const prevPageBtn = document.getElementById('prevPageBtn');
+            const nextPageBtn = document.getElementById('nextPageBtn');
+            const pageInput = document.getElementById('pageInput');
+            const totalPagesEl = document.getElementById('totalPages');
+            const modalBookmarkBtn = document.getElementById('modalBookmarkBtn');
+            const modalLikeBtn = document.getElementById('modalLikeBtn');
+            const fabMain = document.getElementById('fabMain');
+            const fabMenu = document.getElementById('fabMenu');
+            const fabBookmarks = document.getElementById('fabBookmarks');
+            const fabLikes = document.getElementById('fabLikes');
+            const fabHistory = document.getElementById('fabHistory');
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            // --- Initialize ---
+            function init() {
+                currentYearEl.textContent = new Date().getFullYear();
+                initTheme();
+                initAudio();
+                initEventListeners();
+                loadStories();
             }
-
-            container.innerHTML = activeStories.map(story => `
-                <div class="continue-card" onclick="openReader(${story.id})">
-                    <div class="continue-bg" style="background-image: url('${story.cover}')"></div>
-                    <div class="continue-content">
-                        <div>
-                            <div class="story-title-sm">${story.title}</div>
-                            <div class="last-read">Page 42</div>
-                        </div>
-                        <div>
-                            <div style="font-size:0.7rem; display:flex; justify-content:space-between;">
-                                <span>${story.progress}% Complete</span>
-                            </div>
-                            <div class="progress-bar-sm">
-                                <div class="progress-fill" style="width: ${story.progress}%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function renderLibrary() {
-            const container = document.getElementById('libraryContainer');
-            container.innerHTML = stories.map(story => `
-                <div class="book-card" onclick="openReader(${story.id})">
-                    <div class="book-cover">
-                        <img src="${story.cover}" alt="${story.title}">
-                    </div>
-                    <div class="book-info">
-                        <div class="book-title">${story.title}</div>
-                        <div class="book-meta">
-                            <span>${story.author}</span>
-                            <span class="rating"><i class="fas fa-star"></i> 4.8</span>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // 3. UI Interactions
-        function setupEventListeners() {
-            // Filter Toggle
-            document.getElementById('filterToggle').addEventListener('click', () => {
-                document.getElementById('filterPanel').classList.toggle('active');
-            });
-
-            // Audio Toggle
-            document.getElementById('audioBtn').addEventListener('click', () => {
-                document.getElementById('audioModal').classList.add('active');
-            });
-
-            // FAB Toggle
-            const fabContainer = document.getElementById('fabContainer');
-            document.getElementById('fabMain').addEventListener('click', () => {
-                fabContainer.classList.toggle('active');
-                const icon = fabContainer.querySelector('.fab-main i');
-                if(fabContainer.classList.contains('active')){
-                    icon.classList.remove('fa-plus');
-                    icon.classList.add('fa-times');
+            
+            // --- Theme Management ---
+            function initTheme() {
+                const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME);
+                if (savedTheme === 'light') {
+                    document.body.classList.remove('dark-mode');
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                    themeToggle.classList.add('active');
                 } else {
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-plus');
+                    document.body.classList.add('dark-mode');
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
                 }
-            });
-
-            // Click outside to close FAB
-            document.addEventListener('click', (e) => {
-                if (!fabContainer.contains(e.target)) {
-                    fabContainer.classList.remove('active');
-                    fabContainer.querySelector('.fab-main i').className = 'fas fa-plus';
-                }
-            });
-
-            // Theme Toggle
-            const themeBtn = document.getElementById('themeBtn');
-            themeBtn.addEventListener('click', () => {
-                document.body.classList.toggle('light-mode');
-                const icon = themeBtn.querySelector('i');
-                icon.className = document.body.classList.contains('light-mode') ? 'fas fa-sun' : 'fas fa-moon';
-            });
+            }
             
-            // Tag interactions
-            document.querySelectorAll('.tag').forEach(tag => {
-                tag.addEventListener('click', function() {
-                    this.parentNode.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
+            // --- Audio Management ---
+            function initAudio() {
+                SOUNDS.forEach(sound => {
+                    const audioOption = document.createElement('div');
+                    audioOption.className = 'audio-option';
+                    audioOption.dataset.soundId = sound.id;
+                    
+                    const audioInfo = document.createElement('div');
+                    audioInfo.className = 'audio-info';
+                    
+                    const audioIcon = document.createElement('div');
+                    audioIcon.className = 'audio-icon';
+                    audioIcon.innerHTML = '<i class="fas fa-volume-up"></i>';
+                    
+                    const audioName = document.createElement('div');
+                    audioName.className = 'audio-name';
+                    audioName.textContent = sound.name;
+                    
+                    const audioControls = document.createElement('div');
+                    audioControls.className = 'audio-controls';
+                    
+                    const volumeSlider = document.createElement('input');
+                    volumeSlider.type = 'range';
+                    volumeSlider.className = 'audio-volume';
+                    volumeSlider.min = '0';
+                    volumeSlider.max = '100';
+                    volumeSlider.value = '50';
+                    
+                    audioInfo.appendChild(audioIcon);
+                    audioInfo.appendChild(audioName);
+                    audioControls.appendChild(volumeSlider);
+                    
+                    audioOption.appendChild(audioInfo);
+                    audioOption.appendChild(audioControls);
+                    
+                    audioOption.addEventListener('click', (e) => {
+                        if (!e.target.classList.contains('audio-volume')) {
+                            toggleSound(sound.id);
+                        }
+                    });
+                    
+                    volumeSlider.addEventListener('input', (e) => {
+                        e.stopPropagation();
+                        updateVolume(sound.id, e.target.value / 100);
+                    });
+                    
+                    audioOptions.appendChild(audioOption);
+                    
+                    // Create audio element
+                    const audio = new Audio(sound.url);
+                    audio.loop = true;
+                    audio.volume = 0.5;
+                    audioElements[sound.id] = audio;
                 });
-            });
-        }
-
-        // 4. Modal Logic
-        function openModal(type) {
-            // Close FAB first
-            document.getElementById('fabContainer').classList.remove('active');
-            
-            if(type === 'audioModal') return; // Handled separately
-
-            // Setup generic list modal
-            const modal = document.getElementById('listModal');
-            const title = document.getElementById('listModalTitle');
-            const content = document.getElementById('listModalContent');
-            
-            let data = [];
-            if(type === 'historyModal') {
-                title.innerText = "Reading History";
-                data = stories.slice(0, 3); // Mock
-            } else if(type === 'likedModal') {
-                title.innerText = "Liked Stories";
-                data = [stories[2], stories[5]]; // Mock
-            } else {
-                title.innerText = "Bookmarks";
-                data = [stories[0]]; // Mock
-            }
-
-            // Render list
-            if(data.length === 0) {
-                content.innerHTML = "<p>Nothing here yet.</p>";
-            } else {
-                content.innerHTML = data.map(s => `
-                    <div class="list-item">
-                        <img src="${s.cover}" class="list-thumb">
-                        <div class="list-details">
-                            <h4>${s.title}</h4>
-                            <p>${s.author} • ${s.genre}</p>
-                        </div>
-                        <div style="margin-left:auto; color:var(--primary);">
-                            <i class="fas fa-chevron-right"></i>
-                        </div>
-                    </div>
-                `).join('');
-            }
-
-            modal.classList.add('active');
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.remove('active');
-        }
-
-        function openReader(id) {
-            // Placeholder for reader logic
-            console.log("Opening story ID:", id);
-        }
-
-        // Close modal on outside click
-        document.querySelectorAll('.modal-overlay').forEach(overlay => {
-            overlay.addEventListener('click', (e) => {
-                if(e.target === overlay) {
-                    overlay.classList.remove('active');
+                
+                const savedSound = localStorage.getItem(STORAGE_KEYS.SOUND);
+                const savedVolume = localStorage.getItem(STORAGE_KEYS.VOLUME) || 0.5;
+                
+                if (savedSound && audioElements[savedSound]) {
+                    audioElements[savedSound].volume = parseFloat(savedVolume);
+                    const option = document.querySelector(`.audio-option[data-sound-id="${savedSound}"]`);
+                    if (option) option.classList.add('active');
                 }
-            });
+            }
+            
+            // --- Story Data Management ---
+            async function fetchStories() {
+                try {
+                    const res = await fetch(STORIES_INDEX + "?t=" + Date.now());
+                    if (!res.ok) throw new Error("Bad status " + res.status);
+                    return await res.json();
+                } catch (err) {
+                    console.error("Failed to fetch stories:", err);
+                    return [];
+                }
+            }
+            
+            async function parseStoryContent(content) {
+                const lines = content.split('\n');
+                let inFrontmatter = false;
+                let frontmatter = {};
+                let storyContent = '';
+                
+                for (let line of lines) {
+                    if (line.trim() === '---') {
+                        if (!inFrontmatter) {
+                            inFrontmatter = true;
+                        } else {
+                            inFrontmatter = false;
+                        }
+                        continue;
+                    }
+                    
+                    if (inFrontmatter) {
+                        const match = line.match(/^(\w+):\s*(.+)$/);
+                        if (match) {
+                            const key = match[1].trim();
+                            let value = match[2].trim();
+                            
+                            if (value.startsWith('[') && value.endsWith(']')) {
+                                value = value.slice(1, -1).split(',').map(v => v.trim().replace(/"/g, ''));
+                            }
+                            
+                            frontmatter[key] = value;
+                        }
+                    } else {
+                        storyContent += line + '\n';
+                    }
+                }
+                
+                const wordCount = storyContent.split(/\s+/).length;
+                const readTime = Math.max(1, Math.ceil(wordCount / WORDS_PER_MINUTE));
+                
+                return {
+                    ...frontmatter,
+                    content: storyContent.trim(),
+                    wordCount,
+                    readTime
+                };
+            }
+            
+            async function loadStories() {
+                const files = await fetchStories();
+                const newStories = [];
+                
+                if (files.length === 0) {
+                    // Demo data with the provided story
+                    const demoStory = `---
+title: "The Girl Who Borrowed the Wind"
+author: "Salt Merchant"
+cover: "https://source.unsplash.com/featured/?baobab,wind"
+description: "A short magical tale from Ukambani about courage, sacrifice, and the Wind Spirit Mwenga Mkuu."
+type: "fiction"
+tags: ["African mythology", "Kenyan folklore", "magical realism", "short story", "children's story", "courage", "sacrifice"]
+---
+
+# The Girl Who Borrowed the Wind
+
+In the drought-stricken plains of Ukambani, there lived a young girl named Mumo.  
+Her village had not felt a breeze in many moons, and the wells were turning into dust.
+
+One evening, Mumo wandered to the sacred hill where the old stories say the **Wind Spirit**,  
+_Mwenga Mkuu_, sleeps inside a giant baobab tree.  
+Most children feared the place—but Mumo was brave.
+
+She placed her palms on the rough bark.
+
+> "Great Mwenga," she whispered.  
+> "My people grow weak. Please, wake, even for a moment."
+
+The baobab groaned.  
+A cool swirl of air wrapped around her wrists like bracelets of morning mist.
+
+The Wind Spirit spoke:
+
+> "Child of courage, I can lend you a breeze.  
+> But when I give, something must be returned."
+
+Mumo thought hard. She had no water.  
+She had no cattle.  
+But she had her voice.
+
+So she offered it.
+
+> "Take my songs, Mwenga.  
+> My voice carries stories, and stories are part of the wind."
+
+The spirit agreed.  
+A powerful gust spiraled into her hands, glowing like soft blue fire.
+
+Mumo ran home, releasing the wind across the dry fields.  
+Clouds gathered, rain fell, children danced.
+
+But Mumo could no longer sing.
+
+Weeks later, the Wind Spirit returned, moved by her sacrifice.  
+It placed a warm breeze in her throat.
+
+> "Your songs are now part of every wind," it said.  
+> "Each time the breeze touches your village, it brings your voice home."
+
+And so the people of Ukambani say that when the wind hums through the baobab trees,  
+you can hear a soft girl's song—  
+a reminder of Mumo, who borrowed the wind to save her people.`;
+                    
+                    const parsed = await parseStoryContent(demoStory);
+                    newStories.push({
+                        id: 'the-girl-who-borrowed-the-wind',
+                        filename: 'the-girl-who-borrowed-the-wind.md',
+                        path: `${API_BASE}/stories/the-girl-who-borrowed-the-wind.md`,
+                        ...parsed
+                    });
+                    
+                    // Additional demo stories
+                    const demoStories = [
+                        {
+                            title: "The Whispering Stones",
+                            author: "Ancient Storyteller",
+                            type: "mythology",
+                            tags: ["ancient", "magic", "stones", "wisdom"]
+                        },
+                        {
+                            title: "River of Dreams",
+                            author: "Dream Weaver",
+                            type: "fantasy",
+                            tags: ["dreams", "river", "journey", "discovery"]
+                        },
+                        {
+                            title: "The Last Firekeeper",
+                            author: "Flame Guardian",
+                            type: "folklore",
+                            tags: ["fire", "guardian", "tradition", "sacrifice"]
+                        },
+                        {
+                            title: "Moonlight's Promise",
+                            author: "Night Watcher",
+                            type: "fiction",
+                            tags: ["moon", "promise", "love", "destiny"]
+                        },
+                        {
+                            title: "Echoes of the Mountain",
+                            author: "Highlander",
+                            type: "mythology",
+                            tags: ["mountain", "echoes", "spirits", "adventure"]
+                        }
+                    ];
+                    
+                    demoStories.forEach((story, i) => {
+                        newStories.push({
+                            id: `story-${i+1}`,
+                            filename: `story-${i+1}.md`,
+                            path: `${API_BASE}/stories/story-${i+1}.md`,
+                            title: story.title,
+                            author: story.author,
+                            cover: `https://source.unsplash.com/featured/?${story.type},${i+1}`,
+                            description: `An enchanting ${story.type} story about ${story.tags[0]} and ${story.tags[1]}.`,
+                            type: story.type,
+                            tags: story.tags,
+                            content: `# ${story.title}\n\nThis is an amazing ${story.type} story about ${story.tags.join(', ')}.`,
+                            wordCount: 600 + (i * 100),
+                            readTime: Math.ceil((600 + (i * 100)) / WORDS_PER_MINUTE)
+                        });
+                    });
+                } else {
+                    for (const file of files) {
+                        try {
+                            const res = await fetch(API_BASE + "/stories/" + file);
+                            if (res.ok) {
+                                const content = await res.text();
+                                const parsed = await parseStoryContent(content);
+                                newStories.push({
+                                    id: file.replace(".md", ""),
+                                    filename: file,
+                                    path: API_BASE + "/stories/" + file,
+                                    ...parsed
+                                });
+                            }
+                        } catch (err) {
+                            console.error(`Failed to load story ${file}:`, err);
+                        }
+                    }
+                }
+                
+                allStories = newStories;
+                
+                // Extract all types and tags
+                allTypes.clear();
+                allTags.clear();
+                
+                allStories.forEach(story => {
+                    if (story.type) allTypes.add(story.type);
+                    if (story.tags && Array.isArray(story.tags)) {
+                        story.tags.forEach(tag => allTags.add(tag));
+                    }
+                });
+                
+                // Initialize filters
+                initFilters();
+                
+                // Apply current view
+                applyViewFilter();
+                
+                // Update UI
+                updateContinueReading();
+                updateStats();
+            }
+            
+            function initFilters() {
+                filterTags.innerHTML = '';
+                
+                // Add "All" tag
+                const allTag = document.createElement('span');
+                allTag.className = 'filter-tag active';
+                allTag.textContent = 'All';
+                allTag.dataset.filter = 'all';
+                allTag.addEventListener('click', () => {
+                    filterTags.querySelectorAll('.filter-tag').forEach(tag => tag.classList.remove('active'));
+                    allTag.classList.add('active');
+                    activeFilters.tags.clear();
+                    applyFilters();
+                });
+                filterTags.appendChild(allTag);
+                
+                // Add type filters
+                Array.from(allTypes).sort().forEach(type => {
+                    const tag = document.createElement('span');
+                    tag.className = 'filter-tag';
+                    tag.textContent = type;
+                    tag.dataset.filter = `type:${type}`;
+                    tag.addEventListener('click', () => {
+                        filterTags.querySelectorAll('.filter-tag').forEach(t => {
+                            if (t.dataset.filter === 'all') t.classList.remove('active');
+                        });
+                        tag.classList.toggle('active');
+                        
+                        if (tag.classList.contains('active')) {
+                            activeFilters.type = type;
+                        } else {
+                            activeFilters.type = 'all';
+                        }
+                        applyFilters();
+                    });
+                    filterTags.appendChild(tag);
+                });
+                
+                // Add popular tags
+                const popularTags = Array.from(allTags).slice(0, 5);
+                popularTags.forEach(tagText => {
+                    const tag = document.createElement('span');
+                    tag.className = 'filter-tag';
+                    tag.textContent = tagText;
+                    tag.dataset.filter = `tag:${tagText}`;
+                    tag.addEventListener('click', () => {
+                        filterTags.querySelectorAll('.filter-tag').forEach(t => {
+                            if (t.dataset.filter === 'all') t.classList.remove('active');
+                        });
+                        tag.classList.toggle('active');
+                        
+                        if (tag.classList.contains('active')) {
+                            activeFilters.tags.add(tagText);
+                        } else {
+                            activeFilters.tags.delete(tagText);
+                        }
+                        applyFilters();
+                    });
+                    filterTags.appendChild(tag);
+                });
+            }
+            
+            // --- Filter Functions ---
+            function applyViewFilter() {
+                const bookmarks = JSON.parse(localStorage.getItem(STORAGE_KEYS.BOOKMARKS) || '[]');
+                const likes = JSON.parse(localStorage.getItem(STORAGE_KEYS.LIKES) || '[]');
+                const readingProgress = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_PROGRESS) || '{}');
+                
+                switch (currentView) {
+                    case 'all':
+                        displayedStories = [...allStories];
+                        break;
+                    case 'bookmarked':
+                        displayedStories = allStories.filter(story => bookmarks.includes(story.id));
+                        break;
+                    case 'liked':
+                        displayedStories = allStories.filter(story => likes.includes(story.id));
+                        break;
+                    case 'history':
+                        const readingHistory = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_HISTORY) || '[]');
+                        displayedStories = readingHistory
+                            .map(id => allStories.find(story => story.id === id))
+                            .filter(story => story);
+                        break;
+                }
+                
+                applyFilters();
+            }
+            
+            function applyFilters() {
+                let filteredStories = displayedStories.filter(story => {
+                    // Search filter
+                    if (searchQuery) {
+                        const searchLower = searchQuery.toLowerCase();
+                        const inTitle = story.title?.toLowerCase().includes(searchLower) || false;
+                        const inAuthor = story.author?.toLowerCase().includes(searchLower) || false;
+                        const inDescription = story.description?.toLowerCase().includes(searchLower) || false;
+                        const inType = story.type?.toLowerCase().includes(searchLower) || false;
+                        const inTags = story.tags?.some(tag => tag.toLowerCase().includes(searchLower)) || false;
+                        
+                        if (!inTitle && !inAuthor && !inDescription && !inType && !inTags) {
+                            return false;
+                        }
+                    }
+                    
+                    // Type filter
+                    if (activeFilters.type !== 'all' && story.type !== activeFilters.type) {
+                        return false;
+                    }
+                    
+                    // Tag filter
+                    if (activeFilters.tags.size > 0) {
+                        if (!story.tags || !Array.isArray(story.tags)) return false;
+                        
+                        const hasTag = Array.from(activeFilters.tags).some(tag => 
+                            story.tags.includes(tag)
+                        );
+                        
+                        if (!hasTag) return false;
+                    }
+                    
+                    return true;
+                });
+                
+                // Sort by relevance or progress
+                if (currentView === 'history') {
+                    const readingHistory = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_HISTORY) || '[]');
+                    filteredStories.sort((a, b) => {
+                        const indexA = readingHistory.indexOf(a.id);
+                        const indexB = readingHistory.indexOf(b.id);
+                        return indexA - indexB;
+                    });
+                }
+                
+                displayedStories = filteredStories;
+                renderStories();
+            }
+            
+            // --- Story Rendering ---
+            function renderStories() {
+                storiesContainer.innerHTML = '';
+                
+                if (displayedStories.length === 0) {
+                    const emptyState = document.createElement('div');
+                    emptyState.className = 'empty-state';
+                    emptyState.innerHTML = `
+                        <i class="fas fa-book-open"></i>
+                        <p>No stories found.</p>
+                        <p>Try adjusting your search or filters.</p>
+                        <button class="action-btn" onclick="resetFilters()">
+                            <i class="fas fa-redo"></i> Reset Filters
+                        </button>
+                    `;
+                    storiesContainer.appendChild(emptyState);
+                    return;
+                }
+                
+                displayedStories.forEach(story => {
+                    const storyEl = createStoryCard(story);
+                    storiesContainer.appendChild(storyEl);
+                });
+                
+                updateStats();
+            }
+            
+            function createStoryCard(story) {
+                const card = document.createElement('div');
+                card.className = 'story-card';
+                card.dataset.storyId = story.id;
+                
+                // User data
+                const bookmarks = JSON.parse(localStorage.getItem(STORAGE_KEYS.BOOKMARKS) || '[]');
+                const readingProgress = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_PROGRESS) || '{}');
+                const likes = JSON.parse(localStorage.getItem(STORAGE_KEYS.LIKES) || '[]');
+                
+                const isBookmarked = bookmarks.includes(story.id);
+                const isLiked = likes.includes(story.id);
+                const progress = readingProgress[story.id]?.progress || 0;
+                
+                // Card image
+                const image = document.createElement('div');
+                image.className = 'story-card-image';
+                image.style.backgroundImage = `url('${story.cover || 'https://source.unsplash.com/featured/?story,book'}')`;
+                
+                const overlay = document.createElement('div');
+                overlay.className = 'story-card-overlay';
+                
+                if (story.tags && story.tags.length > 0) {
+                    const tags = document.createElement('div');
+                    tags.className = 'story-card-tags';
+                    
+                    story.tags.slice(0, 2).forEach(tag => {
+                        const tagEl = document.createElement('span');
+                        tagEl.className = 'story-card-tag';
+                        tagEl.textContent = tag;
+                        tags.appendChild(tagEl);
+                    });
+                    
+                    overlay.appendChild(tags);
+                }
+                
+                image.appendChild(overlay);
+                
+                // Card content
+                const content = document.createElement('div');
+                content.className = 'story-card-content';
+                
+                const header = document.createElement('div');
+                header.className = 'story-card-header';
+                
+                const title = document.createElement('h3');
+                title.className = 'story-card-title';
+                title.textContent = story.title || story.id;
+                
+                const author = document.createElement('div');
+                author.className = 'story-card-author';
+                author.textContent = `by ${story.author || 'Unknown'}`;
+                
+                header.appendChild(title);
+                header.appendChild(author);
+                
+                const meta = document.createElement('div');
+                meta.className = 'story-card-meta';
+                meta.innerHTML = `
+                    <span class="story-card-type">${story.type || 'fiction'}</span>
+                    <span class="story-card-time">
+                        <i class="far fa-clock"></i>
+                        ${story.readTime || 1} min
+                    </span>
+                `;
+                
+                const description = document.createElement('p');
+                description.className = 'story-card-description';
+                description.textContent = story.description || 'An enchanting story waiting to be read...';
+                
+                const footer = document.createElement('div');
+                footer.className = 'story-card-footer';
+                
+                if (progress > 0) {
+                    const progressBar = document.createElement('div');
+                    progressBar.className = 'story-card-progress';
+                    
+                    const progressFill = document.createElement('div');
+                    progressFill.className = 'story-card-progress-bar';
+                    progressFill.style.width = `${progress}%`;
+                    
+                    progressBar.appendChild(progressFill);
+                    footer.appendChild(progressBar);
+                }
+                
+                const actions = document.createElement('div');
+                actions.className = 'story-card-actions';
+                
+                const bookmarkBtn = document.createElement('button');
+                bookmarkBtn.className = `story-card-btn ${isBookmarked ? 'active' : ''}`;
+                bookmarkBtn.innerHTML = isBookmarked ? '<i class="fas fa-bookmark"></i>' : '<i class="far fa-bookmark"></i>';
+                bookmarkBtn.title = isBookmarked ? 'Remove bookmark' : 'Bookmark story';
+                bookmarkBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleBookmark(story.id);
+                });
+                
+                const likeBtn = document.createElement('button');
+                likeBtn.className = `story-card-btn ${isLiked ? 'active' : ''}`;
+                likeBtn.innerHTML = isLiked ? '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
+                likeBtn.title = isLiked ? 'Unlike story' : 'Like story';
+                likeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleLike(story.id);
+                });
+                
+                actions.appendChild(bookmarkBtn);
+                actions.appendChild(likeBtn);
+                footer.appendChild(actions);
+                
+                content.appendChild(header);
+                content.appendChild(meta);
+                content.appendChild(description);
+                content.appendChild(footer);
+                
+                card.appendChild(image);
+                card.appendChild(content);
+                
+                card.addEventListener('click', () => openStory(story));
+                
+                return card;
+            }
+            
+            // --- Continue Reading Section ---
+            function updateContinueReading() {
+                continueReadingCards.innerHTML = '';
+                
+                const readingHistory = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_HISTORY) || '[]');
+                const readingProgress = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_PROGRESS) || '{}');
+                
+                const recentReads = readingHistory
+                    .map(storyId => {
+                        const story = allStories.find(s => s.id === storyId);
+                        const progress = readingProgress[storyId]?.progress || 0;
+                        return story ? { ...story, progress } : null;
+                    })
+                    .filter(item => item !== null && item.progress > 0 && item.progress < 100)
+                    .slice(0, 5);
+                
+                if (recentReads.length === 0) {
+                    continueReadingSection.style.display = 'none';
+                    return;
+                }
+                
+                continueReadingSection.style.display = 'block';
+                
+                recentReads.forEach(story => {
+                    const card = document.createElement('div');
+                    card.className = 'continue-card';
+                    card.dataset.storyId = story.id;
+                    
+                    const bg = document.createElement('div');
+                    bg.className = 'continue-card-bg';
+                    bg.style.backgroundImage = `url('${story.cover}')`;
+                    
+                    const content = document.createElement('div');
+                    content.className = 'continue-card-content';
+                    
+                    const header = document.createElement('div');
+                    header.className = 'continue-card-header';
+                    
+                    const title = document.createElement('div');
+                    title.className = 'continue-card-title';
+                    title.textContent = story.title;
+                    
+                    const closeBtn = document.createElement('button');
+                    closeBtn.className = 'continue-card-close';
+                    closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                    closeBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        removeFromContinueReading(story.id);
+                    });
+                    
+                    header.appendChild(title);
+                    header.appendChild(closeBtn);
+                    
+                    const progressBar = document.createElement('div');
+                    progressBar.className = 'continue-card-progress';
+                    
+                    const progressFill = document.createElement('div');
+                    progressFill.className = 'continue-card-progress-bar';
+                    progressFill.style.width = `${story.progress}%`;
+                    
+                    progressBar.appendChild(progressFill);
+                    
+                    const meta = document.createElement('div');
+                    meta.className = 'continue-card-meta';
+                    meta.innerHTML = `
+                        <span>${Math.round(story.progress)}% read</span>
+                        <span>${story.readTime || 1} min</span>
+                    `;
+                    
+                    content.appendChild(header);
+                    content.appendChild(progressBar);
+                    content.appendChild(meta);
+                    
+                    card.appendChild(bg);
+                    card.appendChild(content);
+                    
+                    card.addEventListener('click', () => {
+                        openStory(story);
+                        const page = readingProgress[story.id]?.page || 1;
+                        currentPage = page;
+                        renderStoryPage();
+                    });
+                    
+                    continueReadingCards.appendChild(card);
+                });
+            }
+            
+            function removeFromContinueReading(storyId) {
+                const readingHistory = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_HISTORY) || '[]');
+                const newHistory = readingHistory.filter(id => id !== storyId);
+                localStorage.setItem(STORAGE_KEYS.READING_HISTORY, JSON.stringify(newHistory));
+                
+                updateContinueReading();
+                if (currentView === 'history') applyViewFilter();
+                showToast('Removed from continue reading');
+            }
+            
+            // --- User Actions ---
+            function toggleBookmark(storyId) {
+                const bookmarks = JSON.parse(localStorage.getItem(STORAGE_KEYS.BOOKMARKS) || '[]');
+                const index = bookmarks.indexOf(storyId);
+                
+                if (index === -1) {
+                    bookmarks.push(storyId);
+                    showToast('Story bookmarked');
+                } else {
+                    bookmarks.splice(index, 1);
+                    showToast('Bookmark removed');
+                }
+                
+                localStorage.setItem(STORAGE_KEYS.BOOKMARKS, JSON.stringify(bookmarks));
+                
+                if (currentStoryData && currentStoryData.id === storyId) {
+                    updateModalButtons(storyId);
+                }
+                
+                if (currentView === 'bookmarked') {
+                    applyViewFilter();
+                } else {
+                    renderStories();
+                }
+                
+                updateStats();
+            }
+            
+            function toggleLike(storyId) {
+                const likes = JSON.parse(localStorage.getItem(STORAGE_KEYS.LIKES) || '[]');
+                const index = likes.indexOf(storyId);
+                
+                if (index === -1) {
+                    likes.push(storyId);
+                    showToast('Story liked');
+                } else {
+                    likes.splice(index, 1);
+                    showToast('Like removed');
+                }
+                
+                localStorage.setItem(STORAGE_KEYS.LIKES, JSON.stringify(likes));
+                
+                if (currentStoryData && currentStoryData.id === storyId) {
+                    updateModalButtons(storyId);
+                }
+                
+                if (currentView === 'liked') {
+                    applyViewFilter();
+                } else {
+                    renderStories();
+                }
+                
+                updateStats();
+            }
+            
+            function addToReadingHistory(storyId) {
+                const readingHistory = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_HISTORY) || '[]');
+                
+                const index = readingHistory.indexOf(storyId);
+                if (index !== -1) {
+                    readingHistory.splice(index, 1);
+                }
+                
+                readingHistory.unshift(storyId);
+                
+                if (readingHistory.length > 50) {
+                    readingHistory.splice(50);
+                }
+                
+                localStorage.setItem(STORAGE_KEYS.READING_HISTORY, JSON.stringify(readingHistory));
+                
+                updateContinueReading();
+            }
+            
+            function saveReadingProgress(storyId, page, totalPages) {
+                const readingProgress = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_PROGRESS) || '{}');
+                const progress = Math.min(100, Math.round((page / totalPages) * 100));
+                
+                readingProgress[storyId] = {
+                    progress,
+                    page,
+                    totalPages,
+                    lastRead: Date.now()
+                };
+                
+                localStorage.setItem(STORAGE_KEYS.READING_PROGRESS, JSON.stringify(readingProgress));
+                
+                updateContinueReading();
+                updateStats();
+            }
+            
+            // --- Story Modal ---
+            async function openStory(story) {
+                currentStoryData = story;
+                modalTitle.textContent = story.title || story.id;
+                modalStoryContent.innerHTML = '<div class="loading">Loading story...</div>';
+                storyModal.classList.add('active');
+                
+                try {
+                    const storyText = story.content || `# ${story.title}\n\nStory content not available.`;
+                    
+                    currentStoryPages = paginateStory(storyText);
+                    
+                    const readingProgress = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_PROGRESS) || '{}');
+                    currentPage = readingProgress[story.id]?.page || 1;
+                    
+                    renderStoryPage();
+                    updateModalButtons(story.id);
+                    
+                    addToReadingHistory(story.id);
+                    saveReadingProgress(story.id, currentPage, currentStoryPages.length);
+                    
+                } catch (err) {
+                    console.error("Error loading story:", err);
+                    modalStoryContent.innerHTML = '<div class="error">Error loading story. Please try again.</div>';
+                }
+            }
+            
+            function paginateStory(text) {
+                const words = text.split(/\s+/);
+                const pages = [];
+                
+                for (let i = 0; i < words.length; i += WORDS_PER_PAGE) {
+                    const pageWords = words.slice(i, i + WORDS_PER_PAGE);
+                    pages.push(pageWords.join(' '));
+                }
+                
+                return pages.length > 0 ? pages : [text];
+            }
+            
+            function renderStoryPage() {
+                if (!currentStoryPages.length) return;
+                
+                const pageIndex = Math.min(Math.max(0, currentPage - 1), currentStoryPages.length - 1);
+                let pageContent = currentStoryPages[pageIndex];
+                
+                // Basic markdown parsing
+                pageContent = pageContent
+                    .replace(/# (.*?)(\n|$)/g, '<h1>$1</h1>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/_(.*?)_/g, '<em>$1</em>')
+                    .replace(/> (.*?)(\n|$)/g, '<blockquote>$1</blockquote>')
+                    .replace(/\n/g, '<br>');
+                
+                modalStoryContent.innerHTML = pageContent;
+                pageInput.value = currentPage;
+                totalPagesEl.textContent = `/ ${currentStoryPages.length}`;
+                
+                prevPageBtn.disabled = currentPage <= 1;
+                nextPageBtn.disabled = currentPage >= currentStoryPages.length;
+            }
+            
+            function updateModalButtons(storyId) {
+                const bookmarks = JSON.parse(localStorage.getItem(STORAGE_KEYS.BOOKMARKS) || '[]');
+                const likes = JSON.parse(localStorage.getItem(STORAGE_KEYS.LIKES) || '[]');
+                
+                const isBookmarked = bookmarks.includes(storyId);
+                const isLiked = likes.includes(storyId);
+                
+                modalBookmarkBtn.innerHTML = isBookmarked ? 
+                    '<i class="fas fa-bookmark"></i>' : '<i class="far fa-bookmark"></i>';
+                modalBookmarkBtn.title = isBookmarked ? 'Remove bookmark' : 'Bookmark story';
+                
+                modalLikeBtn.innerHTML = isLiked ? 
+                    '<i class="fas fa-heart"></i>' : '<i class="far fa-heart"></i>';
+                modalLikeBtn.title = isLiked ? 'Unlike story' : 'Like story';
+            }
+            
+            // --- Audio Controls ---
+            function toggleSound(soundId) {
+                const options = document.querySelectorAll('.audio-option');
+                
+                if (activeSound === soundId) {
+                    audioElements[soundId].pause();
+                    activeSound = null;
+                    localStorage.removeItem(STORAGE_KEYS.SOUND);
+                    
+                    options.forEach(option => option.classList.remove('active'));
+                } else {
+                    if (activeSound && audioElements[activeSound]) {
+                        audioElements[activeSound].pause();
+                    }
+                    
+                    audioElements[soundId].play();
+                    activeSound = soundId;
+                    localStorage.setItem(STORAGE_KEYS.SOUND, soundId);
+                    
+                    options.forEach(option => {
+                        option.classList.remove('active');
+                        if (option.dataset.soundId === soundId) {
+                            option.classList.add('active');
+                        }
+                    });
+                }
+            }
+            
+            function updateVolume(soundId, volume) {
+                if (audioElements[soundId]) {
+                    audioElements[soundId].volume = volume;
+                    if (activeSound === soundId) {
+                        localStorage.setItem(STORAGE_KEYS.VOLUME, volume);
+                    }
+                }
+            }
+            
+            // --- UI Update Functions ---
+            function updateStats() {
+                totalStoriesEl.textContent = displayedStories.length;
+                
+                const bookmarks = JSON.parse(localStorage.getItem(STORAGE_KEYS.BOOKMARKS) || '[]');
+                bookmarkedCountEl.textContent = bookmarks.length;
+                
+                const likes = JSON.parse(localStorage.getItem(STORAGE_KEYS.LIKES) || '[]');
+                likedCountEl.textContent = likes.length;
+                
+                const readingProgress = JSON.parse(localStorage.getItem(STORAGE_KEYS.READING_PROGRESS) || '{}');
+                const totalReadTime = Object.keys(readingProgress).reduce((total, storyId) => {
+                    const story = allStories.find(s => s.id === storyId);
+                    return total + (story?.readTime || 0);
+                }, 0);
+                
+                totalReadTimeEl.textContent = totalReadTime;
+            }
+            
+            function showToast(message) {
+                toastMessage.textContent = message;
+                toast.classList.add('show');
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+            
+            function resetFilters() {
+                filterTags.querySelectorAll('.filter-tag').forEach(tag => {
+                    tag.classList.remove('active');
+                    if (tag.dataset.filter === 'all') {
+                        tag.classList.add('active');
+                    }
+                });
+                
+                activeFilters = {
+                    type: 'all',
+                    tags: new Set()
+                };
+                
+                searchInput.value = '';
+                searchQuery = '';
+                
+                applyViewFilter();
+            }
+            
+            // --- Event Listeners ---
+            function initEventListeners() {
+                // Theme toggle
+                themeToggle.addEventListener('click', () => {
+                    const isDark = document.body.classList.contains('dark-mode');
+                    
+                    if (isDark) {
+                        document.body.classList.remove('dark-mode');
+                        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                        themeToggle.classList.add('active');
+                        localStorage.setItem(STORAGE_KEYS.THEME, 'light');
+                    } else {
+                        document.body.classList.add('dark-mode');
+                        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                        themeToggle.classList.remove('active');
+                        localStorage.setItem(STORAGE_KEYS.THEME, 'dark');
+                    }
+                });
+                
+                // Search
+                searchInput.addEventListener('input', (e) => {
+                    searchQuery = e.target.value.trim();
+                    applyFilters();
+                });
+                
+                // Audio dialog
+                audioToggle.addEventListener('click', () => {
+                    audioDialog.classList.toggle('active');
+                });
+                
+                closeAudioDialog.addEventListener('click', () => {
+                    audioDialog.classList.remove('active');
+                });
+                
+                audioDialog.addEventListener('click', (e) => {
+                    if (e.target === audioDialog) {
+                        audioDialog.classList.remove('active');
+                    }
+                });
+                
+                // Modal controls
+                closeModal.addEventListener('click', () => {
+                    storyModal.classList.remove('active');
+                    currentStoryData = null;
+                    currentStoryPages = [];
+                });
+                
+                prevPageBtn.addEventListener('click', () => {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        renderStoryPage();
+                        saveReadingProgress(currentStoryData.id, currentPage, currentStoryPages.length);
+                    }
+                });
+                
+                nextPageBtn.addEventListener('click', () => {
+                    if (currentPage < currentStoryPages.length) {
+                        currentPage++;
+                        renderStoryPage();
+                        saveReadingProgress(currentStoryData.id, currentPage, currentStoryPages.length);
+                    }
+                });
+                
+                pageInput.addEventListener('change', () => {
+                    const newPage = parseInt(pageInput.value);
+                    if (!isNaN(newPage) && newPage >= 1 && newPage <= currentStoryPages.length) {
+                        currentPage = newPage;
+                        renderStoryPage();
+                        saveReadingProgress(currentStoryData.id, currentPage, currentStoryPages.length);
+                    } else {
+                        pageInput.value = currentPage;
+                    }
+                });
+                
+                modalBookmarkBtn.addEventListener('click', () => {
+                    if (currentStoryData) {
+                        toggleBookmark(currentStoryData.id);
+                    }
+                });
+                
+                modalLikeBtn.addEventListener('click', () => {
+                    if (currentStoryData) {
+                        toggleLike(currentStoryData.id);
+                    }
+                });
+                
+                // FAB menu
+                fabMain.addEventListener('click', () => {
+                    fabMenu.classList.toggle('active');
+                });
+                
+                fabBookmarks.addEventListener('click', () => {
+                    currentView = 'bookmarked';
+                    fabMenu.classList.remove('active');
+                    applyViewFilter();
+                    showToast('Showing bookmarked stories');
+                });
+                
+                fabLikes.addEventListener('click', () => {
+                    currentView = 'liked';
+                    fabMenu.classList.remove('active');
+                    applyViewFilter();
+                    showToast('Showing liked stories');
+                });
+                
+                fabHistory.addEventListener('click', () => {
+                    currentView = 'history';
+                    fabMenu.classList.remove('active');
+                    applyViewFilter();
+                    showToast('Showing reading history');
+                });
+                
+                // Close modals on background click
+                storyModal.addEventListener('click', (e) => {
+                    if (e.target === storyModal) {
+                        storyModal.classList.remove('active');
+                        currentStoryData = null;
+                        currentStoryPages = [];
+                    }
+                });
+                
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        if (storyModal.classList.contains('active')) {
+                            storyModal.classList.remove('active');
+                            currentStoryData = null;
+                            currentStoryPages = [];
+                        }
+                        if (audioDialog.classList.contains('active')) {
+                            audioDialog.classList.remove('active');
+                        }
+                        fabMenu.classList.remove('active');
+                    }
+                    
+                    if (storyModal.classList.contains('active')) {
+                        if (e.key === 'ArrowLeft') {
+                            e.preventDefault();
+                            prevPageBtn.click();
+                        } else if (e.key === 'ArrowRight') {
+                            e.preventDefault();
+                            nextPageBtn.click();
+                        }
+                    }
+                });
+                
+                // Reset filters button (for empty state)
+                window.resetFilters = resetFilters;
+            }
+            
+            // Start the application
+            init();
         });
     </script>
 </body>
